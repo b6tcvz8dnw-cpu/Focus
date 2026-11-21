@@ -45,16 +45,25 @@ details summary{cursor:pointer;font-weight:700;font-size:14px} .settings{display
 [hidden]{display:none!important}
 main{padding-bottom:calc(104px + env(safe-area-inset-bottom))}
 .page{display:flex;flex-direction:column;gap:16px}
-.tabbar{position:fixed;z-index:10;bottom:0;left:50%;transform:translateX(-50%);width:min(100%,520px);padding:9px 18px calc(9px + env(safe-area-inset-bottom));display:grid;grid-template-columns:repeat(2,1fr);gap:8px;background:rgba(16,25,21,.96);border-top:1px solid var(--line);backdrop-filter:blur(14px)}
+.tabbar{position:fixed;z-index:10;bottom:0;left:50%;transform:translateX(-50%);width:min(100%,520px);padding:9px 18px calc(9px + env(safe-area-inset-bottom));display:grid;grid-template-columns:repeat(3,1fr);gap:8px;background:rgba(16,25,21,.96);border-top:1px solid var(--line);backdrop-filter:blur(14px)}
 .tab{border:0;border-radius:12px;background:transparent;color:var(--muted);padding:8px 4px;font-size:12px;display:flex;flex-direction:column;align-items:center;gap:3px}
 .tab span{font-size:20px;line-height:1.1}
 .tab.active{background:var(--accent2);color:var(--accent);font-weight:700}
+
+
+.theme-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.theme-choice,.mark-choice{border:1px solid var(--line);border-radius:12px;background:#111b16;color:var(--text);padding:11px 9px;font-size:13px;text-align:left}
+.theme-choice{display:flex;align-items:center;gap:9px}
+.theme-choice i{display:inline-block;width:15px;height:15px;border-radius:50%;flex:none}
+.theme-choice.selected,.mark-choice.selected{border-color:var(--accent);background:var(--accent2)}
+.mark-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.mark-choice{text-align:center}
 
 </style>
 </head>
 <body>
 <main>
-<header><div><div class="brand">FOCUS<span>.</span></div><div class="muted">Study with intention.</div></div><div class="status" id="status">● READY</div></header>
+<header><div><div class="brand">FOCUS<span id="brandMark">●</span></div><div class="muted">Study with intention.</div></div><div class="status" id="status">● READY</div></header>
 <div class="page" id="timerPage">
 <section class="panel">
  <div class="modes"><button class="mode active" data-mode="focus">集中</button><button class="mode" data-mode="short">短い休憩</button><button class="mode" data-mode="long">長い休憩</button></div>
@@ -63,12 +72,7 @@ main{padding-bottom:calc(104px + env(safe-area-inset-bottom))}
  <p class="hint" id="hint">25分間、ひとつのことに集中しよう。</p>
 </section>
 <section class="panel"><h2>今取り組むこと</h2><label class="muted" for="task">学習内容</label><input id="task" maxlength="80" placeholder="例：数学の問題集を進める"></section>
-<section class="panel"><details open><summary>⚙ タイマー設定</summary><div class="settings">
-<label>集中時間（分）<input id="focusDuration" type="number" min="1" max="120" value="25"></label>
-<label>短い休憩（分）<input id="shortDuration" type="number" min="1" max="60" value="5"></label>
-<label>長い休憩（分）<input id="longDuration" type="number" min="1" max="90" value="15"></label>
-<label>長い休憩まで<input id="cycleDuration" type="number" min="2" max="8" value="4"></label>
-</div><button class="secondary wide" id="apply">設定を適用</button></details></section>
+
 </div>
 <div class="page" id="overviewPage" hidden>
 <section class="panel"><h2>学習の全体像</h2>
@@ -82,11 +86,42 @@ main{padding-bottom:calc(104px + env(safe-area-inset-bottom))}
  <div class="muted" style="margin-top:10px">集中セッションを完了すると、その日の棒グラフに反映されるよ。</div>
 </section>
 </div>
+
+<div class="page" id="settingsPage" hidden>
+ <section class="panel"><h2>タイマー</h2>
+  <div class="settings">
+   <label>集中時間（分）<input id="focusDuration" type="number" min="1" max="120" value="25"></label>
+   <label>短い休憩（分）<input id="shortDuration" type="number" min="1" max="60" value="5"></label>
+   <label>長い休憩（分）<input id="longDuration" type="number" min="1" max="90" value="15"></label>
+   <label>長い休憩まで<input id="cycleDuration" type="number" min="2" max="8" value="4"></label>
+  </div>
+  <button class="secondary wide" id="apply">設定を適用</button>
+ </section>
+ <section class="panel"><h2>デザイン</h2>
+  <div class="muted" style="margin-bottom:12px">テーマカラー</div>
+  <div class="theme-grid" role="group" aria-label="テーマカラー">
+   <button class="theme-choice selected" data-theme="green" aria-pressed="true"><i style="background:#8ec5a3"></i>フォレスト</button>
+   <button class="theme-choice" data-theme="blue" aria-pressed="false"><i style="background:#8ab9e8"></i>オーシャン</button>
+   <button class="theme-choice" data-theme="purple" aria-pressed="false"><i style="background:#b8a0e8"></i>ラベンダー</button>
+   <button class="theme-choice" data-theme="amber" aria-pressed="false"><i style="background:#e7b96f"></i>アンバー</button>
+   <button class="theme-choice" data-theme="rose" aria-pressed="false"><i style="background:#e6a0ad"></i>ローズ</button>
+  </div>
+  <div class="muted" style="margin:16px 0 10px">アプリ内マーク</div>
+  <div class="mark-grid" role="group" aria-label="アプリ内マーク">
+   <button class="mark-choice selected" data-mark="dot" aria-pressed="true">● ドット</button>
+   <button class="mark-choice" data-mark="star" aria-pressed="false">✦ スター</button>
+   <button class="mark-choice" data-mark="leaf" aria-pressed="false">❧ リーフ</button>
+  </div>
+  <p class="muted" style="margin:14px 0 0">ここで変更できるマークはアプリ画面内の表示だよ。iPhoneホーム画面のアイコンはPWAの仕様上、この画面からは切り替えられないよ。</p>
+ </section>
+ <section class="panel"><h2>データ</h2><p class="muted">学習記録はこの端末のブラウザ内に保存されるよ。</p><button class="secondary wide" id="clear">今日の記録をリセット</button></section>
+</div>
 <nav class="tabbar" aria-label="ページ切り替え">
  <button class="tab active" data-page="timerPage"><span>◷</span>タイマー</button>
  <button class="tab" data-page="overviewPage"><span>▥</span>学習記録</button>
+ <button class="tab" data-page="settingsPage"><span>⚙</span>設定</button>
 </nav>
-<div class="foot"><span>FOCUS · STUDY TIMER</span><button class="linkbtn" id="clear">今日の記録をリセット</button></div><div id="toast" role="status" aria-live="polite">自分のペースで、一歩ずつ。</div>
+<div class="foot"><span>FOCUS · STUDY TIMER</span></div><div id="toast" role="status" aria-live="polite">自分のペースで、一歩ずつ。</div>
 </main>
 <script>
 const $=id=>document.getElementById(id);
@@ -118,10 +153,17 @@ $('start').onclick=()=>{if(running){stop();update();return}if(finished){$('toast
 $('reset').onclick=()=>{stop();finished=false;remaining=durations[mode]*60;total=remaining;$('toast').textContent='タイマーをリセットしたよ。';update()};
 $('skip').onclick=()=>{if(mode==='focus')setMode((completed+1)%cycle()===0?'long':'short');else setMode('focus');$('toast').textContent='次の時間に切り替えたよ。'};
 document.querySelectorAll('[data-mode]').forEach(b=>b.onclick=()=>setMode(b.dataset.mode));
-$('apply').onclick=()=>{let vals={focus:+$('focusDuration').value,short:+$('shortDuration').value,long:+$('longDuration').value,cycle:+$('cycleDuration').value};if(vals.focus<1||vals.focus>120||vals.short<1||vals.short>60||vals.long<1||vals.long>90||vals.cycle<2||vals.cycle>8||Object.values(vals).some(v=>!Number.isInteger(v))){$('toast').textContent='設定値を範囲内の整数で入力してね。';return}durations={focus:vals.focus,short:vals.short,long:vals.long};stop();finished=false;remaining=durations[mode]*60;total=remaining;$('toast').textContent='設定を適用したよ。';update()};
+$('apply').onclick=()=>{let vals={focus:+$('focusDuration').value,short:+$('shortDuration').value,long:+$('longDuration').value,cycle:+$('cycleDuration').value};if(vals.focus<1||vals.focus>120||vals.short<1||vals.short>60||vals.long<1||vals.long>90||vals.cycle<2||vals.cycle>8||Object.values(vals).some(v=>!Number.isInteger(v))){$('toast').textContent='設定値を範囲内の整数で入力してね。';return}durations={focus:vals.focus,short:vals.short,long:vals.long};stop();finished=false;remaining=durations[mode]*60;total=remaining;localStorage.setItem('focus-timer-settings',JSON.stringify(vals));$('toast').textContent='タイマー設定を保存したよ。';update()};
 $('task').onchange=save;
 
-document.querySelectorAll('[data-page]').forEach(b=>b.onclick=()=>{document.querySelectorAll('.page').forEach(p=>p.hidden=p.id!==b.dataset.page);document.querySelectorAll('[data-page]').forEach(t=>t.classList.toggle('active',t===b));if(b.dataset.page==='overviewPage')updateChart();});
+document.querySelectorAll('[data-page]').forEach(b=>b.onclick=()=>{document.querySelectorAll('.page').forEach(p=>p.hidden=p.id!==b.dataset.page);document.querySelectorAll('[data-page]').forEach(t=>t.classList.toggle('active',t===b));if(b.dataset.page==='overviewPage')updateChart()});
+const themes={green:{accent:'#8ec5a3',accent2:'#294b38'},blue:{accent:'#8ab9e8',accent2:'#244765'},purple:{accent:'#b8a0e8',accent2:'#443663'},amber:{accent:'#e7b96f',accent2:'#574323'},rose:{accent:'#e6a0ad',accent2:'#59323d'}};
+function setTheme(name,save=true){const t=themes[name]||themes.green;document.documentElement.style.setProperty('--accent',t.accent);document.documentElement.style.setProperty('--accent2',t.accent2);document.querySelectorAll('[data-theme]').forEach(b=>{const active=b.dataset.theme===name;b.classList.toggle('selected',active);b.setAttribute('aria-pressed',String(active))});if(save)localStorage.setItem('focus-appearance',JSON.stringify({theme:name,mark:localStorage.getItem('focus-mark')||'dot'}))}
+function setMark(name,save=true){const marks={dot:'●',star:'✦',leaf:'❧'};$('brandMark').textContent=marks[name]||marks.dot;document.querySelectorAll('[data-mark]').forEach(b=>{const active=b.dataset.mark===name;b.classList.toggle('selected',active);b.setAttribute('aria-pressed',String(active))});if(save)localStorage.setItem('focus-mark',name)}
+document.querySelectorAll('[data-theme]').forEach(b=>b.onclick=()=>setTheme(b.dataset.theme));
+document.querySelectorAll('[data-mark]').forEach(b=>b.onclick=()=>setMark(b.dataset.mark));
+try{const ts=JSON.parse(localStorage.getItem('focus-timer-settings')||'null');if(ts){durations={focus:ts.focus,short:ts.short,long:ts.long};$('focusDuration').value=ts.focus;$('shortDuration').value=ts.short;$('longDuration').value=ts.long;$('cycleDuration').value=ts.cycle}}catch(e){}
+try{const ap=JSON.parse(localStorage.getItem('focus-appearance')||'null');if(ap&&ap.theme)setTheme(ap.theme,false);setMark(localStorage.getItem('focus-mark')||'dot',false)}catch(e){}
 
 $('clear').onclick=()=>{stop();completed=0;minutes=0;history[dateKey(new Date())]=0;finished=false;remaining=durations[mode]*60;total=remaining;save();$('toast').textContent='今日の記録をリセットしたよ。';update();updateChart()};
 try{let s=JSON.parse(localStorage.getItem('focus-stats')||'{}');completed=s.completed||0;minutes=s.minutes||0;history=s.history&&typeof s.history==='object'?s.history:{};$('task').value=s.task||''}catch(e){}
