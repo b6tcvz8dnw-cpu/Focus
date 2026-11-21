@@ -494,6 +494,28 @@ details summary{min-height:26px;display:flex;align-items:center}
  }
 }
 
+
+/* Home Screen PWA: reserve a fixed top band for the iOS status/notch area */
+@media (display-mode: standalone) {
+ body.study-room-fullscreen #studyRoomPage{
+  padding-top:max(env(safe-area-inset-top,0px), 72px) !important;
+  padding-bottom:max(env(safe-area-inset-bottom,0px), 28px) !important;
+ }
+ body.study-room-fullscreen .study-room-panel{
+  padding-top:0 !important;
+ }
+ body.study-room-fullscreen .study-room-view{
+  padding-top:22px !important;
+ }
+}
+@supports (-webkit-touch-callout:none) {
+ @media (display-mode: standalone) {
+  body.study-room-fullscreen #studyRoomPage{
+   padding-top:max(env(safe-area-inset-top,0px), 72px) !important;
+  }
+ }
+}
+
 </style>
 </head>
 <body>
