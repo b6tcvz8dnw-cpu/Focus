@@ -98,7 +98,7 @@ body.timer-large-mode #timerPanel #largeToggle{border-color:var(--accent);backgr
 [hidden]{display:none!important}
 main{padding-bottom:calc(104px + env(safe-area-inset-bottom))}
 .page{display:flex;flex-direction:column;gap:16px}
-.tabbar{position:fixed;z-index:10;bottom:0;left:50%;transform:translateX(-50%);width:min(100%,520px);padding:7px 8px calc(7px + env(safe-area-inset-bottom));display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:4px;background:var(--tab-bg);border-top:1px solid var(--line);backdrop-filter:blur(14px)}
+.tabbar{position:fixed;z-index:10;bottom:0;left:50%;transform:translateX(-50%);width:min(100%,520px);padding:7px 8px calc(7px + env(safe-area-inset-bottom));display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px;background:var(--tab-bg);border-top:1px solid var(--line);backdrop-filter:blur(14px)}
 .tab{border:0;border-radius:10px;background:transparent;color:var(--muted);padding:7px 2px;font-size:10px;display:flex;flex-direction:column;align-items:center;gap:3px;min-width:0}
 .tab span{font-size:18px;line-height:1.1}
 .tab.active{background:var(--accent2);color:var(--accent);font-weight:700}
@@ -201,6 +201,58 @@ textarea.field-select{font-family:inherit;resize:vertical;min-height:80px}
 .hourglass-foot{font-size:10px;color:var(--muted);margin:12px 0 0}
 @keyframes sand-stream{from{opacity:.35}to{opacity:1}}
 @media(prefers-reduced-motion:reduce){.hourglass-art.is-running .hourglass-stream{animation:none;opacity:.7}}
+
+/* A wider, immersive study nook with a desk by the window */
+body.study-room-fullscreen{overflow:hidden}
+body.study-room-fullscreen main{max-width:none;height:100dvh;padding:0;gap:0}
+body.study-room-fullscreen header,body.study-room-fullscreen .tabbar,body.study-room-fullscreen .foot,body.study-room-fullscreen #toast{display:none}
+body.study-room-fullscreen #studyRoomPage{position:fixed;inset:0;z-index:80;display:block!important;overflow:auto;background:var(--bg);padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
+body.study-room-fullscreen .study-room-panel{height:100%;padding:10px;border:0;background:transparent}
+body.study-room-fullscreen .study-room-view{min-height:calc(100dvh - 20px);border-radius:18px}
+.study-room-top-actions{display:flex;align-items:center;gap:10px}
+.room-exit{border:1px solid rgba(255,255,255,.3);background:rgba(12,18,17,.25);color:#fff;border-radius:30px;padding:7px 11px;font-size:11px;backdrop-filter:blur(8px)}
+.study-window{inset:15% 7% 29%;border-width:11px;box-shadow:0 0 0 2px rgba(244,226,195,.3),inset 0 0 0 2px rgba(255,255,255,.16),0 20px 45px rgba(0,0,0,.3)}
+.study-window-glow{position:absolute;inset:0;background:linear-gradient(115deg,transparent 35%,rgba(255,255,255,.16) 48%,transparent 58%);mix-blend-mode:screen;pointer-events:none}
+.room-desk-scene{position:absolute;z-index:5;left:-2%;right:-2%;bottom:10%;height:32%;pointer-events:none}
+.desk-surface{position:absolute;left:0;right:0;top:49%;height:15%;background:linear-gradient(180deg,#9a7150,#654832 45%,#39291f);border-top:5px solid rgba(221,183,137,.65);box-shadow:0 -9px 24px rgba(0,0,0,.22),0 15px 24px rgba(0,0,0,.25)}
+.desk-front{position:absolute;left:4%;right:4%;top:64%;height:40%;background:linear-gradient(90deg,#4a3428,#76543a 45%,#4b3327);clip-path:polygon(0 0,100% 0,94% 100%,6% 100%);box-shadow:0 12px 20px rgba(0,0,0,.3)}
+.desk-hourglass{pointer-events:auto;position:absolute;z-index:8;right:19%;top:0;width:112px;height:155px;border:0;background:transparent;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:1px;padding:0 4px 8px;text-shadow:0 2px 8px rgba(0,0,0,.65);filter:drop-shadow(0 8px 9px rgba(0,0,0,.28))}
+.desk-hourglass:before{content:"";position:absolute;z-index:-1;bottom:4px;width:105px;height:15px;border-radius:50%;background:rgba(0,0,0,.28);filter:blur(5px)}
+.desk-hourglass .hourglass-art{width:58px;height:94px;filter:drop-shadow(0 3px 8px rgba(0,0,0,.35))}
+.desk-hourglass-time{font-size:16px;font-variant-numeric:tabular-nums;letter-spacing:1px}
+.desk-hourglass-label{font-size:9px;opacity:.9;white-space:nowrap}
+.desk-books{position:absolute;left:18%;top:33%;z-index:7;display:flex;align-items:flex-end;gap:2px;transform:rotate(-4deg)}
+.desk-books i{display:block;width:16px;height:47px;border-radius:2px 2px 0 0;background:linear-gradient(90deg,#6d4b3b,#a97855,#583a30);box-shadow:2px 0 3px #30251f}
+.desk-books i:nth-child(2){height:55px;background:linear-gradient(90deg,#53655a,#8b9b7b,#34483d)}
+.desk-books i:nth-child(3){height:42px;background:linear-gradient(90deg,#8c6b45,#c09b65,#6e5036)}
+.desk-lamp{position:absolute;z-index:7;left:43%;top:6%;width:65px;height:92px}
+.desk-lamp:before{content:"";position:absolute;left:29px;top:30px;width:5px;height:54px;background:linear-gradient(90deg,#473b2c,#b39a6e,#53432f);transform:rotate(5deg)}
+.desk-lamp:after{content:"";position:absolute;left:7px;top:13px;width:48px;height:30px;background:linear-gradient(180deg,#d6bd8b,#806744);clip-path:polygon(22% 0,78% 0,100% 100%,0 100%);filter:drop-shadow(0 0 16px rgba(245,207,139,.32))}
+.desk-lamp i{position:absolute;bottom:0;left:17px;width:38px;height:7px;border-radius:50%;background:#9b8058}
+.room-plant{position:absolute;z-index:7;left:7%;top:18%;width:42px;height:58px}
+.room-plant:before{content:"";position:absolute;bottom:0;left:5px;width:32px;height:22px;border-radius:3px 3px 9px 9px;background:linear-gradient(90deg,#795943,#c39b73,#684b38)}
+.room-plant i{position:absolute;bottom:17px;left:18px;width:15px;height:34px;border-radius:100% 0 100% 0;background:linear-gradient(135deg,#a3b28b,#526e53);transform:rotate(-25deg);transform-origin:bottom}
+.room-plant i:nth-child(2){transform:rotate(25deg);left:8px;height:29px}
+.room-plant i:nth-child(3){transform:rotate(2deg);left:16px;height:42px}
+.room-controls{display:flex;justify-content:center;align-items:center;gap:12px;padding:12px}
+body.study-room-fullscreen .room-controls{display:none}
+.study-room-note{position:relative;z-index:8;background:rgba(13,20,18,.22);padding:8px 12px;border-radius:10px;max-width:90%;margin:0 auto;text-align:center}
+.chill-overlay{background:#10151a}
+.chill-content{padding-top:30px}
+.chill-content:before{content:"";position:absolute;z-index:-1;inset:-35px -22px;border:1px solid rgba(255,255,255,.13);border-radius:28px;background:linear-gradient(145deg,rgba(255,255,255,.09),rgba(255,255,255,.015));backdrop-filter:blur(13px);box-shadow:0 25px 90px rgba(0,0,0,.18)}
+.chill-clock{font-size:clamp(48px,13vw,76px);font-weight:200;letter-spacing:5px;margin-top:24px;text-shadow:0 0 30px rgba(255,255,255,.2)}
+.chill-pause{display:block;margin:13px auto 0;border:1px solid rgba(255,255,255,.32);border-radius:30px;padding:9px 20px;color:#fff;background:rgba(255,255,255,.12);font-size:12px;backdrop-filter:blur(10px)}
+.chill-pause:disabled{opacity:.45}
+.chill-scenes{margin-top:24px}
+.chill-scene-choice{transition:background .3s,border-color .3s,transform .3s}
+.chill-scene-choice.active{transform:translateY(-2px);box-shadow:0 5px 20px rgba(0,0,0,.15)}
+.scene-rain .scene-window{inset:8% 5% 8%;border:1px solid rgba(224,235,242,.12);box-shadow:inset 0 0 65px rgba(0,0,0,.3),0 0 80px rgba(183,209,228,.08)}
+.scene-rain .scene-moon{width:120px;height:120px;filter:blur(1px);box-shadow:0 0 90px 28px rgba(222,215,185,.18)}
+.scene-night:before{background-size:100% 100%,100% 100%;filter:drop-shadow(0 0 5px rgba(255,255,255,.25))}
+.scene-forest:before{filter:blur(4px);opacity:.9}
+.scene-ocean:before{height:43%;filter:blur(1px)}
+@media(max-width:420px){.desk-hourglass{right:15%;transform:scale(.92);transform-origin:bottom center}.desk-lamp{left:43%}.room-plant{left:5%}}
+@media(prefers-reduced-motion:reduce){.chill-content:before,.chill-scene:before,.chill-scene:after{animation:none!important}}
 </style>
 </head>
 <body>
@@ -238,44 +290,35 @@ textarea.field-select{font-family:inherit;resize:vertical;min-height:80px}
 <section class="panel" id="analyticsPanel"><h2>学習分析</h2><div class="muted" style="margin:-4px 0 10px">記録されたセッションから集計。</div><div id="analyticsContent"></div></section>
 </div>
 <div class="page" id="calendarPage" hidden><section class="panel"><h2>月間カレンダー</h2><p class="muted" style="margin:-4px 0 12px">日ごとの学習時間を確認できるよ。</p></section></div>
-<div class="page" id="historyPage" hidden><section class="panel"><h2>学習履歴</h2><p class="muted" style="margin:-4px 0 12px">完了したセッションの記録を確認・編集できるよ。</p></section></div>
 <div class="page" id="analyticsPage" hidden><section class="panel"><h2>学習分析</h2><p class="muted" style="margin:-4px 0 12px">曜日別の集中時間を確認できるよ。</p></section></div>
 
 
 <div class="page" id="studyRoomPage" hidden>
- <section class="panel study-room-panel">
+ <section class="study-room-panel">
   <div class="study-room-view season-autumn time-day" id="studyRoomView">
-   <div class="study-room-top"><div><div class="study-room-kicker">A LITTLE PLACE OF YOUR OWN</div><div class="study-room-title">小さな書斎</div></div><div class="study-room-season" id="studyRoomSeason">秋 · 昼</div></div>
-   <div class="study-window" aria-hidden="true"><div class="study-sun"></div><div class="study-hills"></div><div class="study-window-cross"></div></div>
+   <div class="study-room-top"><div><div class="study-room-kicker">A LITTLE PLACE OF YOUR OWN</div><div class="study-room-title">小さな書斎</div></div><div class="study-room-top-actions"><div class="study-room-season" id="studyRoomSeason">秋 · 昼</div><button class="room-exit" id="roomExit" type="button">閉じる ×</button></div></div>
+   <div class="study-window" aria-hidden="true"><div class="study-sun"></div><div class="study-hills"></div><div class="study-window-cross"></div><div class="study-window-glow"></div></div>
+   <div class="room-desk-scene" aria-label="窓際の机と砂時計">
+    <div class="room-plant"><i></i><i></i><i></i></div>
+    <div class="desk-lamp"><i></i></div>
+    <div class="desk-books"><i></i><i></i><i></i></div>
+    <button class="desk-hourglass" id="hourglassStart" type="button" aria-label="5分間の休憩を始める">
+     <svg class="hourglass-art" id="hourglassArt" viewBox="0 0 100 120" role="img" aria-label="砂が落ちる砂時計">
+      <path class="hourglass-frame" d="M27 7H73 M27 113H73 M31 9C31 35 48 43 50 60C52 77 69 85 69 111 M69 9C69 35 52 43 50 60C48 77 31 85 31 111"/>
+      <path class="hourglass-glass" d="M32 12C32 34 47 43 50 58C53 43 68 34 68 12Z M50 62C47 78 32 87 32 108H68C68 87 53 78 50 62Z"/>
+      <path class="hourglass-sand-top" id="hourglassSandTop" d="M35 15H65C64 31 57 39 50 48C43 39 36 31 35 15Z"/>
+      <path class="hourglass-sand-bottom" id="hourglassSandBottom" d="M35 105C37 89 43 82 50 74C57 82 63 89 65 105Z"/>
+      <path class="hourglass-stream" d="M50 48V74"/>
+     </svg>
+     <span class="desk-hourglass-time" id="hourglassTime">05:00</span>
+     <span class="desk-hourglass-label" id="hourglassState">砂時計をひっくり返す</span>
+    </button>
+    <div class="desk-surface"></div><div class="desk-front"></div>
+   </div>
    <div class="study-room-bottom"><div><div class="study-room-clock" id="studyRoomClock">15:00</div><div class="study-room-date" id="studyRoomDate">11月21日 土曜日</div></div><div class="study-room-foot">NO TASKS · NO GOALS</div></div>
+   <p class="study-room-note" id="studyRoomMessage">窓の外を眺めて、ただ過ごす。それだけでいい時間。</p>
   </div>
-  <p class="study-room-note" id="studyRoomMessage">窓の外を眺めて、ただ過ごす。それだけでいい時間。</p>
- </section>
- <section class="panel hourglass-panel" aria-label="書斎の砂時計タイマー">
-  <h2 class="hourglass-heading">小さな砂時計</h2>
-  <p class="hourglass-sub">少しだけ、時間を眺める。</p>
-  <div class="hourglass-stage">
-   <svg class="hourglass-art" id="hourglassArt" viewBox="0 0 100 120" role="img" aria-label="砂が落ちる砂時計">
-    <path class="hourglass-frame" d="M27 7H73 M27 113H73 M31 9C31 35 48 43 50 60C52 77 69 85 69 111 M69 9C69 35 52 43 50 60C48 77 31 85 31 111"/>
-    <path class="hourglass-glass" d="M32 12C32 34 47 43 50 58C53 43 68 34 68 12Z M50 62C47 78 32 87 32 108H68C68 87 53 78 50 62Z"/>
-    <path class="hourglass-sand-top" id="hourglassSandTop" d="M35 15H65C64 31 57 39 50 48C43 39 36 31 35 15Z"/>
-    <path class="hourglass-sand-bottom" id="hourglassSandBottom" d="M35 105C37 89 43 82 50 74C57 82 63 89 65 105Z"/>
-    <path class="hourglass-stream" d="M50 48V74"/>
-   </svg>
-   <div class="hourglass-readout"><div class="hourglass-time" id="hourglassTime">05:00</div><div class="hourglass-state" id="hourglassState">いつでも始められるよ</div></div>
-  </div>
-  <div class="hourglass-presets" role="group" aria-label="砂時計の時間">
-   <button type="button" data-hourglass-minutes="1">1分</button>
-   <button type="button" data-hourglass-minutes="3">3分</button>
-   <button type="button" data-hourglass-minutes="5" class="active">5分</button>
-  </div>
-  <div class="hourglass-controls"><button class="secondary" id="hourglassReset" type="button">↺ 戻す</button><button class="primary" id="hourglassStart" type="button">▶ はじめる</button></div>
-  <p class="hourglass-foot">ここで過ごした時間は、学習記録には残らないよ。</p>
- </section>
-
- <section class="panel">
-  <h2>ここでは、何もしなくていい。</h2>
-  <p class="muted" style="line-height:2;margin:0">タイマーを動かす必要も、記録を残す必要もないよ。何かを達成しなくても、ここにいる時間はそのままで大丈夫。窓の外の景色は、今の季節と時間に合わせて移り変わる。</p>
+  <div class="room-controls"><button class="secondary" id="hourglassReset" type="button">↺ 砂時計を戻す</button><span class="muted">5分だけ、何もしない時間。</span></div>
  </section>
 </div>
 <div class="page" id="settingsPage" hidden>
@@ -311,7 +354,7 @@ textarea.field-select{font-family:inherit;resize:vertical;min-height:80px}
 <section id="chillOverlay" class="chill-overlay" aria-label="チル空間" aria-hidden="true">
  <div class="chill-scene scene-rain" id="chillScene" aria-hidden="true"><div class="scene-window"></div><div class="scene-moon"></div><div class="scene-horizon"></div><div class="scene-ambient"></div></div>
  <div class="chill-top"><div class="chill-brand">FOCUS <span>· SLOW DOWN</span></div><button class="chill-close" id="closeChill" aria-label="チル空間を閉じる">×</button></div>
- <div class="chill-content"><div class="chill-eyebrow" id="chillEyebrow">A QUIET MOMENT</div><h2 id="chillTitle">雨の降る窓辺</h2><p id="chillCaption">急がなくていい。今は、ここにいるだけでいい。</p><div class="chill-clock" id="chillClock">--:--</div><div class="chill-timer-label" id="chillTimerLabel">休憩の残り時間</div>
+ <div class="chill-content"><div class="chill-eyebrow" id="chillEyebrow">A QUIET MOMENT</div><h2 id="chillTitle">雨の降る窓辺</h2><p id="chillCaption">急がなくていい。今は、ここにいるだけでいい。</p><div class="chill-clock" id="chillClock">--:--</div><div class="chill-timer-label" id="chillTimerLabel">休憩の残り時間</div><button class="chill-pause" id="chillPause" type="button">Ⅱ 一時停止</button>
  <div class="chill-scenes" role="group" aria-label="空間を選ぶ"><button class="chill-scene-choice active" data-scene="rain">雨の窓辺</button><button class="chill-scene-choice" data-scene="night">星空</button><button class="chill-scene-choice" data-scene="forest">森</button><button class="chill-scene-choice" data-scene="ocean">海辺</button></div>
  <label class="chill-auto"><input type="checkbox" id="autoChill"> 休憩を始めたら自動で開く</label>
  <div class="chill-footer">何もしない時間にも、ちゃんと意味がある。</div></div>
@@ -320,8 +363,7 @@ textarea.field-select{font-family:inherit;resize:vertical;min-height:80px}
  <button class="tab active" data-page="timerPage"><span>◷</span>タイマー</button>
  <button class="tab" data-page="overviewPage"><span>▥</span>概要</button>
  <button class="tab" data-page="calendarPage"><span>▦</span>カレンダー</button>
- <button class="tab" data-page="historyPage"><span>≡</span>履歴</button>
- <button class="tab" data-page="analyticsPage"><span>⌁</span>分析</button>
+  <button class="tab" data-page="analyticsPage"><span>⌁</span>分析</button>
  <button class="tab" data-page="studyRoomPage"><span>⌂</span>書斎</button>\n
 </nav>
 <div class="foot"><span>FOCUS · STUDY TIMER</span></div><div id="toast" role="status" aria-live="polite">自分のペースで、一歩ずつ。</div>
@@ -375,11 +417,11 @@ const chillScenes={
 function setChillScene(name){const s=chillScenes[name]||chillScenes.rain;$('chillScene').className='chill-scene scene-'+name;$('chillTitle').textContent=s.title;$('chillCaption').textContent=s.caption;$('chillEyebrow').textContent=s.eyebrow;document.querySelectorAll('[data-scene]').forEach(b=>b.classList.toggle('active',b.dataset.scene===name));localStorage.setItem('focus-chill-scene',name)}
 function openChill(){if(document.body.classList.contains('timer-large-mode'))setLargeMode(false);$('chillOverlay').classList.add('open');$('chillOverlay').setAttribute('aria-hidden','false');setChillScene(localStorage.getItem('focus-chill-scene')||'rain');$('autoChill').checked=localStorage.getItem('focus-auto-chill')==='true';updateChillClock()}
 function closeChill(){$('chillOverlay').classList.remove('open');$('chillOverlay').setAttribute('aria-hidden','true')}
-function updateChillClock(){$('chillClock').textContent=fmt(remaining);$('chillTimerLabel').textContent=(mode==='focus'?'集中時間の残り':'休憩の残り時間')+' · '+(running?'進行中':'一時停止中')}
-$('openChill').onclick=openChill;$('closeChill').onclick=closeChill;
+function updateChillClock(){const t=hourglassRemaining;$('chillClock').textContent=fmt(t);$('chillTimerLabel').textContent=t<=0?'5分の休憩が終わりました':'5分の小休憩 · '+(hourglassRunning?'ゆっくり休もう':'一時停止中');$('chillPause').textContent=hourglassRunning?'Ⅱ 一時停止':'▶ 再開';$('chillPause').disabled=t<=0}
+$('openChill').onclick=openChill;$('closeChill').onclick=closeChill;$('chillPause').onclick=()=>{if(hourglassRunning){tickHourglass();if(hourglassRemaining>0){stopHourglass();renderHourglass();updateChillClock()}}else if(hourglassRemaining>0){startHourglass()} };
 document.querySelectorAll('[data-scene]').forEach(b=>b.onclick=()=>setChillScene(b.dataset.scene));
 $('autoChill').onchange=()=>localStorage.setItem('focus-auto-chill',String($('autoChill').checked));
-document.addEventListener('keydown',e=>{if(e.key==='Escape'&&$('chillOverlay').classList.contains('open'))closeChill()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&$('chillOverlay').classList.contains('open'))closeChill();else if(e.key==='Escape'&&document.body.classList.contains('study-room-fullscreen'))setStudyRoomMode(false)});
 function setMode(m){stop();mode=m;finished=false;remaining=durations[m]*60;total=remaining;update();if((m==="short"||m==="long")&&localStorage.getItem("focus-auto-chill")==="true")openChill()}
 function notify(title){if('Notification'in window&&Notification.permission==='granted')new Notification(title,{body:'FOCUS — 学習タイマー'});$('toast').textContent=title}
 function complete(){stop();remaining=0;finished=true;if(mode==='focus'){completed++;minutes+=durations.focus;const key=dateKey(new Date());history[key]=(Number(history[key])||0)+durations.focus;save()}update();updateChart();notify(mode==='focus'?'集中セッション完了！お疲れさま。':'休憩終了！次の集中に備えよう。');try{let C=window.AudioContext||window.webkitAudioContext;if(C){let c=new C(),o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);g.gain.value=.07;o.frequency.value=660;o.start();o.stop(c.currentTime+.3)}}catch(e){}}
@@ -393,7 +435,7 @@ $('skip').onclick=()=>{if(mode==='focus')setMode((completed+1)%cycle()===0?'long
 document.querySelectorAll('[data-mode]').forEach(b=>b.onclick=()=>setMode(b.dataset.mode));
 $('apply').onclick=()=>{let vals={focus:+$('focusDuration').value,short:+$('shortDuration').value,long:+$('longDuration').value,cycle:+$('cycleDuration').value};if(vals.focus<1||vals.focus>120||vals.short<1||vals.short>60||vals.long<1||vals.long>90||vals.cycle<2||vals.cycle>8||Object.values(vals).some(v=>!Number.isInteger(v))){$('toast').textContent='設定値を範囲内の整数で入力してね。';return}durations={focus:vals.focus,short:vals.short,long:vals.long};stop();finished=false;remaining=durations[mode]*60;total=remaining;localStorage.setItem('focus-timer-settings',JSON.stringify(vals));$('toast').textContent='タイマー設定を保存したよ。';update()};
 
-document.querySelectorAll('[data-page]').forEach(b=>b.onclick=()=>{document.querySelectorAll('.page').forEach(p=>p.hidden=p.id!==b.dataset.page);document.querySelectorAll('[data-page]').forEach(t=>t.classList.toggle('active',t===b));if(b.dataset.page==='overviewPage')renderAllRecords()});
+document.querySelectorAll('[data-page]').forEach(b=>b.onclick=()=>{if(b.dataset.page==='settingsPage'){document.querySelectorAll('.page').forEach(p=>p.hidden=p.id!==b.dataset.page);return}document.body.classList.toggle('study-room-fullscreen',b.dataset.page==='studyRoomPage');document.querySelectorAll('.page').forEach(p=>p.hidden=p.id!==b.dataset.page);document.querySelectorAll('[data-page]').forEach(t=>t.classList.toggle('active',t===b));if(b.dataset.page==='overviewPage')renderAllRecords()});
 
 const studyRoomSeasons=[
  {id:'spring',name:'春',months:[2,3,4],message:'花の気配が、窓の向こうに少しずつ増えていく。'},
@@ -416,35 +458,32 @@ function renderHourglass(){
  $('hourglassTime').textContent=String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');
  $('hourglassArt').classList.toggle('is-running',hourglassRunning);
  $('hourglassStart').textContent=hourglassRunning?'Ⅱ 一時停止':s===0?'↻ もう一度':'▶ はじめる';
- $('hourglassState').textContent=s===0?'砂が落ちきったよ。少し休もう。':hourglassRunning?'静かに時間が流れているよ。':'いつでも始められるよ';
+ $('hourglassState').textContent=s===0?'休憩が終わりました':hourglassRunning?'休憩中 · タップで一時停止':'砂時計をひっくり返す';
  const fraction=hourglassDuration?hourglassRemaining/hourglassDuration:0;
  $('hourglassSandTop').style.transform='scaleY('+Math.max(0,fraction)+')';
  $('hourglassSandBottom').style.transform='scaleY('+Math.max(0,1-fraction)+')';
- document.querySelectorAll('[data-hourglass-minutes]').forEach(b=>{const active=Number(b.dataset.hourglassMinutes)*60===hourglassDuration;b.classList.toggle('active',active);b.setAttribute('aria-pressed',String(active))});
+ $('hourglassTime').setAttribute('aria-label','残り '+Math.floor(s/60)+' 分 '+(s%60)+' 秒');
 }
 function stopHourglass(){if(hourglassInterval){clearInterval(hourglassInterval);hourglassInterval=null}hourglassRunning=false}
+function startHourglass(){
+ if(hourglassRemaining<=0)hourglassRemaining=300;
+ hourglassDeadline=Date.now()+hourglassRemaining*1000;hourglassRunning=true;
+ if(hourglassInterval)clearInterval(hourglassInterval);
+ hourglassInterval=window.setInterval(tickHourglass,250);renderHourglass();updateChillClock();openChill();
+}
 function tickHourglass(){
  if(!hourglassRunning)return;
  hourglassRemaining=Math.max(0,Math.ceil((hourglassDeadline-Date.now())/1000));
  if(hourglassRemaining<=0){hourglassRemaining=0;stopHourglass()}
- renderHourglass();
+ renderHourglass();updateChillClock();
 }
-function resetHourglass(){
- stopHourglass();hourglassRemaining=hourglassDuration;hourglassDeadline=0;renderHourglass();
-}
-document.querySelectorAll('[data-hourglass-minutes]').forEach(b=>b.addEventListener('click',()=>{
- stopHourglass();hourglassDuration=Math.min(300,Math.max(60,Number(b.dataset.hourglassMinutes)*60));hourglassRemaining=hourglassDuration;hourglassDeadline=0;renderHourglass();
-}));
-$('hourglassStart').addEventListener('click',()=>{
- if(hourglassRunning){tickHourglass();if(hourglassRemaining>0){stopHourglass();renderHourglass()}return}
- if(hourglassRemaining<=0)hourglassRemaining=hourglassDuration;
- hourglassDeadline=Date.now()+hourglassRemaining*1000;hourglassRunning=true;
- if(hourglassInterval)clearInterval(hourglassInterval);
- hourglassInterval=window.setInterval(tickHourglass,250);renderHourglass();
-});
+function resetHourglass(){stopHourglass();hourglassDuration=300;hourglassRemaining=300;hourglassDeadline=0;renderHourglass();updateChillClock();closeChill()}
+$('hourglassStart').addEventListener('click',()=>{if(hourglassRunning){tickHourglass();if(hourglassRemaining>0){stopHourglass();renderHourglass();updateChillClock()}}else startHourglass()});
 $('hourglassReset').addEventListener('click',resetHourglass);
-document.addEventListener('visibilitychange',()=>{if(!document.hidden)tickHourglass()});
+document.addEventListener('visibilitychange',()=>{if(!document.hidden){tickHourglass();updateStudyRoom()}});
 renderHourglass();
+function setStudyRoomMode(enabled){document.body.classList.toggle('study-room-fullscreen',enabled);}
+$('roomExit').addEventListener('click',()=>setStudyRoomMode(false));
 function updateStudyRoom(){
  const now=new Date(),month=now.getMonth(),hour=now.getHours();
  const season=studyRoomSeasons.find(s=>s.months.includes(month))||studyRoomSeasons[0];
@@ -510,7 +549,7 @@ $('exportData').onclick=()=>{const payload={app:'FOCUS',version:2,exportedAt:new
 $('importData').onchange=async e=>{const file=e.target.files[0];if(!file)return;try{const obj=JSON.parse(await file.text()),s=obj.stats;if(obj.app!=='FOCUS'||!s||!Array.isArray(s.records)||!confirm('現在の学習記録をバックアップの内容で置き換える？'))return;records=s.records.filter(r=>r&&Number.isFinite(Number(r.timestamp))&&Number.isFinite(Number(r.minutes))&&Number(r.minutes)>0).map(r=>({...r,minutes:Number(r.minutes)}));dailyGoal=Number(s.dailyGoal)||60;weeklyGoal=Number(s.weeklyGoal)||300;const importedTotals={};records.forEach(r=>{const k=r.date||dateKey(new Date(r.timestamp));importedTotals[k]=(importedTotals[k]||0)+r.minutes});legacyCompleted=Math.max(0,(Number(s.completed)||0)-records.length);legacyMinutes=Math.max(0,(Number(s.minutes)||0)-records.reduce((a,r)=>a+r.minutes,0));legacyHistory=Object.fromEntries(Object.entries(s.history||{}).map(([k,v])=>[k,Math.max(0,Number(v||0)-(importedTotals[k]||0))]));recalculateStats();if(obj.timerSettings){localStorage.setItem('focus-timer-settings',JSON.stringify(obj.timerSettings))}save();localStorage.setItem('focus-stats',JSON.stringify({...s,completed,minutes,history,records,dailyGoal,weeklyGoal}));$('dailyGoal').value=dailyGoal;$('weeklyGoal').value=weeklyGoal;renderAllRecords();$('toast').textContent='バックアップを読み込んだよ。ページを再読み込みすると設定も反映されるよ。'}catch(err){$('toast').textContent='ファイルを読み込めなかったよ。FOCUSのJSONバックアップか確認してね。'}finally{e.target.value=''}};
 
 if('serviceWorker'in navigator){let refreshing=false;navigator.serviceWorker.addEventListener('controllerchange',()=>{if(!refreshing){refreshing=true;window.location.reload();}});window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').then(reg=>reg.update()).catch(()=>{}));}
-$('calendarPage').appendChild($('calendarPanel'));$('historyPage').appendChild($('historyPanel'));$('analyticsPage').appendChild($('analyticsPanel'));
+$('calendarPage').appendChild($('calendarPanel'));$('analyticsPage').appendChild($('analyticsPanel'));
 update();updateChart();
 </script>
 </body></html>
