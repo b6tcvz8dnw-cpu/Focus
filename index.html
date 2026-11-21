@@ -173,12 +173,41 @@ textarea.field-select{font-family:inherit;resize:vertical;min-height:80px}
 .study-room-note{font-size:12px;color:var(--muted);line-height:1.9;margin:12px 2px 2px}
 .study-room-foot{font-size:10px;letter-spacing:1.5px;opacity:.62}
 @media(prefers-reduced-motion:no-preference){.study-sun{transition:top 1.2s ease,left 1.2s ease,background 1.2s ease}.study-window{transition:background 1.2s ease}}
+
+/* Compact settings shortcut on the timer page */
+.timer-page-tools{display:flex;justify-content:flex-end;margin:0 2px 8px}
+.small-settings{border:1px solid var(--line);background:var(--panel);color:var(--muted);border-radius:999px;padding:6px 10px;font-size:11px;letter-spacing:.3px;min-height:30px}
+.small-settings:active{transform:scale(.97)}
+/* Quiet five-minute hourglass */
+.hourglass-panel{margin-top:14px;text-align:center;padding:18px 14px}
+.hourglass-heading{font-size:14px;letter-spacing:1px;margin:0 0 4px}
+.hourglass-sub{font-size:11px;color:var(--muted);margin:0 0 14px}
+.hourglass-stage{display:flex;align-items:center;justify-content:center;gap:20px;min-height:138px}
+.hourglass-art{width:76px;height:118px;overflow:visible;filter:drop-shadow(0 7px 10px rgba(0,0,0,.18))}
+.hourglass-frame{fill:none;stroke:var(--accent);stroke-width:4;stroke-linecap:round;opacity:.88}
+.hourglass-glass{fill:rgba(210,226,218,.07);stroke:rgba(224,233,226,.7);stroke-width:2}
+.hourglass-sand-top{fill:var(--accent);transform-origin:50px 12px;transition:transform .5s linear}
+.hourglass-sand-bottom{fill:var(--accent);transform-origin:50px 108px;transition:transform .5s linear}
+.hourglass-stream{stroke:var(--accent);stroke-width:2.2;stroke-linecap:round;opacity:0}
+.hourglass-art.is-running .hourglass-stream{opacity:.8;animation:sand-stream .7s ease-in-out infinite alternate}
+.hourglass-readout{text-align:left;min-width:112px}
+.hourglass-time{font-size:clamp(32px,9vw,42px);font-weight:300;letter-spacing:1px;font-variant-numeric:tabular-nums}
+.hourglass-state{font-size:11px;color:var(--muted);margin-top:4px;min-height:16px}
+.hourglass-presets{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin:10px 0 12px}
+.hourglass-presets button{min-width:54px;padding:7px 12px;border:1px solid var(--line);border-radius:999px;background:var(--surface-deep);color:var(--muted);font-size:11px}
+.hourglass-presets button.active{background:var(--accent2);border-color:var(--accent);color:var(--text)}
+.hourglass-controls{display:flex;justify-content:center;gap:8px}
+.hourglass-controls button{min-width:94px}
+.hourglass-foot{font-size:10px;color:var(--muted);margin:12px 0 0}
+@keyframes sand-stream{from{opacity:.35}to{opacity:1}}
+@media(prefers-reduced-motion:reduce){.hourglass-art.is-running .hourglass-stream{animation:none;opacity:.7}}
 </style>
 </head>
 <body>
 <main>
 <header><div><div class="brand">FOCUS<span id="brandMark">●</span></div><div class="muted">Study with intention.</div></div><div class="status" id="status">● READY</div></header>
 <div class="page" id="timerPage">
+<div class="timer-page-tools"><button class="small-settings" type="button" data-page="settingsPage" aria-label="設定を開く">⚙ 設定</button></div>
 <section class="panel" id="timerPanel">
  <div class="modes"><button class="mode active" data-mode="focus">集中</button><button class="mode" data-mode="short">短い休憩</button><button class="mode" data-mode="long">長い休憩</button></div>
  <div class="timer"><svg class="ring" viewBox="0 0 200 200"><circle class="track" cx="100" cy="100" r="88"/><circle class="progress" id="progress" cx="100" cy="100" r="88"/></svg><div style="text-align:center"><div class="clock" id="clock">25:00</div><div class="mode-label" id="modeLabel">集中する時間</div></div></div>
@@ -222,6 +251,28 @@ textarea.field-select{font-family:inherit;resize:vertical;min-height:80px}
   </div>
   <p class="study-room-note" id="studyRoomMessage">窓の外を眺めて、ただ過ごす。それだけでいい時間。</p>
  </section>
+ <section class="panel hourglass-panel" aria-label="書斎の砂時計タイマー">
+  <h2 class="hourglass-heading">小さな砂時計</h2>
+  <p class="hourglass-sub">少しだけ、時間を眺める。</p>
+  <div class="hourglass-stage">
+   <svg class="hourglass-art" id="hourglassArt" viewBox="0 0 100 120" role="img" aria-label="砂が落ちる砂時計">
+    <path class="hourglass-frame" d="M27 7H73 M27 113H73 M31 9C31 35 48 43 50 60C52 77 69 85 69 111 M69 9C69 35 52 43 50 60C48 77 31 85 31 111"/>
+    <path class="hourglass-glass" d="M32 12C32 34 47 43 50 58C53 43 68 34 68 12Z M50 62C47 78 32 87 32 108H68C68 87 53 78 50 62Z"/>
+    <path class="hourglass-sand-top" id="hourglassSandTop" d="M35 15H65C64 31 57 39 50 48C43 39 36 31 35 15Z"/>
+    <path class="hourglass-sand-bottom" id="hourglassSandBottom" d="M35 105C37 89 43 82 50 74C57 82 63 89 65 105Z"/>
+    <path class="hourglass-stream" d="M50 48V74"/>
+   </svg>
+   <div class="hourglass-readout"><div class="hourglass-time" id="hourglassTime">05:00</div><div class="hourglass-state" id="hourglassState">いつでも始められるよ</div></div>
+  </div>
+  <div class="hourglass-presets" role="group" aria-label="砂時計の時間">
+   <button type="button" data-hourglass-minutes="1">1分</button>
+   <button type="button" data-hourglass-minutes="3">3分</button>
+   <button type="button" data-hourglass-minutes="5" class="active">5分</button>
+  </div>
+  <div class="hourglass-controls"><button class="secondary" id="hourglassReset" type="button">↺ 戻す</button><button class="primary" id="hourglassStart" type="button">▶ はじめる</button></div>
+  <p class="hourglass-foot">ここで過ごした時間は、学習記録には残らないよ。</p>
+ </section>
+
  <section class="panel">
   <h2>ここでは、何もしなくていい。</h2>
   <p class="muted" style="line-height:2;margin:0">タイマーを動かす必要も、記録を残す必要もないよ。何かを達成しなくても、ここにいる時間はそのままで大丈夫。窓の外の景色は、今の季節と時間に合わせて移り変わる。</p>
@@ -271,7 +322,7 @@ textarea.field-select{font-family:inherit;resize:vertical;min-height:80px}
  <button class="tab" data-page="calendarPage"><span>▦</span>カレンダー</button>
  <button class="tab" data-page="historyPage"><span>≡</span>履歴</button>
  <button class="tab" data-page="analyticsPage"><span>⌁</span>分析</button>
- <button class="tab" data-page="studyRoomPage"><span>⌂</span>書斎</button>\n <button class="tab" data-page="settingsPage"><span>⚙</span>設定</button>
+ <button class="tab" data-page="studyRoomPage"><span>⌂</span>書斎</button>\n
 </nav>
 <div class="foot"><span>FOCUS · STUDY TIMER</span></div><div id="toast" role="status" aria-live="polite">自分のペースで、一歩ずつ。</div>
 </main>
@@ -358,6 +409,42 @@ const studyRoomTimes=[
  {id:'evening',name:'夕方',from:16,to:19,sunX:'76%',sunY:'54%',message:'空の色が変わっていくのを、ゆっくり眺めよう。'},
  {id:'night',name:'夜',from:19,to:24,sunX:'70%',sunY:'18%',message:'遠くの明かりを眺めながら、静かな夜を過ごそう。'}
 ];
+
+let hourglassDuration=300,hourglassRemaining=300,hourglassDeadline=0,hourglassInterval=null,hourglassRunning=false;
+function renderHourglass(){
+ const s=Math.max(0,hourglassRemaining);
+ $('hourglassTime').textContent=String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');
+ $('hourglassArt').classList.toggle('is-running',hourglassRunning);
+ $('hourglassStart').textContent=hourglassRunning?'Ⅱ 一時停止':s===0?'↻ もう一度':'▶ はじめる';
+ $('hourglassState').textContent=s===0?'砂が落ちきったよ。少し休もう。':hourglassRunning?'静かに時間が流れているよ。':'いつでも始められるよ';
+ const fraction=hourglassDuration?hourglassRemaining/hourglassDuration:0;
+ $('hourglassSandTop').style.transform='scaleY('+Math.max(0,fraction)+')';
+ $('hourglassSandBottom').style.transform='scaleY('+Math.max(0,1-fraction)+')';
+ document.querySelectorAll('[data-hourglass-minutes]').forEach(b=>{const active=Number(b.dataset.hourglassMinutes)*60===hourglassDuration;b.classList.toggle('active',active);b.setAttribute('aria-pressed',String(active))});
+}
+function stopHourglass(){if(hourglassInterval){clearInterval(hourglassInterval);hourglassInterval=null}hourglassRunning=false}
+function tickHourglass(){
+ if(!hourglassRunning)return;
+ hourglassRemaining=Math.max(0,Math.ceil((hourglassDeadline-Date.now())/1000));
+ if(hourglassRemaining<=0){hourglassRemaining=0;stopHourglass()}
+ renderHourglass();
+}
+function resetHourglass(){
+ stopHourglass();hourglassRemaining=hourglassDuration;hourglassDeadline=0;renderHourglass();
+}
+document.querySelectorAll('[data-hourglass-minutes]').forEach(b=>b.addEventListener('click',()=>{
+ stopHourglass();hourglassDuration=Math.min(300,Math.max(60,Number(b.dataset.hourglassMinutes)*60));hourglassRemaining=hourglassDuration;hourglassDeadline=0;renderHourglass();
+}));
+$('hourglassStart').addEventListener('click',()=>{
+ if(hourglassRunning){tickHourglass();if(hourglassRemaining>0){stopHourglass();renderHourglass()}return}
+ if(hourglassRemaining<=0)hourglassRemaining=hourglassDuration;
+ hourglassDeadline=Date.now()+hourglassRemaining*1000;hourglassRunning=true;
+ if(hourglassInterval)clearInterval(hourglassInterval);
+ hourglassInterval=window.setInterval(tickHourglass,250);renderHourglass();
+});
+$('hourglassReset').addEventListener('click',resetHourglass);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)tickHourglass()});
+renderHourglass();
 function updateStudyRoom(){
  const now=new Date(),month=now.getMonth(),hour=now.getHours();
  const season=studyRoomSeasons.find(s=>s.months.includes(month))||studyRoomSeasons[0];
