@@ -3,6 +3,7 @@ import { storage } from './data/storage.js';
 import { getRemainingSeconds, getNextBreakMode } from './core/timer.js';
 import { calculateStats } from './data/records.js';
 import { normalizeStatsData, normalizeTimerSettings, validateBackupPayload, CURRENT_DATA_SCHEMA_VERSION, CURRENT_BACKUP_VERSION } from './data/schema.js';
+import { inspectRecoverySnapshots } from './data/recovery.js';
 const $=id=>document.getElementById(id);
 let durations={focus:25,short:5,long:15},mode='focus',remaining=1500,total=1500,running=false,deadline=0,interval=null,completed=0,minutes=0,finished=false,history={},records=[],legacyCompleted=0,legacyMinutes=0,legacyHistory={},statsWriteBlocked=false,dailyGoal=60,weeklyGoal=300,calendarCursor=new Date(new Date().getFullYear(),new Date().getMonth(),1),audioContext=null,audioSource=null,audioGain=null,currentSound='off',appReady=false;
 const labels={focus:'集中する時間',short:'短い休憩',long:'長い休憩'},hints={focus:'ひとつのことに集中しよう。',short:'少し頭を休めよう。',long:'ゆっくり休んで次のセットに備えよう。'},circ=2*Math.PI*88;
@@ -251,8 +252,57 @@ $('soundVolume').oninput=()=>{const layers=Object.values(ambientLayers),gain=Num
 function buildBackupPayload(){return {app:'FOCUS',version:CURRENT_BACKUP_VERSION,exportedAt:new Date().toISOString(),stats:{schemaVersion:CURRENT_DATA_SCHEMA_VERSION,completed,minutes,history,records,legacyCompleted,legacyMinutes,legacyHistory,dailyGoal,weeklyGoal},timerSettings:normalizeTimerSettings(storage.getJSON('focus-timer-settings',null)),appearance:storage.getJSON('focus-appearance',null),mark:storage.getText('focus-mark')||'dot',notificationsEnabled,quietText:storage.getText('focus-room-quiet-text')==='true'}}
 function downloadBackup(payload,filename){const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=filename;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)}
 $('exportData').onclick=()=>{downloadBackup(buildBackupPayload(),'focus-backup-'+dateKey(new Date())+'.json');$('toast').textContent='バックアップを書き出したよ。'};
+function renderRecovery(){
+ const root=$('recoveryList');if(!root)return;
+ root.replaceChildren();
+ const items=inspectRecoverySnapshots(storage).filter(item=>item.available);
+ if(!items.length){const empty=document.createElement('p');empty.className='muted';empty.textContent='復旧用データは見つかっていないよ。';root.appendChild(empty);return}
+ for(const item of items){
+  const row=document.createElement('div');row.className='recovery-item';
+  const title=document.createElement('strong');title.textContent=item.label;
+  const status=document.createElement('p');status.className='muted';status.textContent=item.status;
+  const actions=document.createElement('div');actions.className='recovery-actions';
+  const download=document.createElement('button');download.type='button';download.className='secondary';download.textContent='元データを書き出す';download.dataset.recoveryDownload=item.key;
+  actions.appendChild(download);
+  if(item.restorable){const restore=document.createElement('button');restore.type='button';restore.className='secondary';restore.textContent='学習記録を復元';restore.dataset.recoveryRestore=item.key;actions.appendChild(restore)}
+  row.append(title,status,actions);root.appendChild(row);
+ }
+}
+function downloadRecoverySnapshot(key){
+ const item=inspectRecoverySnapshots(storage).find(entry=>entry.key===key&&entry.available);
+ if(!item)return;
+ let extension='json';try{JSON.parse(item.rawText)}catch{extension='txt'}
+ const blob=new Blob([item.rawText],{type:extension==='json'?'application/json':'text/plain'});
+ const url=URL.createObjectURL(blob),a=document.createElement('a');
+ a.href=url;a.download='focus-recovery-'+key+'.'+extension;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+function restoreRecoverySnapshot(key){
+ const item=inspectRecoverySnapshots(storage).find(entry=>entry.key===key&&entry.available&&entry.restorable);
+ if(!item){$('toast').textContent='このデータは自動復元できないため、元データを書き出して保管してね。';return}
+ if(!confirm('このバックアップの学習記録と目標で、現在の記録を置き換える？\n復元直前のデータも端末内に保護するよ。'))return;
+ const currentRaw=storage.getText('focus-stats',null);
+ if(currentRaw!==null&&!storage.setText('focus-pre-recovery-raw-stats',currentRaw)){
+  $('toast').textContent='復元直前のデータを保護できなかったため、復元を中止したよ。';return;
+ }
+ const stats=item.stats;
+ const totals=calculateStats({legacyCompleted:stats.legacyCompleted,legacyMinutes:stats.legacyMinutes,legacyHistory:stats.legacyHistory,records:stats.records});
+ const next={schemaVersion:CURRENT_DATA_SCHEMA_VERSION,completed:totals.completed,minutes:totals.minutes,history:totals.history,records:stats.records,legacyCompleted:stats.legacyCompleted,legacyMinutes:stats.legacyMinutes,legacyHistory:stats.legacyHistory,dailyGoal:stats.dailyGoal,weeklyGoal:stats.weeklyGoal};
+ if(!storage.setJSON('focus-stats',next)){
+  $('toast').textContent='復元データの保存に失敗したよ。復元直前のデータは保護してあるので、空き容量などを確認してね。';return;
+ }
+ statsWriteBlocked=false;records=stats.records;legacyCompleted=stats.legacyCompleted;legacyMinutes=stats.legacyMinutes;legacyHistory=stats.legacyHistory;dailyGoal=stats.dailyGoal;weeklyGoal=stats.weeklyGoal;completed=totals.completed;minutes=totals.minutes;history=totals.history;
+ $('dailyGoal').value=dailyGoal;$('weeklyGoal').value=weeklyGoal;renderAllRecords();renderRecovery();
+ $('toast').textContent='学習記録を復元したよ。復元直前のデータも端末内に保護してあるよ。';
+}
+$('recoveryList').onclick=e=>{
+ const download=e.target.closest('[data-recovery-download]');
+ if(download){downloadRecoverySnapshot(download.dataset.recoveryDownload);return}
+ const restore=e.target.closest('[data-recovery-restore]');
+ if(restore)restoreRecoverySnapshot(restore.dataset.recoveryRestore);
+};
+
 $('importData').onchange=async e=>{const file=e.target.files[0];if(!file)return;try{const parsed=JSON.parse(await file.text()),checked=validateBackupPayload(parsed);if(!checked.valid){$('toast').textContent=checked.reason;return}if(!confirm('現在の学習記録をバックアップの内容で置き換える？\n読み込み前の状態も端末内に退避するよ。'))return;const snapshot=buildBackupPayload();if(!storage.setJSON('focus-preimport-backup',snapshot)){$('toast').textContent='端末内バックアップを作成できなかったため、読み込みを中止したよ。';return}const obj=checked.data,s=obj.stats;records=s.records;legacyCompleted=s.legacyCompleted;legacyMinutes=s.legacyMinutes;legacyHistory=s.legacyHistory;dailyGoal=s.dailyGoal;weeklyGoal=s.weeklyGoal;recalculateStats();if(obj.timerSettings)storage.setJSON('focus-timer-settings',obj.timerSettings);if(obj.appearance&&obj.appearance.theme){setTheme(obj.appearance.theme);setMark(obj.mark)}else if(obj.mark)setMark(obj.mark);if(typeof obj.notificationsEnabled==='boolean'){notificationsEnabled=obj.notificationsEnabled;storage.setText('focus-notifications',String(notificationsEnabled));updateNotificationButton()}if(typeof obj.quietText==='boolean'){storage.setText('focus-room-quiet-text',String(obj.quietText));$('studyRoomView').classList.toggle('room-quiet-text',obj.quietText);$('roomTextToggle').setAttribute('aria-pressed',String(obj.quietText))}save();$('dailyGoal').value=dailyGoal;$('weeklyGoal').value=weeklyGoal;renderAllRecords();$('toast').textContent='バックアップを読み込んだよ。読み込み前のデータは端末内に退避してあるよ。ページを再読み込みすると設定も反映されるよ。'}catch(err){$('toast').textContent='ファイルを読み込めなかったよ。JSONの形式を確認してね。'}finally{e.target.value=''}};
 
 if('serviceWorker'in navigator){let refreshing=false;navigator.serviceWorker.addEventListener('controllerchange',()=>{if(!refreshing){refreshing=true;window.location.reload();}});window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').then(reg=>reg.update()).catch(()=>{}));}
 $('calendarPage').appendChild($('calendarPanel'));$('analyticsPage').appendChild($('analyticsPanel'));
-update();updateChart();appReady=true;
+update();updateChart();appReady=true;renderRecovery();
