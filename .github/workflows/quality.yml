@@ -30,3 +30,11 @@ jobs:
         run: npm test
       - name: Build production PWA
         run: npm run build
+
+      - name: Upload production build for review
+        uses: actions/upload-artifact@v4
+        with:
+          name: focus-production-build
+          path: dist/
+          if-no-files-found: error
+          retention-days: 7
