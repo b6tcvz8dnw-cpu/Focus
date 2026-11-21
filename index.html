@@ -95,7 +95,7 @@ textarea.field-select{font-family:inherit;resize:vertical;min-height:80px}
 
 
 /* A small study room that follows the real local season and time */
-.tabbar{grid-template-columns:repeat(6,minmax(0,1fr))}
+.tabbar{grid-template-columns:repeat(5,minmax(0,1fr))}
 .tab{font-size:9px;padding-left:1px;padding-right:1px}
 .tab span{font-size:16px}
 .study-room-panel{padding:14px;overflow:hidden}
@@ -132,6 +132,46 @@ textarea.field-select{font-family:inherit;resize:vertical;min-height:80px}
 .study-room-note{font-size:12px;color:var(--muted);line-height:1.9;margin:12px 2px 2px}
 .study-room-foot{font-size:10px;letter-spacing:1.5px;opacity:.62}
 @media(prefers-reduced-motion:no-preference){.study-sun{transition:top 1.2s ease,left 1.2s ease,background 1.2s ease}.study-window{transition:background 1.2s ease}}
+
+/* 2D picture-book view for the existing study room */
+.study-room-panel{padding:10px;background:transparent;border:0}
+.study-room-view{min-height:clamp(520px,78vh,760px);border-radius:22px;padding:18px;background:linear-gradient(180deg,#283c3b,#1e302b);box-shadow:0 20px 54px rgba(0,0,0,.24)}
+.study-window{inset:12% 6% 29%;border:13px solid #5a4435;border-radius:8px 8px 3px 3px;background:linear-gradient(180deg,var(--sky1),var(--sky2));box-shadow:0 0 0 2px rgba(245,224,190,.5),inset 0 0 0 3px rgba(255,245,220,.3),0 20px 44px rgba(0,0,0,.36)}
+.study-window:after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(110deg,rgba(255,255,255,.12),transparent 28% 72%,rgba(255,255,255,.08));z-index:3}
+.room-landscape{position:absolute;inset:0;width:100%;height:100%;z-index:1}
+.study-sun,.study-clouds,.study-hills{display:none!important}
+.study-weather-effects{z-index:2!important;pointer-events:none}
+.study-window-cross{z-index:4;background:linear-gradient(90deg,transparent 49.45%,rgba(58,43,33,.82) 49.7% 50.3%,transparent 50.55%),linear-gradient(0deg,transparent 49.45%,rgba(58,43,33,.82) 49.7% 50.3%,transparent 50.55%)}
+.study-window-glow{z-index:5;opacity:.7}
+.room-sun-disc{transform-box:fill-box;transform-origin:center;animation:room-sun-breathe 8s ease-in-out infinite alternate}
+.room-cloud{transform-box:fill-box;animation:room-cloud-drift 48s ease-in-out infinite alternate}
+.cloud-two{animation-duration:62s;animation-direction:alternate-reverse}
+.room-birds{transform-box:fill-box;animation:room-bird-glide 25s ease-in-out infinite alternate}
+.room-distant-trees{transform-box:fill-box;transform-origin:bottom;animation:room-trees-sway 8s ease-in-out infinite alternate}
+.room-floating-petals{animation:room-petal-drift 18s ease-in-out infinite alternate}
+.time-dawn .room-sun-disc,.time-morning .room-sun-disc,.time-day .room-sun-disc{fill:#f9e6b7}
+.time-evening .room-sun-disc{fill:#f2b98d}
+.time-night .room-sun-disc,.time-late .room-sun-disc{fill:#e5eaf2}
+.time-night .room-sun-glow,.time-late .room-sun-glow{opacity:.35}
+.season-spring .room-meadow{filter:hue-rotate(8deg) saturate(.9)}
+.season-summer .room-meadow{filter:saturate(1.22)}
+.season-autumn .room-meadow{filter:hue-rotate(-24deg) saturate(.92)}
+.season-winter .room-meadow{filter:grayscale(.38) brightness(1.12)}
+.season-winter .room-distant-trees{opacity:.48}
+.season-spring .room-floating-petals{animation-duration:12s}
+.study-room-view .room-desk-scene{bottom:7%;height:34%}
+.desk-surface{top:47%;height:17%;background:linear-gradient(180deg,#b18a65,#79563c 42%,#513827);border-top:5px solid rgba(238,202,157,.72);box-shadow:0 -10px 28px rgba(0,0,0,.25),0 18px 26px rgba(0,0,0,.32)}
+.desk-front{background:linear-gradient(90deg,#38271f,#79563d 48%,#3c2a20)}
+.room-plant{filter:drop-shadow(0 8px 6px rgba(0,0,0,.2))}
+.desk-books{filter:drop-shadow(0 5px 5px rgba(0,0,0,.2))}
+.desk-lamp{filter:drop-shadow(0 6px 9px rgba(0,0,0,.25))}
+@keyframes room-sun-breathe{from{transform:scale(.97);opacity:.86}to{transform:scale(1.04);opacity:1}}
+@keyframes room-cloud-drift{from{translate:-22px 2px}to{translate:30px -5px}}
+@keyframes room-bird-glide{from{translate:-10px 0}to{translate:18px -9px}}
+@keyframes room-trees-sway{from{transform:skewX(-1deg)}to{transform:skewX(1.3deg)}}
+@keyframes room-petal-drift{from{translate:-12px 5px;rotate:-8deg}to{translate:18px -9px;rotate:12deg}}
+@media(max-width:520px){.study-room-panel{padding:0}.study-room-view{min-height:clamp(560px,80vh,760px);padding:14px}.study-window{inset:14% 4% 31%;border-width:9px}.room-desk-scene{bottom:9%;height:31%}}
+@media(prefers-reduced-motion:reduce){.room-sun-disc,.room-cloud,.room-birds,.room-distant-trees,.room-floating-petals{animation:none!important}}
 
 /* Compact settings shortcut on the timer page */
 .timer-page-tools{display:flex;justify-content:flex-end;margin:0 2px 8px}
@@ -362,35 +402,12 @@ details summary{min-height:26px;display:flex;align-items:center}
 
 
 
-/* FOCUS picture-book island: a quiet, fixed-camera scene */
-#gamePage{gap:12px}
-#gameStage{position:relative;width:100%;height:min(64svh,620px);min-height:340px;overflow:hidden;border:1px solid #ffffff24;border-radius:24px;background:#b9d2d5;box-shadow:0 16px 42px #0002;isolation:isolate}
-#gameCanvas{display:block;width:100%;height:100%;touch-action:pan-y}
-.game-caption{display:flex;align-items:center;justify-content:space-between;padding:0 4px;color:var(--muted);font-size:11px;letter-spacing:.04em}
-.game-caption strong{font-size:13px;color:var(--text);font-weight:600;letter-spacing:.08em}
-.game-loading,.game-error{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:9px;padding:24px;text-align:center;color:#fff;background:linear-gradient(145deg,#a9c7d1,#d8d2bc);text-shadow:0 1px 8px #29435366;z-index:4}
-.game-loading strong,.game-error strong{font-size:18px;letter-spacing:.1em}
-.game-loading span,.game-error span{font-size:12px;opacity:.9}
-.game-error{display:none;background:rgba(49,62,65,.9)}
-.game-error button{border:1px solid #ffffff77;border-radius:99px;background:#ffffff20;color:white;padding:9px 16px}
-@media(max-width:390px){#gameStage{height:58svh;min-height:300px;border-radius:18px}}
-@media(prefers-reduced-motion:reduce){#gameStage{scroll-behavior:auto}}
 </style>
 </head>
 <body>
 <main>
 <header><div><div class="brand">FOCUS<span id="brandMark">●</span></div></div><div class="status" id="status" aria-label="タイマーの状態">●</div></header>
 
-
-<div class="page" id="gamePage" hidden>
- <div class="game-caption"><strong>小さな浮島</strong><span>いつでも、ひと休みできる場所</span></div>
- <section id="gameStage" aria-label="絵本のような浮島の風景">
-  <canvas id="gameCanvas" aria-label="雲と草花に囲まれた小さな浮島"></canvas>
-  <div class="game-loading" id="gameLoading"><strong>小さな浮島</strong><span>景色を描いています…</span></div>
-  <div class="game-error" id="gameError"><strong>景色を表示できませんでした</strong><span>3D表示の読み込みに失敗しました。通信状態を確認して、もう一度試してください。</span><button id="gameRetry" type="button">もう一度読み込む</button></div>
- </section>
- <p class="muted" style="text-align:center;margin:0 8px 8px">何かをする必要はありません。景色を眺めるだけの、小さな休息場所です。</p>
-</div>
 
 <div class="page" id="timerPage">
 <div class="timer-page-tools"><button class="small-settings" type="button" data-page="settingsPage" aria-label="設定を開く">⚙ 設定</button></div>
@@ -430,7 +447,44 @@ details summary{min-height:26px;display:flex;align-items:center}
  <section class="study-room-panel">
   <div class="study-room-view season-autumn time-day" id="studyRoomView">
    <div class="study-room-top"><div><div class="study-room-kicker" aria-hidden="true"></div><div class="study-room-title">小さな書斎</div></div><div class="study-room-top-actions"><div class="study-room-season" id="studyRoomSeason">秋 · 昼</div><button class="room-text-toggle" id="roomTextToggle" type="button" aria-label="文字情報を隠す" aria-pressed="false" title="文字情報の表示切替">Aa</button><button class="study-room-weather" id="studyRoomWeather" type="button" aria-label="名古屋市の今日の天気を再取得">名古屋市 · 天気を取得</button><button class="room-exit" id="roomExit" type="button" aria-label="書斎を閉じる" title="書斎を閉じる">×</button></div></div>
-   <div class="study-window" aria-hidden="true"><div class="study-sun"></div><div class="study-clouds"></div><div class="study-weather-effects"></div><div class="study-hills"></div><div class="study-window-cross"></div><div class="study-window-glow"></div></div>
+   <div class="study-window" aria-hidden="true">
+    <svg class="room-landscape" viewBox="0 0 1000 560" preserveAspectRatio="xMidYMid slice" role="presentation">
+     <defs>
+      <linearGradient id="roomSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--sky1)"/><stop offset="1" stop-color="var(--sky2)"/></linearGradient>
+      <linearGradient id="roomHaze" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#fff" stop-opacity=".34"/></linearGradient>
+      <radialGradient id="roomSunGlow"><stop offset="0" stop-color="#fff5d6" stop-opacity=".85"/><stop offset="1" stop-color="#fff0c7" stop-opacity="0"/></radialGradient>
+      <linearGradient id="roomHillFar" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#9db7a5"/><stop offset="1" stop-color="#769482"/></linearGradient>
+      <linearGradient id="roomHillNear" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#668a70"/><stop offset="1" stop-color="#3f6957"/></linearGradient>
+      <clipPath id="roomViewClip"><rect width="1000" height="560"/></clipPath>
+     </defs>
+     <g clip-path="url(#roomViewClip)">
+      <rect width="1000" height="560" fill="url(#roomSky)"/>
+      <circle class="room-sun-glow" cx="735" cy="160" r="190" fill="url(#roomSunGlow)"/>
+      <circle class="room-sun-disc" cx="735" cy="160" r="48" fill="#f8e5b6"/>
+      <g class="room-cloud cloud-one" fill="#f8f4e9" opacity=".82"><ellipse cx="190" cy="150" rx="83" ry="27"/><circle cx="145" cy="137" r="31"/><circle cx="193" cy="119" r="42"/><circle cx="239" cy="139" r="31"/></g>
+      <g class="room-cloud cloud-two" fill="#f8f4e9" opacity=".64"><ellipse cx="650" cy="245" rx="72" ry="21"/><circle cx="614" cy="235" r="25"/><circle cx="654" cy="220" r="32"/><circle cx="690" cy="239" r="24"/></g>
+      <path d="M0 350 Q120 280 240 340 T490 325 T760 335 T1000 300 V560 H0Z" fill="url(#roomHillFar)" opacity=".86"/>
+      <path d="M0 405 Q140 330 280 390 T560 380 T820 365 T1000 390 V560 H0Z" fill="#789778" opacity=".82"/>
+      <g class="room-distant-trees" fill="#55765f" opacity=".76">
+       <path d="M55 390l34-92 34 92z M83 420l37-112 38 112z M830 385l43-112 42 112z M883 416l40-126 42 126z"/>
+       <path d="M105 406h8v58h-8z M120 416h8v50h-8z M864 393h9v70h-9z M905 410h8v54h-8z" fill="#705e4b"/>
+      </g>
+      <path d="M0 460 Q170 400 330 455 T650 442 T1000 425 V560 H0Z" fill="url(#roomHillNear)"/>
+      <g class="room-meadow" opacity=".9">
+       <path d="M0 500q130-48 250 0t250-4q130-42 250 0t250-5v69H0z" fill="#52785b"/>
+       <g fill="#f4d9d2"><circle cx="120" cy="480" r="7"/><circle cx="135" cy="492" r="5"/><circle cx="285" cy="468" r="6"/><circle cx="805" cy="472" r="7"/><circle cx="830" cy="488" r="5"/></g>
+       <g fill="#f2dfad"><circle cx="165" cy="500" r="5"/><circle cx="350" cy="485" r="5"/><circle cx="740" cy="493" r="6"/><circle cx="925" cy="477" r="5"/></g>
+      </g>
+      <g class="room-birds" fill="none" stroke="#435c5a" stroke-width="4" stroke-linecap="round"><path d="M420 190q18-18 36 0q18-18 36 0"/><path d="M495 220q13-13 26 0q13-13 26 0"/></g>
+      <rect width="1000" height="560" fill="url(#roomHaze)"/>
+      <g class="room-floating-petals">
+       <ellipse cx="280" cy="310" rx="7" ry="3" fill="#f3d5d1"/><ellipse cx="690" cy="365" rx="6" ry="3" fill="#f6e2c0"/><ellipse cx="555" cy="290" rx="5" ry="3" fill="#f3d5d1"/>
+      </g>
+     </g>
+    </svg>
+    <div class="study-sun"></div><div class="study-clouds"></div><div class="study-weather-effects"></div><div class="study-hills"></div>
+    <div class="study-window-cross"></div><div class="study-window-glow"></div>
+   </div>
    <div class="room-desk-scene" aria-label="窓際の机と砂時計">
     <div class="room-plant"><i></i><i></i><i></i></div>
     <div class="desk-lamp"><i></i></div>
@@ -488,7 +542,6 @@ details summary{min-height:26px;display:flex;align-items:center}
 </section>
 <nav class="tabbar" aria-label="ページ切り替え">
  <button class="tab active" data-page="timerPage"><span>◷</span>タイマー</button>
- <button class="tab" data-page="gamePage"><span>✧</span>世界</button>
  <button class="tab" data-page="overviewPage"><span>▥</span>概要</button>
  <button class="tab" data-page="calendarPage"><span>▦</span>カレンダー</button>
   <button class="tab" data-page="analyticsPage"><span>⌁</span>分析</button>
@@ -724,118 +777,6 @@ $('calendarPage').appendChild($('calendarPanel'));$('analyticsPage').appendChild
 update();updateChart();
 </script>
 
-<script type="module">
-try{
- const THREE=await import('https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js');
- const stage=document.getElementById('gameStage'),canvas=document.getElementById('gameCanvas');
- const loading=document.getElementById('gameLoading'),error=document.getElementById('gameError');
- const scene=new THREE.Scene();
- const sky=new THREE.Color(0xb8d2dc);scene.background=sky;scene.fog=new THREE.Fog(0xb8d2dc,34,95);
- const camera=new THREE.PerspectiveCamera(42,1,.1,180);
- camera.position.set(22,18,26);camera.lookAt(0,1.4,0);
- const renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:false,powerPreference:'low-power'});
- renderer.setPixelRatio(Math.min(devicePixelRatio||1,1.6));renderer.outputColorSpace=THREE.SRGBColorSpace;
- renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.18;
- renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
- scene.add(new THREE.HemisphereLight(0xeaf5ff,0x78806c,2.15));
- const sun=new THREE.DirectionalLight(0xffe6c9,2.15);sun.position.set(-12,19,8);sun.castShadow=true;
- sun.shadow.mapSize.set(1536,1536);sun.shadow.camera.left=-18;sun.shadow.camera.right=18;sun.shadow.camera.top=18;sun.shadow.camera.bottom=-18;scene.add(sun);
- const fill=new THREE.DirectionalLight(0xc4d9ed,.55);fill.position.set(10,8,-12);scene.add(fill);
- // Soft hand-painted material textures, generated locally.
- function paintedTexture(base,seed){
-  const c=document.createElement('canvas');c.width=c.height=256;const x=c.getContext('2d');
-  x.fillStyle=base;x.fillRect(0,0,256,256);
-  let n=seed;const rnd=()=>{n=(n*1664525+1013904223)>>>0;return n/4294967296};
-  for(let i=0;i<1500;i++){const a=rnd(),b=rnd(),r=1+rnd()*8;x.globalAlpha=.025+rnd()*.055;x.fillStyle=rnd()>.5?'#fff':'#45534a';x.beginPath();x.ellipse(a*256,b*256,r,r*.55,rnd()*3,0,Math.PI*2);x.fill()}
-  x.globalAlpha=1;const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;t.wrapS=t.wrapT=THREE.RepeatWrapping;t.repeat.set(2,2);return t;
- }
- const grassTex=paintedTexture('#819d78',81),rockTex=paintedTexture('#8c8980',29);
- const grass=new THREE.MeshStandardMaterial({map:grassTex,color:0xffffff,roughness:1});
- const soil=new THREE.MeshStandardMaterial({map:rockTex,color:0xffffff,roughness:1});
- const leafA=new THREE.MeshStandardMaterial({color:0x78977f,roughness:1});
- const leafB=new THREE.MeshStandardMaterial({color:0xa5b69a,roughness:1});
- const trunkMat=new THREE.MeshStandardMaterial({color:0x806c59,roughness:1});
- const stoneMat=new THREE.MeshStandardMaterial({color:0xc7c1ad,roughness:1});
- const island=new THREE.Group();scene.add(island);
- const crown=new THREE.Mesh(new THREE.CylinderGeometry(10.4,9.9,.95,64,2),grass);crown.position.y=-.1;crown.castShadow=true;crown.receiveShadow=true;island.add(crown);
- const underside=new THREE.Mesh(new THREE.ConeGeometry(9.4,7.3,56,5),soil);underside.rotation.x=Math.PI;underside.position.y=-4.05;underside.castShadow=true;island.add(underside);
- const shelf=new THREE.Mesh(new THREE.CylinderGeometry(9.95,9.2,.45,56),soil);shelf.position.y=-.72;island.add(shelf);
- // A few softly rounded rock facets around the floating underside.
- for(let i=0;i<36;i++){const a=i/36*Math.PI*2,radius=9.1+(i%3)*.28;const rock=new THREE.Mesh(new THREE.DodecahedronGeometry(.55+(i%4)*.16,1),soil);rock.position.set(Math.cos(a)*radius,-1.45-(i%5)*.43,Math.sin(a)*radius);rock.scale.set(1.2,1.15,.92);rock.rotation.set(i*.18,i*.47,i*.22);rock.castShadow=true;island.add(rock)}
- // Gentle meadow mounds.
- for(const p of [[-5,-3,1.1],[5,-4,1.1],[-6,3,.8],[5,4,.85]]){const mound=new THREE.Mesh(new THREE.SphereGeometry(p[2],18,12),leafB);mound.scale.set(2.2,.24,1.55);mound.position.set(p[0],.18,p[1]);mound.receiveShadow=true;island.add(mound)}
- // Pond with layered translucent rings.
- const waterMat=new THREE.MeshStandardMaterial({color:0x91c6c8,roughness:.18,metalness:.04,transparent:true,opacity:.88});
- const pond=new THREE.Mesh(new THREE.CircleGeometry(2.35,64),waterMat);pond.rotation.x=-Math.PI/2;pond.position.set(-3.35,.31,2.25);island.add(pond);
- const pondEdge=new THREE.Mesh(new THREE.TorusGeometry(2.38,.13,10,64),stoneMat);pondEdge.rotation.x=Math.PI/2;pondEdge.position.set(-3.35,.32,2.25);island.add(pondEdge);
- const ripples=[];
- for(let i=0;i<3;i++){const ring=new THREE.Mesh(new THREE.TorusGeometry(.3+i*.25,.018,5,48),new THREE.MeshBasicMaterial({color:0xe5f2e9,transparent:true,opacity:.28}));ring.rotation.x=Math.PI/2;ring.position.set(-3.35,.34+i*.002,2.25);island.add(ring);ripples.push(ring)}
- // Meandering pale stepping stones.
- for(let i=0;i<15;i++){const t=i/14,stone=new THREE.Mesh(new THREE.CylinderGeometry(.28+(i%3)*.07,.35,.13,9),stoneMat);stone.position.set(-.2+t*4.0,.36,6.2-t*8.2+Math.sin(t*7)*.45);stone.rotation.y=t*1.7;stone.castShadow=true;island.add(stone)}
- // Tiny cottage tucked into the trees.
- const cottage=new THREE.Group();cottage.position.set(4.1,.35,-3.2);cottage.rotation.y=-.42;island.add(cottage);
- const wallMat=new THREE.MeshStandardMaterial({color:0xe6d7bd,roughness:1});
- const wall=new THREE.Mesh(new THREE.BoxGeometry(1.65,1.2,1.35),wallMat);wall.position.y=.62;wall.castShadow=true;cottage.add(wall);
- const roofMat=new THREE.MeshStandardMaterial({color:0x9a8175,roughness:1});
- const roof=new THREE.Mesh(new THREE.ConeGeometry(1.28,.85,4),roofMat);roof.position.y=1.62;roof.rotation.y=Math.PI/4;roof.scale.set(1.05,1,1);roof.castShadow=true;cottage.add(roof);
- const door=new THREE.Mesh(new THREE.BoxGeometry(.34,.72,.05),new THREE.MeshStandardMaterial({color:0x8b7562}));door.position.set(0,.37,.7);cottage.add(door);
- const windowMat=new THREE.MeshStandardMaterial({color:0xf5dba3,emissive:0xe9b86f,emissiveIntensity:.32});
- for(const x of [-.48,.48]){const w=new THREE.Mesh(new THREE.BoxGeometry(.25,.3,.045),windowMat);w.position.set(x,.78,.69);cottage.add(w)}
- // Trees built from layered, softly rounded crowns.
- const swaying=[];
- function makeTree(x,z,s=1){const g=new THREE.Group();g.position.set(x,.34,z);g.scale.setScalar(s);const tr=new THREE.Mesh(new THREE.CylinderGeometry(.13,.22,1.55,9),trunkMat);tr.position.y=.78;tr.castShadow=true;g.add(tr);for(let j=0;j<4;j++){const c=new THREE.Mesh(new THREE.SphereGeometry(.83-j*.07,16,12),j%2?leafB:leafA);c.position.set((j%2?-.23:.2),1.55+j*.43,(j-1.5)*.12);c.scale.set(1.12,.92,1);c.castShadow=true;g.add(c)}island.add(g);swaying.push(g)}
- makeTree(5.9,-1.5,1.08);makeTree(6.6,.65,.78);makeTree(-6.4,-2.3,.9);makeTree(2.4,5.2,.72);makeTree(-1.1,-6.1,.68);
- // Grass tufts and flowers catch the breeze.
- const grasses=[],flowers=[];
- const flowerColors=[0xf1d9a8,0xe9c7cf,0xd7e0e8,0xf3e9c9,0xc9d7bc];
- for(let i=0;i<115;i++){
-  const a=i*2.399,rad=2.8+(i%8)*.72,x=Math.cos(a)*rad,z=Math.sin(a)*rad;
-  if((x+3.35)**2+(z-2.25)**2<7.2||x>3.1&&z<-.8)continue;
-  const tuft=new THREE.Group();tuft.position.set(x,.35,z);
-  for(let j=0;j<3;j++){const blade=new THREE.Mesh(new THREE.ConeGeometry(.045,.42+(j%2)*.16,5),j%2?leafA:leafB);blade.position.set((j-1)*.07,.2,0);blade.rotation.z=(j-1)*.23;tuft.add(blade)}
-  island.add(tuft);grasses.push(tuft);
-  if(i%3===0){const bloom=new THREE.Group();bloom.position.set(x,.36,z);const stem=new THREE.Mesh(new THREE.CylinderGeometry(.018,.025,.27,5),leafA);stem.position.y=.13;bloom.add(stem);const flower=new THREE.Mesh(new THREE.SphereGeometry(.105,10,8),new THREE.MeshStandardMaterial({color:flowerColors[(i/3|0)%flowerColors.length],roughness:.9}));flower.position.y=.29;flower.scale.y=.72;bloom.add(flower);island.add(bloom);flowers.push(bloom)}
- }
- // Hanging little lanterns.
- const lanterns=[];
- for(const p of [[2.9,-1.7],[5.2,-.2],[-4.8,-1.5]]){const g=new THREE.Group();g.position.set(p[0],.5,p[1]);const stem=new THREE.Mesh(new THREE.CylinderGeometry(.025,.025,.62,6),trunkMat);stem.position.y=.31;g.add(stem);const lamp=new THREE.Mesh(new THREE.SphereGeometry(.13,12,10),new THREE.MeshBasicMaterial({color:0xffe2a6}));lamp.position.y=.08;g.add(lamp);const light=new THREE.PointLight(0xffd99a,.35,3);light.position.y=.08;g.add(light);island.add(g);lanterns.push(g)}
- // Distant floating islets add depth to the picture-book horizon.
- const distant=[];
- for(let i=0;i<5;i++){const g=new THREE.Group();const cap=new THREE.Mesh(new THREE.CylinderGeometry(2.1,1.85,.32,24),new THREE.MeshStandardMaterial({color:0x8ca68b,roughness:1}));cap.position.y=0;g.add(cap);const tip=new THREE.Mesh(new THREE.ConeGeometry(1.75,2.6,24,3),soil);tip.rotation.x=Math.PI;tip.position.y=-1.35;g.add(tip);g.position.set(-23+i*11,2+(i%3)*2,-27-(i%2)*7);g.scale.setScalar(.65+(i%3)*.18);scene.add(g);distant.push(g)}
- // Clouds are layered translucent puffs, drifting very slowly.
- const cloudMat=new THREE.MeshStandardMaterial({color:0xf5f2e9,roughness:1,transparent:true,opacity:.68,depthWrite:false});
- const clouds=[];
- for(let i=0;i<11;i++){const g=new THREE.Group();for(let j=0;j<6;j++){const p=new THREE.Mesh(new THREE.SphereGeometry(.9+(j%3)*.18,14,10),cloudMat);p.position.set((j-2.5)*.7,(j%2)*.23,Math.sin(j*2)*.12);p.scale.set(1.25,.58,.82);g.add(p)}g.position.set(-34+(i%6)*13,5+(i%4)*2,-24-Math.floor(i/6)*15);g.scale.setScalar(.8+(i%3)*.2);scene.add(g);clouds.push(g)}
- // A few floating pollen lights.
- const moteCount=65,positions=new Float32Array(moteCount*3),phases=[];
- for(let i=0;i<moteCount;i++){positions[i*3]=(Math.random()-.5)*19;positions[i*3+1]=.6+Math.random()*5;positions[i*3+2]=(Math.random()-.5)*17;phases.push(Math.random()*Math.PI*2)}
- const moteGeo=new THREE.BufferGeometry();moteGeo.setAttribute('position',new THREE.BufferAttribute(positions,3));
- const motes=new THREE.Points(moteGeo,new THREE.PointsMaterial({color:0xffe8bd,size:.075,transparent:true,opacity:.7,depthWrite:false}));island.add(motes);
- // A small traveler rests beside the pond; the scene itself does not move.
- const traveler=new THREE.Group();traveler.position.set(-.5,.36,1.0);traveler.rotation.y=-.55;island.add(traveler);
- const cloak=new THREE.Mesh(new THREE.ConeGeometry(.24,.65,9),new THREE.MeshStandardMaterial({color:0x6e8490,roughness:1}));cloak.position.y=.34;cloak.castShadow=true;traveler.add(cloak);
- const hood=new THREE.Mesh(new THREE.SphereGeometry(.17,12,10),new THREE.MeshStandardMaterial({color:0xe4d5b8,roughness:1}));hood.position.y=.78;traveler.add(hood);
- const backpack=new THREE.Mesh(new THREE.BoxGeometry(.17,.24,.12),new THREE.MeshStandardMaterial({color:0x8c765d}));backpack.position.set(0,.38,.2);traveler.add(backpack);
- // Fixed camera: no controls, no following, just a composed illustration.
- const lookAt=new THREE.Vector3(0,1.1,0);
- function resize(){const w=Math.max(1,stage.clientWidth),h=Math.max(1,stage.clientHeight);camera.aspect=w/h;camera.updateProjectionMatrix();renderer.setSize(w,h,false)}
- window.addEventListener('resize',resize);window.addEventListener('orientationchange',()=>setTimeout(resize,160));
- if('ResizeObserver'in window)new ResizeObserver(resize).observe(stage);resize();
- let last=performance.now();
- function animate(now){requestAnimationFrame(animate);if(document.hidden)return;const t=now*.001,dt=Math.min(.05,(now-last)/1000);last=now;
-  swaying.forEach((g,i)=>{g.rotation.z=Math.sin(t*.48+i*1.7)*.018;g.rotation.x=Math.cos(t*.37+i)*.012});
-  grasses.forEach((g,i)=>{g.rotation.z=Math.sin(t*.9+i*.7)*.09});
-  flowers.forEach((g,i)=>{g.rotation.z=Math.sin(t*.7+i)*.055});
-  clouds.forEach((g,i)=>{g.position.x+=dt*(.055+(i%3)*.018);if(g.position.x>39)g.position.x=-39});
-  ripples.forEach((r,i)=>{const q=(t*.18+i/3)%1;r.scale.setScalar(.7+q*1.5);r.material.opacity=.23*(1-q)});
-  const attr=moteGeo.attributes.position;for(let i=0;i<moteCount;i++){const k=i*3;positions[k+1]+=(Math.sin(t*.45+phases[i])*.0009);positions[k]+=(Math.cos(t*.3+phases[i])*.0007);if(positions[k]>9)positions[k]=-9;if(positions[k]<-9)positions[k]=9}attr.needsUpdate=true;
-  lanterns.forEach((g,i)=>{const l=g.children[2];l.intensity=.28+Math.sin(t*1.7+i*2)*.045});
-  renderer.render(scene,camera)
- }
- loading.style.display='none';requestAnimationFrame(animate);
- document.addEventListener('visibilitychange',()=>{last=performance.now()});
- document.getElementById('gameRetry').addEventListener('click',()=>location.reload());
-}catch(err){console.error('FOCUS picture-book scene failed',err);document.getElementById('gameLoading').style.display='none';document.getElementById('gameError').style.display='flex'}
-</script>
+
 
 </body></html>
