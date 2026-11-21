@@ -86,7 +86,7 @@ test("PWA manifest remains valid and standalone-capable", async () => {
 test("service worker caches all extracted modules with a new version", async () => {
   const sw = await read("../sw.js");
   const cacheName = sw.match(/const CACHE='([^']+)'/)?.[1];
-  assert.equal(cacheName, "focus-pwa-v36");
+  assert.equal(cacheName, "focus-pwa-v37");
   for (const asset of [
     "./index.html", "./manifest.webmanifest", "./icon.svg", "./src/main.js",
     "./src/core/date-time.js", "./src/data/storage.js", "./src/core/timer.js", "./src/data/records.js", "./src/data/schema.js"
