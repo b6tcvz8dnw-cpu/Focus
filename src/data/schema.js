@@ -38,7 +38,7 @@ function normalizeRecords(value) {
     if (!isObject(raw)) return;
     const timestamp = Number(raw.timestamp);
     const minutes = Number(raw.minutes);
-    if (!Number.isFinite(timestamp) || timestamp <= 0 || !Number.isInteger(minutes) || minutes < 1 || minutes > 120) return;
+    if (!Number.isFinite(timestamp) || timestamp <= 0 || !Number.isFinite(new Date(timestamp).getTime()) || !Number.isInteger(minutes) || minutes < 1 || minutes > 120) return;
     const date = validDateKey(raw.date) ? raw.date : dateKey(new Date(timestamp));
     let id = typeof raw.id === "string" && raw.id.trim() ? raw.id.trim().slice(0, 100) : `legacy-${timestamp}-${index}`;
     if (seen.has(id)) id = `${id}-${index}`;
@@ -107,7 +107,7 @@ export function normalizeTimerSettings(raw) {
     : { focus, short, long, cycle };
 }
 
-const allowedThemes = new Set(["forest", "ocean", "lavender", "amber", "rose"]);
+const allowedThemes = new Set(["green", "blue", "purple", "amber", "rose"]);
 const allowedMarks = new Set(["dot", "star", "leaf"]);
 
 /** Validate supported backup generations and return a safe, normalized payload. */
