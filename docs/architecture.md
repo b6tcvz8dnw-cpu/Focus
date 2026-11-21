@@ -25,7 +25,7 @@
 - 保存層: `src/data/storage.js`（文字列・JSONの読み書き、利用不可・不正JSONへの防御処理）
 - 学習記録集計: `src/data/records.js`（累計・日別履歴の再計算、重複ID排除）
 - 復旧データ検査: `src/data/recovery.js`（端末内スナップショットの一覧化、形式検証、将来スキーマの復元拒否、現在の保護データの原文書き出し）
-- 品質保証: `tests/app-integrity.test.mjs`（Node.js標準テスト39項目、HTML/DOM契約・移行・タイマー・記録・保存の検証）
+- 品質保証: `tests/app-integrity.test.mjs`（Node.js標準テスト40項目、HTML/DOM契約・移行・タイマー・記録・保存の検証）
 - アプリ本体の保存API直接呼び出し: 0件
 
 ## 画面
