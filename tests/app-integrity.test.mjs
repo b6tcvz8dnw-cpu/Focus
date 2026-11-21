@@ -2,6 +2,12 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import vm from "node:vm";
+import {
+  formatClock,
+  dateKey,
+  buildWeekData,
+  getStudySkyLevel
+} from "../src/core/date-time.js";
 
 const read = (path) => readFile(new URL(path, import.meta.url), "utf8");
 
@@ -41,16 +47,18 @@ test("essential pages and controls remain present", async () => {
   }
 });
 
-test("inline application JavaScript parses without syntax errors", async () => {
+test("application entrypoint is a module and parses after its import", async () => {
   const html = await read("../index.html");
-  const start = html.indexOf("<script>");
+  const start = html.indexOf('<script type="module">');
   const end = html.lastIndexOf("</script>");
-  assert.ok(start >= 0 && end > start, "inline application script should exist");
-  const script = html.slice(start + "<script>".length, end);
-  assert.doesNotThrow(() => new vm.Script(script, { filename: "index.html:inline-script" }));
+  assert.ok(start >= 0 && end > start, "module entrypoint should exist");
+  const script = html.slice(start + '<script type="module">'.length, end);
+  const executable = script.replace(/^\s*import\s+[^;]+;\s*/, "");
+  assert.doesNotThrow(() => new vm.Script(executable, { filename: "index.html:module-body" }));
+  assert.ok(script.includes("./src/core/date-time.js"), "date-time module should be imported");
 });
 
-test("core timer, study room, and recovery functions remain present", async () => {
+test("core timer and Study Room functions remain present", async () => {
   const html = await read("../index.html");
   for (const name of [
     "startTimer",
@@ -89,12 +97,69 @@ test("PWA manifest remains valid and standalone-capable", async () => {
   assert.ok(Array.isArray(manifest.icons) && manifest.icons.length >= 2);
 });
 
-test("service worker retains versioned cache and offline assets", async () => {
+test("service worker caches the extracted module with a new version", async () => {
   const sw = await read("../sw.js");
   const cacheName = sw.match(/const CACHE='([^']+)'/)?.[1];
-  assert.ok(cacheName?.startsWith("focus-pwa-v"), "service worker cache should be versioned");
-  for (const asset of ["./index.html", "./manifest.webmanifest", "./icon.svg"]) {
+  assert.equal(cacheName, "focus-pwa-v31");
+  for (const asset of [
+    "./index.html",
+    "./manifest.webmanifest",
+    "./icon.svg",
+    "./src/core/date-time.js"
+  ]) {
     assert.ok(sw.includes(asset), `service worker should cache ${asset}`);
   }
   assert.ok(sw.includes("caches.match"), "service worker should have a cache lookup");
+});
+
+test("formatClock keeps the existing MM:SS display contract", () => {
+  assert.equal(formatClock(0), "00:00");
+  assert.equal(formatClock(9), "00:09");
+  assert.equal(formatClock(65), "01:05");
+  assert.equal(formatClock(1500), "25:00");
+});
+
+test("dateKey uses local calendar fields and zero padding", () => {
+  assert.equal(dateKey(new Date(2026, 0, 3, 23, 59)), "2026-01-03");
+  assert.equal(dateKey(new Date(2026, 10, 21)), "2026-11-21");
+});
+
+test("buildWeekData returns seven chronological days without mutating history", () => {
+  const history = { "2026-11-19": 25, "2026-11-21": 40 };
+  const original = structuredClone(history);
+  const week = buildWeekData(history, new Date(2026, 10, 21, 12));
+  assert.equal(week.length, 7);
+  assert.deepEqual(week.map((day) => day.key), [
+    "2026-11-15",
+    "2026-11-16",
+    "2026-11-17",
+    "2026-11-18",
+    "2026-11-19",
+    "2026-11-20",
+    "2026-11-21"
+  ]);
+  assert.equal(week[4].minutes, 25);
+  assert.equal(week[6].minutes, 40);
+  assert.deepEqual(history, original);
+});
+
+test("buildWeekData normalizes invalid or negative stored minutes", () => {
+  const week = buildWeekData({
+    "2026-11-20": -5,
+    "2026-11-21": "not-a-number"
+  }, new Date(2026, 10, 21, 12));
+  assert.equal(week[5].minutes, 0);
+  assert.equal(week[6].minutes, 0);
+});
+
+test("Study Room sky progression preserves all existing thresholds", () => {
+  assert.equal(getStudySkyLevel(0), 0);
+  assert.equal(getStudySkyLevel(29), 0);
+  assert.equal(getStudySkyLevel(30), 1);
+  assert.equal(getStudySkyLevel(59), 1);
+  assert.equal(getStudySkyLevel(60), 2);
+  assert.equal(getStudySkyLevel(119), 2);
+  assert.equal(getStudySkyLevel(120), 3);
+  assert.equal(getStudySkyLevel(179), 3);
+  assert.equal(getStudySkyLevel(180), 4);
 });
