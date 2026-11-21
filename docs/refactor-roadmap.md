@@ -57,8 +57,9 @@
 - [x] PWA資産を `public/` に集約し、PNGアイコンをビルド時にコピー
 - [x] ビルド時にハッシュ付きJS/CSSをService Workerのプリキャッシュへ注入
 - [x] CIでテストと本番ビルドを実行する構成
-- [ ] CIで生成された成果物の実体・パス・オフラインキャッシュを確認
-- [ ] GitHub Pagesの公開元を確認し、既存URLを維持した段階的切替
+- [x] CIで生成された成果物をダウンロードして実体確認（相対URL、manifest、PNG/SVG、ハッシュ付きJS、Service Workerプリキャッシュ）
+- [ ] GitHub Pagesの現在の公開元を確認
+- [ ] 既存URLを維持した段階的切替（実機・公開元設定の確認後）
 
 ### Phase 5 — iOSアプリ化
 - [ ] Capacitor導入
