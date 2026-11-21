@@ -736,6 +736,90 @@ details summary{min-height:26px;display:flex;align-items:center}
 }
 @media(prefers-reduced-motion:reduce){.study-room-view:before,.study-window{animation:none!important}}
 
+
+/* A quiet picture-book cosmos: a small world seen from afar */
+.little-planet-view{
+ position:relative;isolation:isolate;overflow:hidden;
+ min-height:clamp(540px,76svh,760px)!important;
+ background:linear-gradient(180deg,#111b3b,#303b61 58%,#746b80)!important;
+ border:1px solid rgba(238,218,192,.3)!important;
+ box-shadow:inset 0 0 80px rgba(7,13,36,.35),0 24px 60px rgba(0,0,0,.3)!important;
+}
+.little-planet-view:before{
+ content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
+ background:radial-gradient(ellipse at 50% 38%,transparent 28%,rgba(9,15,39,.28) 100%),linear-gradient(180deg,rgba(11,18,44,.14),transparent 35%,rgba(17,20,44,.1));
+}
+.little-planet-view:after{
+ content:"";position:absolute;inset:0;z-index:1;pointer-events:none;opacity:.3;
+ background-image:radial-gradient(rgba(255,244,221,.6) .7px,transparent .9px);
+ background-size:47px 53px;
+ mask-image:linear-gradient(180deg,#000,transparent 88%);
+}
+.little-planet-view .study-room-top,.little-planet-view .study-room-bottom{position:relative;z-index:5}
+.little-planet-view .study-room-title{color:#f8ead4;text-shadow:0 2px 16px rgba(10,15,40,.6);font-weight:400;letter-spacing:.12em}
+.little-planet-view .study-room-kicker{color:#d9c9c5;font-size:9px;letter-spacing:.22em}
+.little-planet-view .study-room-season,.little-planet-view .study-room-date{color:#e4d8d0}
+.little-planet-view .study-room-clock{color:#fff0d8;text-shadow:0 0 20px rgba(255,223,180,.3);font-weight:300}
+.little-planet-view .study-room-foot{color:rgba(232,218,205,.55);letter-spacing:.18em;font-size:9px}
+.little-planet-scene{
+ position:absolute!important;inset:0!important;overflow:hidden!important;
+ border:0!important;border-radius:0!important;box-shadow:none!important;
+ background:transparent!important;
+}
+.little-planet-scene:before,.little-planet-scene:after{display:none!important}
+.planet-landscape{position:absolute;inset:0;width:100%;height:100%;display:block;filter:saturate(.88) contrast(1.02)}
+.planet-hourglass{
+ position:absolute!important;z-index:7;right:22px!important;bottom:74px!important;left:auto!important;top:auto!important;
+ width:70px;height:82px;border-radius:48% 48% 12px 12px;
+ background:linear-gradient(180deg,rgba(244,224,200,.16),rgba(105,103,130,.2))!important;
+ border:1px solid rgba(255,235,209,.24);
+ box-shadow:0 0 25px rgba(248,222,192,.12),inset 0 0 16px rgba(255,255,255,.08);
+ backdrop-filter:blur(8px);
+}
+.planet-hourglass .room-hourglass-shelf{position:absolute!important;top:-12px!important;right:5px!important;transform:scale(.54)!important;transform-origin:top right!important}
+.planet-hourglass .desk-hourglass-time,.planet-hourglass .desk-hourglass-label{display:none!important}
+.little-planet-view .study-room-bottom{margin-top:auto;padding-top:0}
+.little-planet-view .study-room-note{position:relative;z-index:5;color:rgba(245,230,214,.7);font-size:12px;letter-spacing:.08em;text-shadow:0 2px 10px rgba(12,17,39,.7)}
+.starfield circle,.star-crosses{animation:star-twinkle 4.5s ease-in-out infinite alternate;transform-box:fill-box;transform-origin:center}
+.starfield circle:nth-child(3n){animation-delay:-2.1s}
+.starfield circle:nth-child(4n){animation-delay:-3.2s}
+.nebula-one{transform-origin:30% 35%;animation:nebula-breathe 18s ease-in-out infinite alternate}
+.nebula-two{transform-origin:80% 40%;animation:nebula-breathe 22s ease-in-out infinite alternate-reverse}
+.far-planet-one{transform-origin:170px 365px;animation:planet-drift 26s ease-in-out infinite alternate}
+.far-planet-two{transform-origin:820px 235px;animation:planet-drift 34s ease-in-out infinite alternate-reverse}
+.distant-sun-glow{animation:sun-breathe 9s ease-in-out infinite alternate}
+.comet-trail{animation:comet-fade 12s ease-in-out infinite}
+.solitary-tree{transform-origin:650px 490px;animation:tree-sway 7s ease-in-out infinite alternate}
+.tiny-flower{transform-origin:745px 535px;animation:flower-sway 4s ease-in-out infinite alternate}
+.world-fireflies circle{animation:firefly 3.5s ease-in-out infinite alternate}
+.world-fireflies circle:nth-child(2){animation-delay:-1.2s}
+.world-fireflies circle:nth-child(3){animation-delay:-2.3s}
+.orbiting-dust{animation:orbit-drift 30s linear infinite;transform-origin:555px 350px}
+@keyframes star-twinkle{from{opacity:.35}to{opacity:1}}
+@keyframes nebula-breathe{from{transform:scale(.94) translateX(-8px);opacity:.65}to{transform:scale(1.08) translateX(12px);opacity:1}}
+@keyframes planet-drift{from{transform:translate(0,0)}to{transform:translate(12px,-9px)}}
+@keyframes sun-breathe{from{opacity:.55;transform:scale(.92)}to{opacity:1;transform:scale(1.08)}}
+@keyframes comet-fade{0%,72%,100%{opacity:0}78%,90%{opacity:1}}
+@keyframes tree-sway{from{transform:rotate(-1.8deg)}to{transform:rotate(1.8deg)}}
+@keyframes flower-sway{from{transform:rotate(-5deg)}to{transform:rotate(5deg)}}
+@keyframes firefly{from{opacity:.2;transform:scale(.7)}to{opacity:1;transform:scale(1.45)}}
+@keyframes orbit-drift{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+@media(max-width:520px){
+ .little-planet-view{min-height:clamp(540px,75svh,760px)!important}
+ .planet-hourglass{right:12px!important;bottom:74px!important;transform:scale(.86);transform-origin:bottom right}
+ .little-planet-view .study-room-kicker{display:none}
+ .little-planet-view .study-room-title{font-size:18px}
+ .little-planet-view .study-room-top-actions{gap:5px}
+ .little-planet-view .study-room-weather{max-width:92px;font-size:10px}
+}
+@media(orientation:landscape){
+ .little-planet-view{min-height:100%!important}
+ .planet-hourglass{bottom:52px!important}
+}
+@media(prefers-reduced-motion:reduce){
+ .starfield circle,.star-crosses,.nebula-one,.nebula-two,.far-planet-one,.far-planet-two,.distant-sun-glow,.comet-trail,.solitary-tree,.tiny-flower,.world-fireflies circle,.orbiting-dust{animation:none!important}
+}
+
 </style>
 </head>
 <body>
@@ -779,91 +863,71 @@ details summary{min-height:26px;display:flex;align-items:center}
 
 <div class="page" id="studyRoomPage" hidden>
  <section class="study-room-panel">
-  <div class="study-room-view season-autumn time-day" id="studyRoomView">
-   <div class="study-room-top"><div><div class="study-room-kicker" aria-hidden="true"></div><div class="study-room-title">小さな書斎</div></div><div class="study-room-top-actions"><div class="study-room-season" id="studyRoomSeason">秋 · 昼</div><button class="room-text-toggle" id="roomTextToggle" type="button" aria-label="文字情報を隠す" aria-pressed="false" title="文字情報の表示切替">Aa</button><button class="study-room-weather" id="studyRoomWeather" type="button" aria-label="名古屋市の今日の天気を再取得">名古屋市 · 天気を取得</button><button class="room-exit" id="roomExit" type="button" aria-label="書斎を閉じる" title="書斎を閉じる">×</button></div></div>
-   <div class="study-window" aria-hidden="true">
-    <svg class="room-landscape" viewBox="0 0 1000 560" preserveAspectRatio="xMidYMid slice" role="presentation">
+  <div class="study-room-view little-planet-view season-autumn time-day" id="studyRoomView">
+   <div class="study-room-top">
+    <div><div class="study-room-kicker">A QUIET PLACE IN THE UNIVERSE</div><div class="study-room-title">星を眺める場所</div></div>
+    <div class="study-room-top-actions"><div class="study-room-season" id="studyRoomSeason">秋 · 昼</div><button class="room-text-toggle" id="roomTextToggle" type="button" aria-label="文字情報を隠す" aria-pressed="false" title="文字情報の表示切替">Aa</button><button class="study-room-weather" id="studyRoomWeather" type="button" aria-label="名古屋市の今日の天気を再取得">名古屋市 · 天気</button><button class="room-exit" id="roomExit" type="button" aria-label="書斎を閉じる" title="書斎を閉じる">×</button></div>
+   </div>
+   <div class="study-window little-planet-scene" aria-hidden="true">
+    <svg class="room-landscape planet-landscape" viewBox="0 0 1000 700" preserveAspectRatio="xMidYMid slice" role="presentation">
      <defs>
-      <linearGradient id="roomSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--sky1)"/><stop offset="1" stop-color="var(--sky2)"/></linearGradient>
-      <linearGradient id="roomHaze" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#fff" stop-opacity=".34"/></linearGradient>
-      <radialGradient id="roomSunGlow"><stop offset="0" stop-color="#fff5d6" stop-opacity=".85"/><stop offset="1" stop-color="#fff0c7" stop-opacity="0"/></radialGradient>
-      <linearGradient id="roomHillFar" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#9db7a5"/><stop offset="1" stop-color="#769482"/></linearGradient>
-      <linearGradient id="roomHillNear" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#668a70"/><stop offset="1" stop-color="#3f6957"/></linearGradient>
-      <clipPath id="roomViewClip"><rect width="1000" height="560"/></clipPath>
+      <linearGradient id="planetSpace" x1="0" y1="0" x2=".2" y2="1"><stop stop-color="#101b3d"/><stop offset=".48" stop-color="#27365e"/><stop offset="1" stop-color="#796b83"/></linearGradient>
+      <radialGradient id="planetNebula"><stop stop-color="#e5b9c0" stop-opacity=".35"/><stop offset=".55" stop-color="#8d9bc5" stop-opacity=".12"/><stop offset="1" stop-color="#7b8db5" stop-opacity="0"/></radialGradient>
+      <radialGradient id="planetGlow"><stop stop-color="#fff4d7" stop-opacity=".95"/><stop offset=".22" stop-color="#f5d9b5" stop-opacity=".35"/><stop offset="1" stop-color="#f5d9b5" stop-opacity="0"/></radialGradient>
+      <linearGradient id="littleWorld" x1=".15" y1="0" x2=".8" y2="1"><stop stop-color="#e6c9a4"/><stop offset=".45" stop-color="#bd9b91"/><stop offset="1" stop-color="#725f78"/></linearGradient>
+      <linearGradient id="worldNight" x1="0" y1="0" x2="1" y2=".2"><stop stop-color="#354568" stop-opacity="0"/><stop offset="1" stop-color="#1c274b" stop-opacity=".88"/></linearGradient>
+      <linearGradient id="planetRing" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f5dfc0" stop-opacity=".08"/><stop offset=".48" stop-color="#f4d8b4" stop-opacity=".78"/><stop offset=".6" stop-color="#a9a3c3" stop-opacity=".35"/><stop offset="1" stop-color="#f8e4c7" stop-opacity=".08"/></linearGradient>
+      <clipPath id="worldClip"><circle cx="555" cy="620" r="315"/></clipPath>
      </defs>
-     <g clip-path="url(#roomViewClip)">
-      <rect width="1000" height="560" fill="url(#roomSky)"/>
-      <circle class="room-sun-glow" cx="735" cy="160" r="190" fill="url(#roomSunGlow)"/>
-      <circle class="room-sun-disc" cx="735" cy="160" r="48" fill="#f8e5b6"/>
-      <g class="room-cloud cloud-one" fill="#f8f4e9" opacity=".82"><ellipse cx="190" cy="150" rx="83" ry="27"/><circle cx="145" cy="137" r="31"/><circle cx="193" cy="119" r="42"/><circle cx="239" cy="139" r="31"/></g>
-      <g class="room-cloud cloud-two" fill="#f8f4e9" opacity=".64"><ellipse cx="650" cy="245" rx="72" ry="21"/><circle cx="614" cy="235" r="25"/><circle cx="654" cy="220" r="32"/><circle cx="690" cy="239" r="24"/></g>
-      <path d="M-30 365 C90 290 155 300 235 337 C300 230 390 225 470 330 C560 265 640 275 710 328 C790 250 890 260 1030 330 L1030 560H-30Z" fill="url(#roomHillFar)" opacity=".78"/><path d="M-20 386 C110 330 170 340 255 370 C350 300 420 300 510 366 C610 315 700 315 780 365 C870 315 940 325 1020 370" fill="none" stroke="#d6e2d7" stroke-opacity=".34" stroke-width="5"/>
-      <path d="M-20 420 C90 365 175 365 260 407 C350 360 450 355 535 405 C640 350 735 355 820 400 C900 370 955 380 1020 415 L1020 560H-20Z" fill="#789778" opacity=".82"/><path d="M0 432 C160 390 215 407 300 430 S470 390 560 427 S760 385 870 420 S960 400 1000 424" fill="none" stroke="#d3d8c0" stroke-opacity=".22" stroke-width="4"/>
-      <g class="room-distant-trees" fill="#55765f" opacity=".76">
-       <path d="M55 390l34-92 34 92z M83 420l37-112 38 112z M830 385l43-112 42 112z M883 416l40-126 42 126z"/>
-       <path d="M105 406h8v58h-8z M120 416h8v50h-8z M864 393h9v70h-9z M905 410h8v54h-8z" fill="#705e4b"/>
-      </g>
-      <g class="room-mountains" opacity=".52">
-       <path d="M0 390L105 270l65 70 95-135 115 170 82-95 102 110 110-145 120 130 92-95 114 115v110H0Z" fill="#9baea0"/>
-       <path d="M55 335l50-65 29 35 31-39 32 48-31-18-26 21-28-20z M265 238l-38 54 40-22 25 24 25-32 38 49-47-21-25 16-27-20z M690 288l43-58 35 40 26-19 38 48-49-22-24 18-29-19z" fill="#e9e5d6" opacity=".7"/>
-      </g>
-      <g class="room-river">
-       <path d="M515 395 Q590 410 625 445 Q662 478 740 478 Q800 480 1000 438 L1000 560H520Q575 520 540 482Q510 445 515 395Z" fill="#9fc5c0" opacity=".75"/>
-       <path d="M550 445Q635 468 700 493T930 480" fill="none" stroke="#e0eee0" stroke-width="7" stroke-linecap="round" opacity=".65"/>
-       <path d="M590 466q35 4 62 18 M760 495q42 0 74-12 M850 474q22-4 44-12" fill="none" stroke="#f4f1d9" stroke-width="3" stroke-linecap="round" opacity=".7"/>
-      </g>
-      <g class="room-woodland" opacity=".9">
-       <g fill="#4e725c"><circle cx="90" cy="393" r="34"/><circle cx="125" cy="377" r="29"/><circle cx="157" cy="399" r="37"/><circle cx="860" cy="392" r="39"/><circle cx="900" cy="370" r="34"/><circle cx="942" cy="400" r="42"/></g>
-       <g fill="#789678"><circle cx="104" cy="377" r="17"/><circle cx="146" cy="386" r="19"/><circle cx="879" cy="378" r="20"/><circle cx="927" cy="391" r="18"/></g>
-       <g stroke="#6b5945" stroke-width="9" stroke-linecap="round" fill="none"><path d="M122 406v72m0-50l-24-24m24 10l25-28 M900 405v72m0-47l-25-25m25 12l26-29"/></g>
-      </g>
-      <path d="M-20 475 C105 425 205 438 300 470 C390 430 495 430 590 468 C700 420 810 420 900 458 C960 438 1000 440 1020 450V560H-20Z" fill="url(#roomHillNear)"/><path d="M-10 492 C120 455 215 463 310 490 S490 456 610 488 S830 450 1010 480" fill="none" stroke="#b4c99d" stroke-opacity=".35" stroke-width="4"/>
-      <g class="room-meadow" opacity=".9">
-       <path d="M0 500q130-48 250 0t250-4q130-42 250 0t250-5v69H0z" fill="#52785b"/>
-       <g fill="#f4d9d2"><circle cx="120" cy="480" r="7"/><circle cx="135" cy="492" r="5"/><circle cx="285" cy="468" r="6"/><circle cx="805" cy="472" r="7"/><circle cx="830" cy="488" r="5"/></g>
-       <g fill="#f2dfad"><circle cx="165" cy="500" r="5"/><circle cx="350" cy="485" r="5"/><circle cx="740" cy="493" r="6"/><circle cx="925" cy="477" r="5"/></g>
-      </g>
-      <g class="room-birds" fill="none" stroke="#435c5a" stroke-width="4" stroke-linecap="round"><path d="M420 190q18-18 36 0q18-18 36 0"/><path d="M495 220q13-13 26 0q13-13 26 0"/></g>
-      <rect width="1000" height="560" fill="url(#roomHaze)"/>
-      <g class="room-floating-petals">
-       <ellipse cx="280" cy="310" rx="7" ry="3" fill="#f3d5d1"/><ellipse cx="690" cy="365" rx="6" ry="3" fill="#f6e2c0"/><ellipse cx="555" cy="290" rx="5" ry="3" fill="#f3d5d1"/>
-      </g>
+     <rect width="1000" height="700" fill="url(#planetSpace)"/>
+     <ellipse cx="260" cy="230" rx="360" ry="260" fill="url(#planetNebula)" class="nebula-cloud nebula-one"/>
+     <ellipse cx="820" cy="330" rx="330" ry="250" fill="url(#planetNebula)" class="nebula-cloud nebula-two"/>
+     <g class="starfield" fill="#fff3d9">
+      <circle cx="70" cy="92" r="2.4"/><circle cx="142" cy="182" r="1.7"/><circle cx="230" cy="72" r="2"/><circle cx="320" cy="155" r="1.5"/><circle cx="405" cy="60" r="2.2"/><circle cx="510" cy="125" r="1.5"/><circle cx="620" cy="70" r="2.5"/><circle cx="730" cy="150" r="1.7"/><circle cx="840" cy="72" r="2.1"/><circle cx="930" cy="188" r="1.6"/>
+      <circle cx="85" cy="330" r="1.5"/><circle cx="190" cy="285" r="2.3"/><circle cx="285" cy="370" r="1.4"/><circle cx="390" cy="280" r="2"/><circle cx="710" cy="280" r="1.8"/><circle cx="830" cy="360" r="2.4"/><circle cx="945" cy="430" r="1.6"/><circle cx="130" cy="470" r="2"/>
      </g>
-    
-      <g class="room-birds-extra" fill="none" stroke="#435c5a" stroke-width="3.2" stroke-linecap="round">
-       <path d="M305 205q13-14 26 0q13-14 26 0"/><path d="M745 175q11-12 22 0q11-12 22 0"/><path d="M570 255q9-10 18 0q9-10 18 0"/>
+     <g class="star-crosses" stroke="#fff0d0" stroke-linecap="round" opacity=".8"><path d="M170 105v14m-7-7h14 M770 90v18m-9-9h18 M905 280v12m-6-6h12 M350 225v10m-5-5h10" stroke-width="1.5"/></g>
+     <circle class="far-planet far-planet-one" cx="170" cy="365" r="43" fill="#c5a7b2"/>
+     <path d="M132 355q38-27 75-2" fill="none" stroke="#f2d8c7" stroke-opacity=".55" stroke-width="5"/>
+     <circle class="far-planet far-planet-two" cx="820" cy="235" r="23" fill="#d7c5a9"/>
+     <ellipse cx="820" cy="235" rx="42" ry="10" fill="none" stroke="#d9c5bb" stroke-width="4" opacity=".65" transform="rotate(-18 820 235)"/>
+     <circle cx="690" cy="120" r="82" fill="url(#planetGlow)" class="distant-sun-glow"/>
+     <circle cx="690" cy="120" r="15" fill="#fff0d2" class="distant-sun"/>
+     <g class="comet-trail"><path d="M930 105q-58 16-95 66" fill="none" stroke="#f5dfcf" stroke-opacity=".65" stroke-width="2"/><circle cx="930" cy="105" r="4" fill="#fff5dc"/></g>
+     <ellipse class="world-ring-back" cx="555" cy="610" rx="380" ry="88" fill="none" stroke="url(#planetRing)" stroke-width="24" transform="rotate(-12 555 610)"/>
+     <circle cx="555" cy="620" r="315" fill="url(#littleWorld)"/>
+     <g clip-path="url(#worldClip)">
+      <path d="M220 490q90-95 190-34t180-5q95-42 280 55v280H220Z" fill="#d6b99c" opacity=".56"/>
+      <path d="M220 560q130-92 250-30t220-14q85-22 190 28v230H220Z" fill="#9e9a91"/>
+      <path d="M220 625q120-74 235-18t240-24q100-24 190 24v180H220Z" fill="#6e7e7e"/>
+      <path d="M260 690q130-54 230-6t220-28q90-20 170 12v120H260Z" fill="#485f69"/>
+      <path d="M290 515q115-42 185 2t145-5" fill="none" stroke="#f3dfc0" stroke-opacity=".52" stroke-width="7"/>
+      <path d="M310 595q95-36 170 0t165-12" fill="none" stroke="#e8c9aa" stroke-opacity=".4" stroke-width="5"/>
+      <g class="little-world-home">
+       <path d="M440 492l34-32 38 32v43h-72z" fill="#806b72"/><path d="M432 493l42-39 45 39" fill="none" stroke="#f1d9bb" stroke-width="6" stroke-linejoin="round"/><rect x="466" y="507" width="15" height="28" rx="7" fill="#f6dcae"/><rect x="490" y="503" width="11" height="12" rx="2" fill="#f7e5c5"/>
+       <path d="M510 531q30-25 58-8" fill="none" stroke="#dfc8ad" stroke-width="3" opacity=".65"/>
       </g>
-      <g class="room-butterflies">
-       <g class="room-butterfly butterfly-one" transform="translate(235 390)"><path d="M0 0Q-17-22-22-5Q-19 9 0 2Q19-13 20-1Q17 12 0 2" fill="#f4d1cb" stroke="#fff0dc" stroke-width="1.5"/><path d="M0 0v12" stroke="#705e4b" stroke-width="2"/></g>
-       <g class="room-butterfly butterfly-two" transform="translate(790 330) scale(.75)"><path d="M0 0Q-17-22-22-5Q-19 9 0 2Q19-13 20-1Q17 12 0 2" fill="#e8d9ad" stroke="#fff0dc" stroke-width="1.5"/><path d="M0 0v12" stroke="#705e4b" stroke-width="2"/></g>
+      <g class="solitary-tree">
+       <path d="M650 490q-5-45 2-92" fill="none" stroke="#564d50" stroke-width="9" stroke-linecap="round"/>
+       <path d="M652 440l-27-27m27 12l28-34m-28 53l-20-9" fill="none" stroke="#564d50" stroke-width="5" stroke-linecap="round"/>
+       <g fill="#788b79" stroke="#b5b99c" stroke-width="2"><ellipse cx="621" cy="402" rx="20" ry="10" transform="rotate(24 621 402)"/><ellipse cx="682" cy="407" rx="23" ry="11" transform="rotate(-32 682 407)"/><ellipse cx="649" cy="382" rx="21" ry="12" transform="rotate(-8 649 382)"/></g>
       </g>
-      <g class="room-fireflies" fill="#fff1b9"><circle cx="180" cy="420" r="3"/><circle cx="210" cy="445" r="2.4"/><circle cx="825" cy="430" r="3"/><circle cx="865" cy="450" r="2.2"/><circle cx="700" cy="405" r="2.5"/><circle cx="390" cy="440" r="2"/></g>
-      <g class="room-river-glints" fill="none" stroke="#f7f4df" stroke-linecap="round"><path d="M630 468h34 M700 489h22 M815 480h42 M900 458h24" stroke-width="3"/><path d="M670 505h18 M770 510h30 M925 493h20" stroke-width="2"/></g>
-      <g class="room-meadow-grass" fill="none" stroke="#b2c99a" stroke-width="2" stroke-linecap="round"><path d="M80 540q-8-25-2-42 M95 540q10-22 8-36 M310 540q-7-28 0-43 M330 540q13-24 18-35 M680 540q-9-27-5-42 M700 540q12-24 18-34 M940 540q-8-26-2-40"/></g>
-</svg>
-    <div class="room-curtain room-curtain-left"></div><div class="room-curtain room-curtain-right"></div>
-   <div class="study-sun"></div><div class="study-clouds"></div><div class="study-weather-effects"></div><div class="study-hills"></div>
-    <div class="study-window-cross"></div><div class="study-window-glow"></div>
+      <g class="tiny-flower"><path d="M745 535v-30" stroke="#526454" stroke-width="3"/><g fill="#e9c5c8"><ellipse cx="745" cy="498" rx="8" ry="13"/><ellipse cx="733" cy="507" rx="8" ry="12" transform="rotate(-55 733 507)"/><ellipse cx="757" cy="507" rx="8" ry="12" transform="rotate(55 757 507)"/></g><circle cx="745" cy="506" r="5" fill="#f6e1ad"/></g>
+      <path d="M240 540q80-30 120-5m-95 30q60-18 105-2m310 70q90-24 140-4" fill="none" stroke="#f4d8b9" stroke-opacity=".32" stroke-width="4"/>
+      <g class="world-fireflies" fill="#fff0c8"><circle cx="380" cy="560" r="3"/><circle cx="590" cy="535" r="2.5"/><circle cx="710" cy="600" r="3"/></g>
+      <rect x="240" y="310" width="630" height="520" fill="url(#worldNight)"/>
+     </g>
+     <ellipse class="world-ring-front" cx="555" cy="610" rx="380" ry="88" fill="none" stroke="url(#planetRing)" stroke-width="24" transform="rotate(-12 555 610)"/>
+     <g class="orbiting-dust" fill="#f8e9cf"><circle cx="245" cy="250" r="3"/><circle cx="275" cy="265" r="1.8"/><circle cx="755" cy="420" r="2.2"/><circle cx="790" cy="445" r="1.5"/></g>
+    </svg>
    </div>
-   <div class="room-desk-scene" aria-label="数冊の本を置いた窓際の机">
-    <div class="desk-books" aria-label="机の上の本"><i></i><i></i><i></i><i></i></div>
-    <div class="desk-surface"></div><div class="desk-front"></div>
-   </div>
-   <div class="room-window-shelf" aria-label="窓辺の砂時計">    <button class="desk-hourglass room-hourglass-shelf" id="hourglassStart" type="button" aria-label="5分間の休憩を始める">
-     <svg class="hourglass-art" id="hourglassArt" viewBox="0 0 100 120" role="img" aria-label="砂が落ちる砂時計">
-      <path class="hourglass-frame" d="M27 7H73 M27 113H73 M31 9C31 35 48 43 50 60C52 77 69 85 69 111 M69 9C69 35 52 43 50 60C48 77 31 85 31 111"/>
-      <path class="hourglass-glass" d="M32 12C32 34 47 43 50 58C53 43 68 34 68 12Z M50 62C47 78 32 87 32 108H68C68 87 53 78 50 62Z"/>
-      <path class="hourglass-sand-top" id="hourglassSandTop" d="M35 15H65C64 31 57 39 50 48C43 39 36 31 35 15Z"/>
-      <path class="hourglass-sand-bottom" id="hourglassSandBottom" d="M35 105C37 89 43 82 50 74C57 82 63 89 65 105Z"/>
-      <path class="hourglass-stream" d="M50 48V74"/>
-     </svg>
-     <span class="desk-hourglass-time" id="hourglassTime">05:00</span>
-     <span class="desk-hourglass-label" id="hourglassState">タップで休憩 · 長押しでリセット</span>
-    </button></div>
-   <div class="study-room-bottom"><div><div class="study-room-clock" id="studyRoomClock">15:00</div><div class="study-room-date" id="studyRoomDate">11月21日 土曜日</div></div><div class="study-room-foot">NO TASKS · NO GOALS · WEATHER: OPEN-METEO</div></div>
-   <p class="study-room-note" id="studyRoomMessage">窓の外を眺めて、ただ過ごす。それだけでいい時間。</p>
+   <div class="room-window-shelf planet-hourglass"><button class="desk-hourglass room-hourglass-shelf" id="hourglassStart" type="button" aria-label="5分間の休憩を始める">
+    <svg class="hourglass-art" id="hourglassArt" viewBox="0 0 100 120" role="img" aria-label="砂が落ちる砂時計"><path class="hourglass-frame" d="M27 7H73 M27 113H73 M31 9C31 35 48 43 50 60C52 77 69 85 69 111 M69 9C69 35 52 43 50 60C48 77 31 85 31 111"/><path class="hourglass-glass" d="M32 12C32 34 47 43 50 58C53 43 68 34 68 12Z M50 62C47 78 32 87 32 108H68C68 87 53 78 50 62Z"/><path class="hourglass-sand-top" id="hourglassSandTop" d="M35 15H65C64 31 57 39 50 48C43 39 36 31 35 15Z"/><path class="hourglass-sand-bottom" id="hourglassSandBottom" d="M35 105C37 89 43 82 50 74C57 82 63 89 65 105Z"/><path class="hourglass-stream" d="M50 48V74"/></svg>
+    <span class="desk-hourglass-time" id="hourglassTime">05:00</span><span class="desk-hourglass-label" id="hourglassState">タップで休憩 · 長押しでリセット</span>
+   </button></div>
+   <div class="study-room-bottom"><div><div class="study-room-clock" id="studyRoomClock">15:00</div><div class="study-room-date" id="studyRoomDate">11月21日 土曜日</div></div><div class="study-room-foot">A LITTLE WORLD, SOMEWHERE</div></div>
+   <p class="study-room-note" id="studyRoomMessage">遠くの星にも、誰かの大切なものがある。</p>
   </div>
-  
  </section>
 </div>
 <div class="page" id="settingsPage" hidden>
