@@ -86,7 +86,7 @@ test("PWA manifest remains valid and standalone-capable", async () => {
 test("service worker caches all extracted modules with a new version", async () => {
   const sw = await read("../sw.js");
   const cacheName = sw.match(/const CACHE='([^']+)'/)?.[1];
-  assert.equal(cacheName, "focus-pwa-v38");
+  assert.equal(cacheName, "focus-pwa-v39");
   for (const asset of [
     "./index.html", "./manifest.webmanifest", "./icon.svg", "./src/main.js",
     "./src/core/date-time.js", "./src/data/storage.js", "./src/core/timer.js", "./src/data/records.js", "./src/data/schema.js"
@@ -286,4 +286,139 @@ test("timer settings normalizer accepts only bounded integer settings", () => {
     focus: 25, short: 5, long: 15, cycle: 4
   });
   assert.equal(normalizeTimerSettings({ focus: 0, short: 5, long: 15, cycle: 4 }), null);
+});
+
+
+test("timer boundary calculations handle rounding, elapsed deadlines, and invalid values", () => {
+  assert.equal(getRemainingSeconds(2000, 1000), 1);
+  assert.equal(getRemainingSeconds(2001, 1000), 2);
+  assert.equal(getRemainingSeconds(1999, 1000), 1);
+  assert.equal(getRemainingSeconds(999, 1000), 0);
+  assert.equal(getRemainingSeconds(Number.NaN, 1000), 0);
+  assert.equal(getRemainingSeconds(Number.POSITIVE_INFINITY, 1000), 0);
+  assert.equal(getRemainingSeconds(2000, Number.NaN), 0);
+});
+
+test("break selection handles invalid counters and cycle boundaries", () => {
+  assert.equal(getNextBreakMode(0, 4), "short");
+  assert.equal(getNextBreakMode(4, 4), "long");
+  assert.equal(getNextBreakMode(5, 4), "short");
+  assert.equal(getNextBreakMode(8, 4), "long");
+  assert.equal(getNextBreakMode(Number.NaN, 4), "short");
+  assert.equal(getNextBreakMode(4, Number.POSITIVE_INFINITY), "short");
+});
+
+test("record aggregation ignores duplicate IDs and invalid minute values", () => {
+  const result = calculateStats({
+    legacyCompleted: 1,
+    legacyMinutes: 10,
+    legacyHistory: { "2026-11-21": 10 },
+    records: [
+      { id: "same", date: "2026-11-21", minutes: 25 },
+      { id: "same", date: "2026-11-21", minutes: 25 },
+      { id: "bad", date: "2026-11-21", minutes: Number.NaN },
+      { id: "negative", date: "2026-11-21", minutes: -5 },
+      { date: "2026-11-21", minutes: 5 }
+    ]
+  });
+  assert.equal(result.completed, 5);
+  assert.equal(result.minutes, 40);
+  assert.equal(result.history["2026-11-21"], 40);
+});
+
+test("data normalization drops duplicate session IDs instead of counting them twice", () => {
+  const normalized = normalizeStatsData({
+    completed: 2,
+    minutes: 50,
+    history: { "2026-11-21": 50 },
+    records: [
+      { id: "same", timestamp: 1795262400000, date: "2026-11-21", minutes: 25 },
+      { id: "same", timestamp: 1795266000000, date: "2026-11-21", minutes: 25 }
+    ]
+  });
+  assert.equal(normalized.records.length, 1);
+  assert.equal(normalized.legacyCompleted, 1);
+  assert.equal(normalized.legacyMinutes, 25);
+});
+
+test("storage adapter round-trips runtime state and protects failed writes", () => {
+  const values = new Map();
+  const fakeStorage = {
+    getItem: (key) => values.has(key) ? values.get(key) : null,
+    setItem: (key, value) => values.set(key, String(value))
+  };
+  const store = createStorage(() => fakeStorage);
+  const runtime = {
+    mode: "focus",
+    remaining: 300,
+    deadline: 1795262700000,
+    running: true,
+    finished: false,
+    updatedAt: 1795262400000
+  };
+  assert.equal(store.setJSON("focus-timer-runtime", runtime), true);
+  assert.deepEqual(store.getJSON("focus-timer-runtime"), runtime);
+  const blocked = createStorage(() => ({
+    getItem: () => null,
+    setItem: () => { throw new Error("quota exceeded"); }
+  }));
+  assert.equal(blocked.setJSON("focus-stats", { records: [] }), false);
+});
+
+test("startup restores expired timer only after completion recording is wired", async () => {
+  const script = await read("../src/main.js");
+  const wrapper = script.indexOf("const originalComplete=complete;");
+  const restore = script.indexOf("restoreTimerRuntime();");
+  assert.ok(wrapper >= 0 && wrapper < restore, "completion wrapper must be registered before timer restoration");
+  assert.ok(script.includes("if(appReady){"), "startup completion must defer UI-only effects");
+  assert.ok(script.includes("appReady=true;"), "UI becomes ready after initial rendering");
+  assert.ok(script.includes("Number.isFinite(Number(saved.deadline))"), "invalid persisted deadlines must not resume");
+});
+
+test("screen navigation and direct DOM references resolve to existing page elements", async () => {
+  const html = await read("../index.html");
+  const script = await read("../src/main.js");
+  const ids = new Set([...html.matchAll(/\\bid="([^"]+)"/g)].map((match) => match[1]));
+  const references = [...script.matchAll(/\\$\\(['"]([^'"]+)['"]\\)/g)].map((match) => match[1]);
+  const missing = [...new Set(references.filter((id) => !ids.has(id)))];
+  assert.deepEqual(missing, [], "all direct DOM ID lookups should exist in the HTML");
+  const pageTargets = [...html.matchAll(/data-page="([^"]+)"/g)].map((match) => match[1]);
+  for (const target of pageTargets) {
+    assert.ok(ids.has(target), "navigation target should exist: " + target);
+    assert.ok(new RegExp('id="' + target + '"[^>]*class="[^"]*page').test(html)
+      || new RegExp('class="[^"]*page[^"]*"[^>]*id="' + target + '"').test(html),
+      "navigation target should be a page: " + target);
+  }
+});
+
+test("timer completion wrapper is the only session-record creation path", async () => {
+  const script = await read("../src/main.js");
+  const created = [...script.matchAll(/records\\.push\\(r\\)/g)];
+  assert.equal(created.length, 1);
+  assert.ok(script.includes("minutes:durations.focus"));
+  assert.ok(script.includes("save();if(appReady)"));
+});
+
+test("backup validation round-trips normalized session history", () => {
+  const source = {
+    app: "FOCUS",
+    version: CURRENT_BACKUP_VERSION,
+    stats: {
+      completed: 2,
+      minutes: 50,
+      history: { "2026-11-21": 50 },
+      records: [
+        { id: "one", timestamp: 1795262400000, date: "2026-11-21", minutes: 25 },
+        { id: "two", timestamp: 1795266000000, date: "2026-11-21", minutes: 25 }
+      ]
+    },
+    timerSettings: { focus: 25, short: 5, long: 15, cycle: 4 },
+    mark: "dot"
+  };
+  const exported = validateBackupPayload(source);
+  assert.equal(exported.valid, true);
+  const imported = validateBackupPayload(exported.data);
+  assert.equal(imported.valid, true);
+  assert.equal(imported.data.stats.records.length, 2);
+  assert.equal(imported.data.stats.legacyMinutes, 0);
 });
