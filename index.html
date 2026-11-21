@@ -13,7 +13,7 @@
 <meta name="apple-mobile-web-app-title" content="FOCUS">
 <title>FOCUS — 学習集中タイマー</title>
 <style>
-:root{color-scheme:dark;--bg:#101915;--panel:#19251f;--line:#304138;--text:#edf4ef;--muted:#9eafa4;--accent:#8ec5a3;--accent2:#294b38}
+:root{color-scheme:dark;--bg:#101915;--panel:#19251f;--surface-deep:#111b16;--line:#304138;--text:#edf4ef;--muted:#9eafa4;--accent:#8ec5a3;--accent2:#294b38;--tab-bg:rgba(16,25,21,.96)}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;min-height:100svh}
 main{max-width:520px;margin:auto;padding:calc(18px + env(safe-area-inset-top)) 18px calc(24px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:16px}
 header{display:flex;justify-content:space-between;align-items:center}.brand{font-size:23px;font-weight:800;letter-spacing:2px}.brand span{color:var(--accent)}.status{font-size:11px;color:var(--muted);letter-spacing:1px}
@@ -26,8 +26,8 @@ svg.ring{position:absolute;inset:0;width:100%;height:100%;transform:rotate(-90de
 .controls{display:flex;justify-content:center;gap:9px;flex-wrap:wrap}.primary{background:var(--accent);border-color:var(--accent);color:#102018;font-weight:800;min-width:145px;padding:13px 20px}.secondary{padding:12px 15px}
 .hint{text-align:center;color:var(--muted);font-size:12px;margin:14px 0 2px}
 h2{font-size:15px;margin:0 0 13px}.muted{color:var(--muted);font-size:12px}
-input{width:100%;padding:12px;border-radius:11px;border:1px solid var(--line);background:#111b16;color:var(--text);font-size:16px;margin:7px 0 12px}
-.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center}.stat{background:#111b16;border-radius:13px;padding:12px 3px}.stat strong{display:block;font-size:24px}.stat span{font-size:11px;color:var(--muted)}
+input{width:100%;padding:12px;border-radius:11px;border:1px solid var(--line);background:var(--surface-deep);color:var(--text);font-size:16px;margin:7px 0 12px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center}.stat{background:var(--surface-deep);border-radius:13px;padding:12px 3px}.stat strong{display:block;font-size:24px}.stat span{font-size:11px;color:var(--muted)}
 .progressbar{display:flex;gap:6px;margin-top:9px}.progressbar i{height:7px;flex:1;border-radius:10px;background:var(--line)}.progressbar i.done{background:var(--accent)}
 details summary{cursor:pointer;font-weight:700;font-size:14px} .settings{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:15px}.settings label{font-size:12px;color:var(--muted)}.settings input{margin-bottom:0}
 .wide{width:100%;margin-top:12px}.foot{display:flex;justify-content:space-between;align-items:center;color:var(--muted);font-size:11px}.linkbtn{background:none;border:0;color:var(--muted);text-decoration:underline;padding:8px}
@@ -37,7 +37,7 @@ details summary{cursor:pointer;font-weight:700;font-size:14px} .settings{display
 .week-chart{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:7px;align-items:end;height:142px;padding:8px 0 0}
 .day-col{height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:7px;min-width:0}
 .day-value{font-size:10px;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
-.bar-track{height:92px;width:min(100%,30px);display:flex;align-items:flex-end;background:#111b16;border-radius:8px;overflow:hidden}
+.bar-track{height:92px;width:min(100%,30px);display:flex;align-items:flex-end;background:var(--surface-deep);border-radius:8px;overflow:hidden}
 .day-bar{width:100%;min-height:0;background:var(--accent);border-radius:7px 7px 2px 2px;transition:height .25s}
 .day-label{font-size:11px;color:var(--muted)}
 
@@ -45,19 +45,29 @@ details summary{cursor:pointer;font-weight:700;font-size:14px} .settings{display
 [hidden]{display:none!important}
 main{padding-bottom:calc(104px + env(safe-area-inset-bottom))}
 .page{display:flex;flex-direction:column;gap:16px}
-.tabbar{position:fixed;z-index:10;bottom:0;left:50%;transform:translateX(-50%);width:min(100%,520px);padding:9px 18px calc(9px + env(safe-area-inset-bottom));display:grid;grid-template-columns:repeat(3,1fr);gap:8px;background:rgba(16,25,21,.96);border-top:1px solid var(--line);backdrop-filter:blur(14px)}
+.tabbar{position:fixed;z-index:10;bottom:0;left:50%;transform:translateX(-50%);width:min(100%,520px);padding:9px 18px calc(9px + env(safe-area-inset-bottom));display:grid;grid-template-columns:repeat(3,1fr);gap:8px;background:var(--tab-bg);border-top:1px solid var(--line);backdrop-filter:blur(14px)}
 .tab{border:0;border-radius:12px;background:transparent;color:var(--muted);padding:8px 4px;font-size:12px;display:flex;flex-direction:column;align-items:center;gap:3px}
 .tab span{font-size:20px;line-height:1.1}
 .tab.active{background:var(--accent2);color:var(--accent);font-weight:700}
 
 
 .theme-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
-.theme-choice,.mark-choice{border:1px solid var(--line);border-radius:12px;background:#111b16;color:var(--text);padding:11px 9px;font-size:13px;text-align:left}
+.theme-choice,.mark-choice{border:1px solid var(--line);border-radius:12px;background:var(--surface-deep);color:var(--text);padding:11px 9px;font-size:13px;text-align:left}
 .theme-choice{display:flex;align-items:center;gap:9px}
 .theme-choice i{display:inline-block;width:15px;height:15px;border-radius:50%;flex:none}
 .theme-choice.selected,.mark-choice.selected{border-color:var(--accent);background:var(--accent2)}
 .mark-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
 .mark-choice{text-align:center}
+.achievement-list{display:grid;grid-template-columns:1fr;gap:9px}
+.achievement{display:grid;grid-template-columns:42px 1fr auto;align-items:center;gap:10px;padding:11px;border:1px solid var(--line);border-radius:13px;background:var(--surface-deep)}
+.achievement-icon{width:38px;height:38px;display:grid;place-items:center;border-radius:12px;background:var(--accent2);color:var(--accent);font-size:19px}
+.achievement.locked{opacity:.62}
+.achievement strong{display:block;font-size:13px}
+.achievement small{display:block;color:var(--muted);font-size:11px;margin-top:3px}
+.achievement-state{font-size:10px;color:var(--accent);white-space:nowrap}
+.achievement-progress{height:5px;background:var(--line);border-radius:8px;overflow:hidden;margin-top:7px}
+.achievement-progress i{display:block;height:100%;background:var(--accent);border-radius:8px}
+.achievement-next{font-size:12px;color:var(--muted);margin-top:12px}
 
 </style>
 </head>
@@ -85,6 +95,7 @@ main{padding-bottom:calc(104px + env(safe-area-inset-bottom))}
  <div class="week-chart" id="weekChart" role="img" aria-label="直近7日間の日別学習時間"></div>
  <div class="muted" style="margin-top:10px">集中セッションを完了すると、その日の棒グラフに反映されるよ。</div>
 </section>
+<section class="panel"><h2>アチーブメント</h2><p class="muted" style="margin:-4px 0 12px">累計の集中時間に応じて記録される達成バッジ。</p><div class="achievement-list" id="achievementList"></div><div class="achievement-next" id="achievementNext"></div></section>
 </div>
 
 <div class="page" id="settingsPage" hidden>
@@ -112,7 +123,7 @@ main{padding-bottom:calc(104px + env(safe-area-inset-bottom))}
    <button class="mark-choice" data-mark="star" aria-pressed="false">✦ スター</button>
    <button class="mark-choice" data-mark="leaf" aria-pressed="false">❧ リーフ</button>
   </div>
-  <p class="muted" style="margin:14px 0 0">ここで変更できるマークはアプリ画面内の表示だよ。iPhoneホーム画面のアイコンはPWAの仕様上、この画面からは切り替えられないよ。</p>
+  <p class="muted" style="margin:14px 0 0">テーマカラーを変えると、アクセントだけでなく背景・カード・境界線・文字色もまとめて切り替わるよ。\nマークはアプリ画面内の表示だよ。iPhoneホーム画面のアイコンはPWAの仕様上、この画面からは切り替えられないよ。</p>
  </section>
  <section class="panel"><h2>データ</h2><p class="muted">学習記録はこの端末のブラウザ内に保存されるよ。</p><button class="secondary wide" id="clear">今日の記録をリセット</button></section>
 </div>
@@ -134,12 +145,28 @@ function dateKey(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2
 function getWeekData(){const today=new Date(),data=[];for(let i=6;i>=0;i--){const d=new Date(today.getFullYear(),today.getMonth(),today.getDate()-i);data.push({key:dateKey(d),label:['日','月','火','水','木','金','土'][d.getDay()],minutes:Math.max(0,Number(history[dateKey(d)]||0))})}return data}
 function updateChart(){const data=getWeekData(),sum=data.reduce((a,d)=>a+d.minutes,0),max=Math.max(30,...data.map(d=>d.minutes));$('todayMinutes').textContent=Number(history[dateKey(new Date())]||0);$('weekTotal').textContent=sum>=60?Math.floor(sum/60)+'時間'+(sum%60?sum%60+'分':''):sum+'分';$('weekRange').textContent=data[0].key.slice(5).replace('-','/')+' 〜 '+data[6].key.slice(5).replace('-','/');$('weekChart').innerHTML=data.map(d=>{const h=d.minutes?Math.max(5,d.minutes/max*100):0;return '<div class="day-col" aria-label="'+d.key+' '+d.minutes+'分"><div class="day-value">'+(d.minutes?d.minutes+'分':'–')+'</div><div class="bar-track"><div class="day-bar" style="height:'+h+'%"></div></div><div class="day-label">'+d.label+'</div></div>'}).join('')}
 function save(){localStorage.setItem('focus-stats',JSON.stringify({completed,minutes,task:$('task').value,history}))}
+const achievements=[
+ {minutes:30,title:'はじめの一歩',description:'集中時間を合計30分達成',icon:'✦'},
+ {minutes:180,title:'積み重ね',description:'集中時間を合計3時間達成',icon:'◆'},
+ {minutes:600,title:'習慣の芽',description:'集中時間を合計10時間達成',icon:'❋'},
+ {minutes:1500,title:'探究者',description:'集中時間を合計25時間達成',icon:'✧'},
+ {minutes:3000,title:'継続の人',description:'集中時間を合計50時間達成',icon:'♜'},
+ {minutes:6000,title:'その先へ',description:'集中時間を合計100時間達成',icon:'★'}
+];
+function updateAchievements(){
+ $('achievementList').innerHTML=achievements.map(a=>{
+  const earned=minutes>=a.minutes,progress=Math.min(100,minutes/a.minutes*100);
+  return '<div class="achievement '+(earned?'':'locked')+'"><div class="achievement-icon">'+a.icon+'</div><div><strong>'+a.title+'</strong><small>'+a.description+'</small><div class="achievement-progress"><i style="width:'+progress+'%"></i></div></div><div class="achievement-state">'+(earned?'達成！':Math.floor(progress)+'%')+'</div></div>';
+ }).join('');
+ const next=achievements.find(a=>minutes<a.minutes);
+ $('achievementNext').textContent=next?'次の達成まで：あと'+(next.minutes-minutes)+'分':'すべてのアチーブメントを達成！';
+}
 function update(){
  $('clock').textContent=fmt(remaining);$('modeLabel').textContent=labels[mode];$('hint').textContent=hints[mode];
  $('status').textContent=running?'● FOCUSING':finished?'● COMPLETED':'● READY';
  $('start').textContent=running?'Ⅱ 一時停止':'▶ スタート';
  $('progress').style.strokeDasharray=circ;$('progress').style.strokeDashoffset=circ*(1-remaining/total);
- $('sessions').textContent=completed;$('minutes').textContent=minutes;$('round').textContent=(completed%cycle()+1)+'/'+cycle();
+ $('sessions').textContent=completed;$('minutes').textContent=minutes;updateAchievements();$('round').textContent=(completed%cycle()+1)+'/'+cycle();
  $('setLabel').textContent=(completed%cycle())+' / '+cycle()+' セッション';
  [...$('dots').children].forEach((d,i)=>d.classList.toggle('done',i<completed%cycle()));
  document.title=fmt(remaining)+' | FOCUS';
@@ -157,8 +184,20 @@ $('apply').onclick=()=>{let vals={focus:+$('focusDuration').value,short:+$('shor
 $('task').onchange=save;
 
 document.querySelectorAll('[data-page]').forEach(b=>b.onclick=()=>{document.querySelectorAll('.page').forEach(p=>p.hidden=p.id!==b.dataset.page);document.querySelectorAll('[data-page]').forEach(t=>t.classList.toggle('active',t===b));if(b.dataset.page==='overviewPage')updateChart()});
-const themes={green:{accent:'#8ec5a3',accent2:'#294b38'},blue:{accent:'#8ab9e8',accent2:'#244765'},purple:{accent:'#b8a0e8',accent2:'#443663'},amber:{accent:'#e7b96f',accent2:'#574323'},rose:{accent:'#e6a0ad',accent2:'#59323d'}};
-function setTheme(name,save=true){const t=themes[name]||themes.green;document.documentElement.style.setProperty('--accent',t.accent);document.documentElement.style.setProperty('--accent2',t.accent2);document.querySelectorAll('[data-theme]').forEach(b=>{const active=b.dataset.theme===name;b.classList.toggle('selected',active);b.setAttribute('aria-pressed',String(active))});if(save)localStorage.setItem('focus-appearance',JSON.stringify({theme:name,mark:localStorage.getItem('focus-mark')||'dot'}))}
+const themes={
+ green:{bg:'#101915',panel:'#19251f',deep:'#111b16',line:'#304138',text:'#edf4ef',muted:'#9eafa4',accent:'#8ec5a3',accent2:'#294b38',tab:'rgba(16,25,21,.96)'},
+ blue:{bg:'#101923',panel:'#192838',deep:'#111d29',line:'#30475a',text:'#edf4fb',muted:'#9eafc1',accent:'#8ab9e8',accent2:'#244765',tab:'rgba(16,25,35,.96)'},
+ purple:{bg:'#191522',panel:'#251e32',deep:'#1b1726',line:'#443653',text:'#f2edf9',muted:'#b2a5c3',accent:'#b8a0e8',accent2:'#443663',tab:'rgba(25,21,34,.96)'},
+ amber:{bg:'#1b1710',panel:'#2a2318',deep:'#201a11',line:'#51432c',text:'#f8f0e2',muted:'#bcae94',accent:'#e7b96f',accent2:'#574323',tab:'rgba(27,23,16,.96)'},
+ rose:{bg:'#1b1317',panel:'#2a1d23',deep:'#21171c',line:'#50333d',text:'#f8edf0',muted:'#bea5ad',accent:'#e6a0ad',accent2:'#59323d',tab:'rgba(27,19,23,.96)'}
+};
+function setTheme(name,save=true){
+ const t=themes[name]||themes.green,root=document.documentElement;
+ for(const [key,value] of Object.entries({bg:t.bg,panel:t.panel,'surface-deep':t.deep,line:t.line,text:t.text,muted:t.muted,accent:t.accent,accent2:t.accent2,'tab-bg':t.tab}))root.style.setProperty('--'+key,value);
+ document.querySelectorAll('[data-theme]').forEach(b=>{const active=b.dataset.theme===name;b.classList.toggle('selected',active);b.setAttribute('aria-pressed',String(active))});
+ document.querySelector('meta[name="theme-color"]').setAttribute('content',t.bg);
+ if(save)localStorage.setItem('focus-appearance',JSON.stringify({theme:name,mark:localStorage.getItem('focus-mark')||'dot'}))
+}
 function setMark(name,save=true){const marks={dot:'●',star:'✦',leaf:'❧'};$('brandMark').textContent=marks[name]||marks.dot;document.querySelectorAll('[data-mark]').forEach(b=>{const active=b.dataset.mark===name;b.classList.toggle('selected',active);b.setAttribute('aria-pressed',String(active))});if(save)localStorage.setItem('focus-mark',name)}
 document.querySelectorAll('[data-theme]').forEach(b=>b.onclick=()=>setTheme(b.dataset.theme));
 document.querySelectorAll('[data-mark]').forEach(b=>b.onclick=()=>setMark(b.dataset.mark));
