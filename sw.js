@@ -1,4 +1,4 @@
-const CACHE='focus-pwa-v37';
+const CACHE='focus-pwa-v38';
 const FILES=['./','./index.html','./manifest.webmanifest','./icon.svg','./icon-192.png','./icon-512.png','./src/main.js','./src/core/date-time.js','./src/data/storage.js','./src/core/timer.js','./src/data/records.js','./src/data/schema.js'];
 
 self.addEventListener('install',event=>{
