@@ -57,6 +57,8 @@
 - `focus-appearance`
 - `focus-mark`
 - `focus-preimport-backup`（インポート直前の自動退避）
+- `focus-pre-migration-backup`（旧スキーマ移行前の退避）
+- `focus-corrupt-stats-backup`（破損したJSONの原文退避）
 
 これらは移行時に削除・改名しない。新しい保存層を導入する場合も、旧キーからの読み込みと移行テストを用意する。
 
