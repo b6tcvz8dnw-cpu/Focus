@@ -134,6 +134,45 @@ textarea.field-select{font-family:inherit;resize:vertical;min-height:80px}
 .analytics-row{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--line);font-size:12px}.analytics-row:last-child{border:0}
 .import-label{display:block;text-align:center;border:1px solid var(--line);border-radius:12px;padding:12px;color:var(--text);font-size:13px;margin-top:9px}
 
+
+/* A small study room that follows the real local season and time */
+.tabbar{grid-template-columns:repeat(7,minmax(0,1fr))}
+.tab{font-size:9px;padding-left:1px;padding-right:1px}
+.tab span{font-size:16px}
+.study-room-panel{padding:14px;overflow:hidden}
+.study-room-view{--sky1:#8198a5;--sky2:#d8b9a0;--land:#52665d;position:relative;min-height:clamp(350px,62vh,540px);border-radius:16px;overflow:hidden;background:linear-gradient(180deg,#202c2b 0%,#29352f 100%);display:flex;flex-direction:column;justify-content:space-between;padding:18px;color:#f6f0e6}
+.study-room-view.time-dawn{--sky1:#687d9b;--sky2:#e8a982;--land:#59645b}
+.study-room-view.time-morning{--sky1:#78a9c2;--sky2:#d9e2d3;--land:#52715c}
+.study-room-view.time-day{--sky1:#6ca5c5;--sky2:#d5e6dc;--land:#4e765f}
+.study-room-view.time-evening{--sky1:#5a5273;--sky2:#e39a78;--land:#394b4a}
+.study-room-view.time-night{--sky1:#101b36;--sky2:#394765;--land:#172b30}
+.study-room-view.time-late{--sky1:#090f21;--sky2:#222d49;--land:#101f27}
+.study-room-view.season-spring{--season:#d4b5a0;--season-soft:#e7c9c0}
+.study-room-view.season-summer{--season:#9fbd91;--season-soft:#c1d1a2}
+.study-room-view.season-autumn{--season:#c58c62;--season-soft:#d7ad7d}
+.study-room-view.season-winter{--season:#a9bdce;--season-soft:#d1dce4}
+.study-room-top,.study-room-bottom{position:relative;z-index:3;display:flex;justify-content:space-between;align-items:center;gap:12px}
+.study-room-kicker{font-size:10px;letter-spacing:2px;opacity:.78}
+.study-room-clock{font-size:clamp(26px,7vw,38px);font-weight:300;letter-spacing:1px;font-variant-numeric:tabular-nums}
+.study-room-date{font-size:11px;opacity:.78;margin-top:3px}
+.study-window{position:absolute;inset:15% 8% 24%;border:9px solid #302d2a;border-radius:5px;box-shadow:0 0 0 2px rgba(244,226,195,.28),inset 0 0 0 2px rgba(255,255,255,.16),0 15px 35px rgba(0,0,0,.28);overflow:hidden;background:linear-gradient(180deg,var(--sky1),var(--sky2));}
+.study-window:before{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at 50% 100%,rgba(255,255,255,.16),transparent 50%);z-index:2}
+.study-sun{position:absolute;width:clamp(38px,10vw,62px);height:clamp(38px,10vw,62px);border-radius:50%;left:var(--sun-x,68%);top:var(--sun-y,18%);background:#f2dfb5;box-shadow:0 0 40px 12px rgba(246,220,170,.22);opacity:.9}
+.time-night .study-sun,.time-late .study-sun{background:#dce2e8;box-shadow:0 0 30px 8px rgba(209,224,242,.2)}
+.study-hills{position:absolute;left:-8%;right:-8%;bottom:-3%;height:43%;background:linear-gradient(155deg,transparent 0 20%,var(--land) 20.5% 100%);clip-path:polygon(0 48%,18% 16%,34% 49%,56% 8%,76% 43%,100% 17%,100% 100%,0 100%)}
+.study-hills:after{content:"";position:absolute;inset:30% 0 0;background:linear-gradient(180deg,rgba(18,40,36,.05),rgba(13,34,31,.55))}
+.season-spring .study-window:after{content:"";position:absolute;inset:0;background:radial-gradient(7px 9px at 18% 72%,#f4c8d2 98%,transparent),radial-gradient(6px 8px at 26% 82%,#f4d8b0 98%,transparent),radial-gradient(7px 9px at 78% 68%,#f0c1cb 98%,transparent),radial-gradient(6px 8px at 87% 83%,#f4d8b0 98%,transparent);z-index:2;opacity:.9}
+.season-summer .study-hills{filter:saturate(1.35)}
+.season-autumn .study-window:after{content:"";position:absolute;inset:0;background:radial-gradient(9px 12px at 14% 70%,#c77d4d 98%,transparent),radial-gradient(8px 11px at 25% 82%,#d7a35e 98%,transparent),radial-gradient(9px 12px at 82% 69%,#b96d43 98%,transparent),radial-gradient(8px 11px at 90% 83%,#d7a35e 98%,transparent);z-index:2;opacity:.9}
+.season-winter .study-hills{background:linear-gradient(155deg,transparent 0 20%,#8499a2 20.5% 100%)}
+.season-winter .study-window:after{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at 18% 70%,rgba(240,247,250,.7),transparent 35%),radial-gradient(ellipse at 80% 75%,rgba(240,247,250,.55),transparent 38%);z-index:2}
+.study-window-cross{position:absolute;z-index:4;inset:0;pointer-events:none;background:linear-gradient(90deg,transparent 49%,rgba(39,35,31,.75) 49.5% 50.5%,transparent 51%),linear-gradient(0deg,transparent 49%,rgba(39,35,31,.75) 49.5% 50.5%,transparent 51%)}
+.study-room-caption{max-width:260px;font-size:12px;line-height:1.9;opacity:.9}
+.study-room-season{font-size:11px;letter-spacing:1px;text-align:right}
+.study-room-title{font-size:22px;font-weight:500;letter-spacing:2px;margin:7px 0}
+.study-room-note{font-size:12px;color:var(--muted);line-height:1.9;margin:12px 2px 2px}
+.study-room-foot{font-size:10px;letter-spacing:1.5px;opacity:.62}
+@media(prefers-reduced-motion:no-preference){.study-sun{transition:top 1.2s ease,left 1.2s ease,background 1.2s ease}.study-window{transition:background 1.2s ease}}
 </style>
 </head>
 <body>
@@ -173,6 +212,21 @@ textarea.field-select{font-family:inherit;resize:vertical;min-height:80px}
 <div class="page" id="historyPage" hidden><section class="panel"><h2>学習履歴</h2><p class="muted" style="margin:-4px 0 12px">完了したセッションの記録を確認・編集できるよ。</p></section></div>
 <div class="page" id="analyticsPage" hidden><section class="panel"><h2>学習分析</h2><p class="muted" style="margin:-4px 0 12px">曜日別の集中時間を確認できるよ。</p></section></div>
 
+
+<div class="page" id="studyRoomPage" hidden>
+ <section class="panel study-room-panel">
+  <div class="study-room-view season-autumn time-day" id="studyRoomView">
+   <div class="study-room-top"><div><div class="study-room-kicker">A LITTLE PLACE OF YOUR OWN</div><div class="study-room-title">小さな書斎</div></div><div class="study-room-season" id="studyRoomSeason">秋 · 昼</div></div>
+   <div class="study-window" aria-hidden="true"><div class="study-sun"></div><div class="study-hills"></div><div class="study-window-cross"></div></div>
+   <div class="study-room-bottom"><div><div class="study-room-clock" id="studyRoomClock">15:00</div><div class="study-room-date" id="studyRoomDate">11月21日 土曜日</div></div><div class="study-room-foot">NO TASKS · NO GOALS</div></div>
+  </div>
+  <p class="study-room-note" id="studyRoomMessage">窓の外を眺めて、ただ過ごす。それだけでいい時間。</p>
+ </section>
+ <section class="panel">
+  <h2>ここでは、何もしなくていい。</h2>
+  <p class="muted" style="line-height:2;margin:0">タイマーを動かす必要も、記録を残す必要もないよ。何かを達成しなくても、ここにいる時間はそのままで大丈夫。窓の外の景色は、今の季節と時間に合わせて移り変わる。</p>
+ </section>
+</div>
 <div class="page" id="settingsPage" hidden>
  <details class="panel"><summary>タイマー設定</summary>
   <div class="settings">
@@ -217,7 +271,7 @@ textarea.field-select{font-family:inherit;resize:vertical;min-height:80px}
  <button class="tab" data-page="calendarPage"><span>▦</span>カレンダー</button>
  <button class="tab" data-page="historyPage"><span>≡</span>履歴</button>
  <button class="tab" data-page="analyticsPage"><span>⌁</span>分析</button>
- <button class="tab" data-page="settingsPage"><span>⚙</span>設定</button>
+ <button class="tab" data-page="studyRoomPage"><span>⌂</span>書斎</button>\n <button class="tab" data-page="settingsPage"><span>⚙</span>設定</button>
 </nav>
 <div class="foot"><span>FOCUS · STUDY TIMER</span></div><div id="toast" role="status" aria-live="polite">自分のペースで、一歩ずつ。</div>
 </main>
@@ -289,6 +343,36 @@ document.querySelectorAll('[data-mode]').forEach(b=>b.onclick=()=>setMode(b.data
 $('apply').onclick=()=>{let vals={focus:+$('focusDuration').value,short:+$('shortDuration').value,long:+$('longDuration').value,cycle:+$('cycleDuration').value};if(vals.focus<1||vals.focus>120||vals.short<1||vals.short>60||vals.long<1||vals.long>90||vals.cycle<2||vals.cycle>8||Object.values(vals).some(v=>!Number.isInteger(v))){$('toast').textContent='設定値を範囲内の整数で入力してね。';return}durations={focus:vals.focus,short:vals.short,long:vals.long};stop();finished=false;remaining=durations[mode]*60;total=remaining;localStorage.setItem('focus-timer-settings',JSON.stringify(vals));$('toast').textContent='タイマー設定を保存したよ。';update()};
 
 document.querySelectorAll('[data-page]').forEach(b=>b.onclick=()=>{document.querySelectorAll('.page').forEach(p=>p.hidden=p.id!==b.dataset.page);document.querySelectorAll('[data-page]').forEach(t=>t.classList.toggle('active',t===b));if(b.dataset.page==='overviewPage')renderAllRecords()});
+
+const studyRoomSeasons=[
+ {id:'spring',name:'春',months:[2,3,4],message:'花の気配が、窓の向こうに少しずつ増えていく。'},
+ {id:'summer',name:'夏',months:[5,6,7],message:'光の強い午後も、ここには静かな風が通っている。'},
+ {id:'autumn',name:'秋',months:[8,9,10],message:'色づく景色を眺めながら、時間が過ぎるのを待とう。'},
+ {id:'winter',name:'冬',months:[11,0,1],message:'冷たい空の下、部屋の中には穏やかな静けさがある。'}
+];
+const studyRoomTimes=[
+ {id:'late',name:'深夜',from:0,to:5,sunX:'50%',sunY:'24%',message:'世界が静まり返るころ。ここでは何も急がなくていい。'},
+ {id:'dawn',name:'明け方',from:5,to:7,sunX:'24%',sunY:'58%',message:'夜がほどけて、朝がゆっくり近づいてくる。'},
+ {id:'morning',name:'朝',from:7,to:11,sunX:'28%',sunY:'16%',message:'新しい光が窓辺に届く。今日はまだ、始まったばかり。'},
+ {id:'day',name:'昼',from:11,to:16,sunX:'68%',sunY:'10%',message:'明るい空の下、ただひと息つく時間。'},
+ {id:'evening',name:'夕方',from:16,to:19,sunX:'76%',sunY:'54%',message:'空の色が変わっていくのを、ゆっくり眺めよう。'},
+ {id:'night',name:'夜',from:19,to:24,sunX:'70%',sunY:'18%',message:'遠くの明かりを眺めながら、静かな夜を過ごそう。'}
+];
+function updateStudyRoom(){
+ const now=new Date(),month=now.getMonth(),hour=now.getHours();
+ const season=studyRoomSeasons.find(s=>s.months.includes(month))||studyRoomSeasons[0];
+ const time=studyRoomTimes.find(t=>hour>=t.from&&hour<t.to)||studyRoomTimes[0];
+ const view=$('studyRoomView');
+ view.className='study-room-view season-'+season.id+' time-'+time.id;
+ view.style.setProperty('--sun-x',time.sunX);view.style.setProperty('--sun-y',time.sunY);
+ $('studyRoomClock').textContent=now.toLocaleTimeString('ja-JP',{hour:'2-digit',minute:'2-digit',hour12:false});
+ $('studyRoomDate').textContent=now.toLocaleDateString('ja-JP',{month:'long',day:'numeric',weekday:'long'});
+ $('studyRoomSeason').textContent=season.name+' · '+time.name;
+ $('studyRoomMessage').textContent=season.message+' '+time.message;
+}
+updateStudyRoom();
+window.setInterval(updateStudyRoom,60000);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)updateStudyRoom()});
 const themes={
  green:{bg:'#101915',panel:'#19251f',deep:'#111b16',line:'#304138',text:'#edf4ef',muted:'#9eafa4',accent:'#8ec5a3',accent2:'#294b38',tab:'rgba(16,25,21,.96)'},
  blue:{bg:'#101923',panel:'#192838',deep:'#111d29',line:'#30475a',text:'#edf4fb',muted:'#9eafc1',accent:'#8ab9e8',accent2:'#244765',tab:'rgba(16,25,35,.96)'},
