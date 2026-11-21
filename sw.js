@@ -1,5 +1,5 @@
-const CACHE='focus-pwa-v31';
-const FILES=['./','./index.html','./manifest.webmanifest','./icon.svg','./icon-192.png','./icon-512.png','./src/core/date-time.js'];
+const CACHE='focus-pwa-v32';
+const FILES=['./','./index.html','./manifest.webmanifest','./icon.svg','./icon-192.png','./icon-512.png','./src/core/date-time.js','./src/data/storage.js'];
 
 self.addEventListener('install',event=>{
   event.waitUntil(
