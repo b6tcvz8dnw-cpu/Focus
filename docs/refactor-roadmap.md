@@ -58,7 +58,8 @@
 - [x] ビルド時にハッシュ付きJS/CSSをService Workerのプリキャッシュへ注入
 - [x] CIでテストと本番ビルドを実行する構成
 - [x] CIで生成された成果物をダウンロードして実体確認（相対URL、manifest、PNG/SVG、ハッシュ付きJS、Service Workerプリキャッシュ）
-- [ ] GitHub Pagesの現在の公開元を確認
+- [x] main限定のGitHub Actionsデプロイworkflowを準備（PRではビルドのみ、main push/dispatch時のみdeploy）
+- [ ] GitHub PagesのSourceをGitHub Actionsに設定（管理画面での確認が必要）
 - [ ] 既存URLを維持した段階的切替（実機・公開元設定の確認後）
 
 ### Phase 5 — iOSアプリ化
