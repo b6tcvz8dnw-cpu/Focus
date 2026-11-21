@@ -21,6 +21,7 @@
 - モジュール: `src/core/date-time.js`（`formatClock`, `dateKey`, `buildWeekData`, `getStudySkyLevel`）
 - タイマー計算: `src/core/timer.js`（絶対時刻からの残り時間、休憩モードの選択）
 - 保存層: `src/data/storage.js`（文字列・JSONの読み書き、利用不可・不正JSONへの防御処理）
+- 学習記録集計: `src/data/records.js`（累計・日別履歴の再計算）
 - アプリ本体の保存API直接呼び出し: 0件
 
 ## 画面
@@ -37,7 +38,7 @@
 | 領域 | 現在の関数例 |
 |---|---|
 | タイマー | `startTimer`, `stop`, `tick`, `complete`, `restoreTimerRuntime`。純粋計算は `src/core/timer.js` |
-| 学習統計 | `save`, `recalculateStats`, `getWeekData` |
+| 学習統計 | `save`, `recalculateStats`, `getWeekData`。集計本体は `src/data/records.js` |
 | カレンダー・履歴 | `renderCalendar`, `renderHistory`, `renderAllRecords` |
 | 分析 | `renderAnalytics`, `updateChart` |
 | 書斎 | `updateStudyRoom`, `updateStudySky`, `loadStudyRoomWeather` |
