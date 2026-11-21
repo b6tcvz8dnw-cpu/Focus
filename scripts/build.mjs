@@ -18,7 +18,7 @@ async function collectFiles(directory) {
 const dist = "dist";
 const allFiles = await collectFiles(join(dist, "assets"));
 const precacheAssets = allFiles
-  .filter((path) => /\.(?:js|css|woff2?|ttf|otf)$/.test(path))
+  .filter((path) => true)
   .map((path) => "./" + relative(dist, path).split(sep).join("/"))
   .sort();
 
@@ -35,8 +35,11 @@ const html = await readFile(join(dist, "index.html"), "utf8");
 if (!/src=["']\.\/assets\/[^"']+\.js["']/.test(html)) {
   throw new Error("Built application entry module was not found in dist/index.html.");
 }
-for (const url of ["./manifest.webmanifest", "./icon.svg", "./icon-192.png"]) {
+for (const url of ["./manifest.webmanifest", "./icon.svg"]) {
   if (!html.includes(url)) throw new Error(`Built HTML is missing relative PWA URL ${url}.`);
+}
+if (!/rel=["']apple-touch-icon["'] href=["']\.\/[^"']+["']/.test(html)) {
+  throw new Error("Built HTML is missing a relative Apple touch icon URL.");
 }
 if (/\b(?:src|href)=["']\/(?:manifest|icon)/.test(html)) {
   throw new Error("Built PWA contains a domain-root asset URL that would break under /Focus/.");
