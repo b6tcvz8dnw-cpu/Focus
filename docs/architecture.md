@@ -6,10 +6,11 @@
 
 ## 現状
 
-- エントリーポイント: `index.html`
-- HTML/CSS: 現在は単一HTMLに集約
-- JavaScript: エントリー処理はHTML内のmodule script、純粋な日付・時刻処理は `src/core/date-time.js`
-- `index.html`: 約128 KB / 約1,336行
+- HTMLエントリーポイント: `index.html`
+- JavaScriptエントリーポイント: `src/main.js`（ES module）
+- HTML/CSS: HTMLは `index.html`、CSSは引き続きインライン
+- JavaScript: `src/main.js` と `src/core/`・`src/data/` のモジュールに分割開始
+- `index.html`: 約91 KB / 約1,330行（JavaScript本体を外部化）
 - インラインJavaScript: 約254行、約40個の関数
 - CSS: 1つのインライン `<style>`
 - PWAマニフェスト: `manifest.webmanifest`
