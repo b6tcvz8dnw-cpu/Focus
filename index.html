@@ -68,7 +68,7 @@ main{padding-bottom:calc(104px + env(safe-area-inset-bottom))}
 <label>短い休憩（分）<input id="shortDuration" type="number" min="1" max="60" value="5"></label>
 <label>長い休憩（分）<input id="longDuration" type="number" min="1" max="90" value="15"></label>
 <label>長い休憩まで<input id="cycleDuration" type="number" min="2" max="8" value="4"></label>
-</div><button class="secondary wide" id="apply">設定を適用</button></details></section></section>
+</div><button class="secondary wide" id="apply">設定を適用</button></details></section>
 </div>
 <div class="page" id="overviewPage" hidden>
 <section class="panel"><h2>学習の全体像</h2>
@@ -82,134 +82,9 @@ main{padding-bottom:calc(104px + env(safe-area-inset-bottom))}
  <div class="muted" style="margin-top:10px">集中セッションを完了すると、その日の棒グラフに反映されるよ。</div>
 </section>
 </div>
-<!doctype html>
-<html lang="ja">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#17231f">
-<meta name="description" content="集中と休憩を切り替える学習用ポモドーロタイマー">
-<link rel="manifest" href="manifest.webmanifest">
-<link rel="icon" href="icon.svg" type="image/svg+xml">
-<link rel="apple-touch-icon" href="icon-192.png">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="FOCUS">
-<title>FOCUS — 学習集中タイマー</title>
-<style>
-:root{color-scheme:dark;--bg:#101915;--panel:#19251f;--line:#304138;--text:#edf4ef;--muted:#9eafa4;--accent:#8ec5a3;--accent2:#294b38}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;min-height:100svh}
-main{max-width:520px;margin:auto;padding:calc(18px + env(safe-area-inset-top)) 18px calc(24px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:16px}
-header{display:flex;justify-content:space-between;align-items:center}.brand{font-size:23px;font-weight:800;letter-spacing:2px}.brand span{color:var(--accent)}.status{font-size:11px;color:var(--muted);letter-spacing:1px}
-.panel{background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:17px}
-.modes{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}.mode,.secondary,.primary{border:1px solid var(--line);border-radius:12px;background:transparent;color:var(--text);padding:11px 7px;font-size:14px}
-.mode.active{background:var(--accent2);border-color:var(--accent);color:#eaffef;font-weight:700}
-.timer{display:grid;place-items:center;position:relative;width:min(72vw,270px);aspect-ratio:1;margin:20px auto 12px}
-svg.ring{position:absolute;inset:0;width:100%;height:100%;transform:rotate(-90deg)}.ring circle{fill:none;stroke-width:7}.track{stroke:var(--line)}.progress{stroke:var(--accent);stroke-linecap:round;transition:stroke-dashoffset .25s linear}
-.clock{font-size:clamp(55px,15vw,76px);font-weight:700;letter-spacing:-3px;font-variant-numeric:tabular-nums}.mode-label{color:var(--muted);font-size:14px}
-.controls{display:flex;justify-content:center;gap:9px;flex-wrap:wrap}.primary{background:var(--accent);border-color:var(--accent);color:#102018;font-weight:800;min-width:145px;padding:13px 20px}.secondary{padding:12px 15px}
-.hint{text-align:center;color:var(--muted);font-size:12px;margin:14px 0 2px}
-h2{font-size:15px;margin:0 0 13px}.muted{color:var(--muted);font-size:12px}
-input{width:100%;padding:12px;border-radius:11px;border:1px solid var(--line);background:#111b16;color:var(--text);font-size:16px;margin:7px 0 12px}
-.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center}.stat{background:#111b16;border-radius:13px;padding:12px 3px}.stat strong{display:block;font-size:24px}.stat span{font-size:11px;color:var(--muted)}
-.progressbar{display:flex;gap:6px;margin-top:9px}.progressbar i{height:7px;flex:1;border-radius:10px;background:var(--line)}.progressbar i.done{background:var(--accent)}
-details summary{cursor:pointer;font-weight:700;font-size:14px} .settings{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:15px}.settings label{font-size:12px;color:var(--muted)}.settings input{margin-bottom:0}
-.wide{width:100%;margin-top:12px}.foot{display:flex;justify-content:space-between;align-items:center;color:var(--muted);font-size:11px}.linkbtn{background:none;border:0;color:var(--muted);text-decoration:underline;padding:8px}
-#toast{text-align:center;color:var(--accent);font-size:13px;min-height:18px}
-
-.week-summary{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:12px}.week-total{font-size:24px;font-weight:800;color:var(--accent);font-variant-numeric:tabular-nums}
-.week-chart{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:7px;align-items:end;height:142px;padding:8px 0 0}
-.day-col{height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:7px;min-width:0}
-.day-value{font-size:10px;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
-.bar-track{height:92px;width:min(100%,30px);display:flex;align-items:flex-end;background:#111b16;border-radius:8px;overflow:hidden}
-.day-bar{width:100%;min-height:0;background:var(--accent);border-radius:7px 7px 2px 2px;transition:height .25s}
-.day-label{font-size:11px;color:var(--muted)}
-
-
-[hidden]{display:none!important}
-main{padding-bottom:calc(104px + env(safe-area-inset-bottom))}
-.page{display:flex;flex-direction:column;gap:16px}
-.tabbar{position:fixed;z-index:10;bottom:0;left:50%;transform:translateX(-50%);width:min(100%,520px);padding:9px 18px calc(9px + env(safe-area-inset-bottom));display:grid;grid-template-columns:repeat(3,1fr);gap:8px;background:rgba(16,25,21,.96);border-top:1px solid var(--line);backdrop-filter:blur(14px)}
-.tab{border:0;border-radius:12px;background:transparent;color:var(--muted);padding:8px 4px;font-size:12px;display:flex;flex-direction:column;align-items:center;gap:3px}
-.tab span{font-size:20px;line-height:1.1}
-.tab.active{background:var(--accent2);color:var(--accent);font-weight:700}
-
-</style>
-</head>
-<body>
-<main>
-<header><div><div class="brand">FOCUS<span>.</span></div><div class="muted">Study with intention.</div></div><div class="status" id="status">● READY</div></header>
-<div class="page" id="timerPage">
-<section class="panel">
- <div class="modes"><button class="mode active" data-mode="focus">集中</button><button class="mode" data-mode="short">短い休憩</button><button class="mode" data-mode="long">長い休憩</button></div>
- <div class="timer"><svg class="ring" viewBox="0 0 200 200"><circle class="track" cx="100" cy="100" r="88"/><circle class="progress" id="progress" cx="100" cy="100" r="88"/></svg><div style="text-align:center"><div class="clock" id="clock">25:00</div><div class="mode-label" id="modeLabel">集中する時間</div></div></div>
- <div class="controls"><button class="secondary" id="reset">↺ リセット</button><button class="primary" id="start">▶ スタート</button><button class="secondary" id="skip">次へ →</button></div>
- <p class="hint" id="hint">25分間、ひとつのことに集中しよう。</p>
-</section>
-<section class="panel"><h2>今取り組むこと</h2><label class="muted" for="task">学習内容</label><input id="task" maxlength="80" placeholder="例：数学の問題集を進める"></section>
-</div>
-<div class="page" id="overviewPage" hidden>
-<section class="panel"><h2>学習の全体像</h2>
- <div class="stats"><div class="stat"><strong id="sessions">0</strong><span>完了セッション</span></div><div class="stat"><strong id="minutes">0</strong><span>累計集中時間（分）</span></div><div class="stat"><strong id="todayMinutes">0</strong><span>今日の集中時間（分）</span></div></div>
- <div class="muted" style="display:flex;justify-content:space-between;margin-top:14px"><span>現在のセット</span><span><b id="round">1/4</b> · <span id="setLabel">0 / 4 セッション</span></span></div><div class="progressbar" id="dots"><i></i><i></i><i></i><i></i></div>
-</section>
-<section class="panel">
- <div class="week-summary"><h2 style="margin:0">週間の学習時間</h2><div class="week-total" id="weekTotal">0分</div></div>
- <div class="muted" id="weekRange">直近7日間</div>
- <div class="week-chart" id="weekChart" role="img" aria-label="直近7日間の日別学習時間"></div>
- <div class="muted" style="margin-top:10px">集中セッションを完了すると、その日の棒グラフに反映されるよ。</div>
-</section>
-</div>
-abbar" aria-label="ページ切り替え">
+<nav class="tabbar" aria-label="ページ切り替え">
  <button class="tab active" data-page="timerPage"><span>◷</span>タイマー</button>
  <button class="tab" data-page="overviewPage"><span>▥</span>学習記録</button>
-</nav>
-<div class="foot"><span>FOCUS · STUDY TIMER</span><button class="linkbtn" id="clear">今日の記録をリセット</button></div><div id="toast" role="status" aria-live="polite">自分のペースで、一歩ずつ。</div>
-</main>
-<script>
-const $=id=>document.getElementById(id);
-let durations={focus:25,short:5,long:15},mode='focus',remaining=1500,total=1500,running=false,deadline=0,interval=null,completed=0,minutes=0,finished=false,history={};
-const labels={focus:'集中する時間',short:'短い休憩',long:'長い休憩'},hints={focus:'ひとつのことに集中しよう。',short:'少し頭を休めよう。',long:'ゆっくり休んで次のセットに備えよう。'},circ=2*Math.PI*88;
-function cycle(){return Math.max(2,Math.min(8,+$('cycleDuration').value||4))}
-function fmt(s){return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0')}
-function stop(){clearInterval(interval);interval=null;running=false}
-function dateKey(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
-function getWeekData(){const today=new Date(),data=[];for(let i=6;i>=0;i--){const d=new Date(today.getFullYear(),today.getMonth(),today.getDate()-i);data.push({key:dateKey(d),label:['日','月','火','水','木','金','土'][d.getDay()],minutes:Math.max(0,Number(history[dateKey(d)]||0))})}return data}
-function updateChart(){const data=getWeekData(),sum=data.reduce((a,d)=>a+d.minutes,0),max=Math.max(30,...data.map(d=>d.minutes));$('todayMinutes').textContent=Number(history[dateKey(new Date())]||0);$('weekTotal').textContent=sum>=60?Math.floor(sum/60)+'時間'+(sum%60?sum%60+'分':''):sum+'分';$('weekRange').textContent=data[0].key.slice(5).replace('-','/')+' 〜 '+data[6].key.slice(5).replace('-','/');$('weekChart').innerHTML=data.map(d=>{const h=d.minutes?Math.max(5,d.minutes/max*100):0;return '<div class="day-col" aria-label="'+d.key+' '+d.minutes+'分"><div class="day-value">'+(d.minutes?d.minutes+'分':'–')+'</div><div class="bar-track"><div class="day-bar" style="height:'+h+'%"></div></div><div class="day-label">'+d.label+'</div></div>'}).join('')}
-function save(){localStorage.setItem('focus-stats',JSON.stringify({completed,minutes,task:$('task').value,history}))}
-function update(){
- $('clock').textContent=fmt(remaining);$('modeLabel').textContent=labels[mode];$('hint').textContent=hints[mode];
- $('status').textContent=running?'● FOCUSING':finished?'● COMPLETED':'● READY';
- $('start').textContent=running?'Ⅱ 一時停止':'▶ スタート';
- $('progress').style.strokeDasharray=circ;$('progress').style.strokeDashoffset=circ*(1-remaining/total);
- $('sessions').textContent=completed;$('minutes').textContent=minutes;$('round').textContent=(completed%cycle()+1)+'/'+cycle();
- $('setLabel').textContent=(completed%cycle())+' / '+cycle()+' セッション';
- [...$('dots').children].forEach((d,i)=>d.classList.toggle('done',i<completed%cycle()));
- document.title=fmt(remaining)+' | FOCUS';
- document.querySelectorAll('[data-mode]').forEach(b=>b.classList.toggle('active',b.dataset.mode===mode));
-}
-function setMode(m){stop();mode=m;finished=false;remaining=durations[m]*60;total=remaining;update()}
-function notify(title){if('Notification'in window&&Notification.permission==='granted')new Notification(title,{body:'FOCUS — 学習タイマー'});$('toast').textContent=title}
-function complete(){stop();remaining=0;finished=true;if(mode==='focus'){completed++;minutes+=durations.focus;const key=dateKey(new Date());history[key]=(Number(history[key])||0)+durations.focus;save()}update();updateChart();notify(mode==='focus'?'集中セッション完了！お疲れさま。':'休憩終了！次の集中に備えよう。');try{let C=window.AudioContext||window.webkitAudioContext;if(C){let c=new C(),o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);g.gain.value=.07;o.frequency.value=660;o.start();o.stop(c.currentTime+.3)}}catch(e){}}
-function tick(){remaining=Math.max(0,Math.ceil((deadline-Date.now())/1000));if(!remaining)complete();else update()}
-$('start').onclick=()=>{if(running){stop();update();return}if(finished){$('toast').textContent='次のモードを選んでスタートしよう。';return}if('Notification'in window&&Notification.permission==='default')Notification.requestPermission();running=true;deadline=Date.now()+remaining*1000;interval=setInterval(tick,250);update()};
-$('reset').onclick=()=>{stop();finished=false;remaining=durations[mode]*60;total=remaining;$('toast').textContent='タイマーをリセットしたよ。';update()};
-$('skip').onclick=()=>{if(mode==='focus')setMode((completed+1)%cycle()===0?'long':'short');else setMode('focus');$('toast').textContent='次の時間に切り替えたよ。'};
-document.querySelectorAll('[data-mode]').forEach(b=>b.onclick=()=>setMode(b.dataset.mode));
-$('apply').onclick=()=>{let vals={focus:+$('focusDuration').value,short:+$('shortDuration').value,long:+$('longDuration').value,cycle:+$('cycleDuration').value};if(vals.focus<1||vals.focus>120||vals.short<1||vals.short>60||vals.long<1||vals.long>90||vals.cycle<2||vals.cycle>8||Object.values(vals).some(v=>!Number.isInteger(v))){$('toast').textContent='設定値を範囲内の整数で入力してね。';return}durations={focus:vals.focus,short:vals.short,long:vals.long};stop();finished=false;remaining=durations[mode]*60;total=remaining;$('toast').textContent='設定を適用したよ。';update()};
-$('task').onchange=save;
-
-document.querySelectorAll('[data-page]').forEach(b=>b.onclick=()=>{document.querySelectorAll('.page').forEach(p=>p.hidden=p.id!==b.dataset.page);document.querySelectorAll('[data-page]').forEach(t=>t.classList.toggle('active',t===b));if(b.dataset.page==='overviewPage')updateChart();});
-
-$('clear').onclick=()=>{stop();completed=0;minutes=0;history[dateKey(new Date())]=0;finished=false;remaining=durations[mode]*60;total=remaining;save();$('toast').textContent='今日の記録をリセットしたよ。';update();updateChart()};
-try{let s=JSON.parse(localStorage.getItem('focus-stats')||'{}');completed=s.completed||0;minutes=s.minutes||0;history=s.history&&typeof s.history==='object'?s.history:{};$('task').value=s.task||''}catch(e){}
-if('serviceWorker'in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
-update();updateChart();
-</script>
-</body></html> aria-label="ページ切り替え">
- <button class="tab active" data-page="timerPage"><span>◷</span>タイマー</button>
- <button class="tab" data-page="overviewPage"><span>▥</span>学習記録</button>
- <button class="tab" data-page="settingsPage"><span>⚙</span>設定</button>
 </nav>
 <div class="foot"><span>FOCUS · STUDY TIMER</span><button class="linkbtn" id="clear">今日の記録をリセット</button></div><div id="toast" role="status" aria-live="polite">自分のペースで、一歩ずつ。</div>
 </main>
