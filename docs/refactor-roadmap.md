@@ -52,11 +52,13 @@
 - [ ] iPhone Safari/PWAでの実機操作確認
 
 ### Phase 4 — ビルド基盤
-- [ ] Vite導入
-- [ ] GitHub Pages用baseパス設定
-- [ ] PWA資産の配置とService Worker確認
-- [ ] ビルド成果物と公開内容の比較
-- [ ] 既存URLを維持した段階的切替
+- [x] Vite導入（dev / build / preview scripts）
+- [x] GitHub Pages用baseパス設定（相対パス `./`、プロジェクトページ対応）
+- [x] PWA資産を `public/` に集約し、PNGアイコンをビルド時にコピー
+- [x] ビルド時にハッシュ付きJS/CSSをService Workerのプリキャッシュへ注入
+- [x] CIでテストと本番ビルドを実行する構成
+- [ ] CIで生成された成果物の実体・パス・オフラインキャッシュを確認
+- [ ] GitHub Pagesの公開元を確認し、既存URLを維持した段階的切替
 
 ### Phase 5 — iOSアプリ化
 - [ ] Capacitor導入
