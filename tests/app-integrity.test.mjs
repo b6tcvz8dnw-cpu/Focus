@@ -77,19 +77,18 @@ test("existing local storage keys are preserved", async () => {
 });
 
 test("PWA manifest remains valid and standalone-capable", async () => {
-  const manifest = JSON.parse(await read("../manifest.webmanifest"));
+  const manifest = JSON.parse(await read("../public/manifest.webmanifest"));
   assert.equal(manifest.short_name, "FOCUS");
   assert.equal(manifest.display, "standalone");
   assert.ok(Array.isArray(manifest.icons) && manifest.icons.length >= 2);
 });
 
 test("service worker caches all extracted modules with a new version", async () => {
-  const sw = await read("../sw.js");
+  const sw = await read("../public/sw.js");
   const cacheName = sw.match(/const CACHE='([^']+)'/)?.[1];
-  assert.equal(cacheName, "focus-pwa-v39");
+  assert.equal(cacheName, "focus-pwa-v40");
   for (const asset of [
-    "./index.html", "./manifest.webmanifest", "./icon.svg", "./src/main.js",
-    "./src/core/date-time.js", "./src/data/storage.js", "./src/core/timer.js", "./src/data/records.js", "./src/data/schema.js"
+    "./index.html", "./manifest.webmanifest", "./icon.svg", "./icon-192.png", "./icon-512.png"
   ]) {
     assert.ok(sw.includes(asset), "service worker should cache " + asset);
   }
@@ -421,4 +420,34 @@ test("backup validation round-trips normalized session history", () => {
   assert.equal(imported.valid, true);
   assert.equal(imported.data.stats.records.length, 2);
   assert.equal(imported.data.stats.legacyMinutes, 0);
+});
+
+
+test("Vite keeps the GitHub Pages project path relative", async () => {
+  const config = await read("../vite.config.js");
+  assert.match(config, /base:\s*["']\.\/["']/);
+  assert.match(config, /outDir:\s*["']dist["']/);
+  assert.match(config, /publicDir:\s*["']public["']/);
+  const html = await read("../index.html");
+  assert.ok(html.includes('href="/manifest.webmanifest"'));
+  assert.ok(html.includes('href="/icon.svg"'));
+  assert.ok(html.includes('href="/icon-192.png"'));
+});
+
+test("production build injects generated bundles into the PWA precache", async () => {
+  const buildScript = await read("../scripts/build.mjs");
+  const serviceWorker = await read("../public/sw.js");
+  assert.ok(buildScript.includes("const BUILD_ASSETS = []"));
+  assert.ok(buildScript.includes("FOCUS build verified"));
+  assert.ok(buildScript.includes("precacheAssets"));
+  assert.ok(serviceWorker.includes("const BUILD_ASSETS = [];"));
+  assert.ok(serviceWorker.includes("...BUILD_ASSETS"));
+});
+
+test("package scripts expose development, build, and preview commands", async () => {
+  const pkg = JSON.parse(await read("../package.json"));
+  assert.equal(pkg.scripts.dev, "vite --host 0.0.0.0");
+  assert.equal(pkg.scripts.build, "node scripts/build.mjs");
+  assert.equal(pkg.scripts.preview, "vite preview --host 0.0.0.0");
+  assert.ok(pkg.devDependencies.vite);
 });
