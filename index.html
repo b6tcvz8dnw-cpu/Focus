@@ -821,6 +821,16 @@ details summary{min-height:26px;display:flex;align-items:center}
 }
 
  
+/* True edge-to-edge landscape canvas on the immersive room */
+@media(orientation:landscape){
+ body.study-room-fullscreen #studyRoomPage{inset:0!important;width:100vw;height:100dvh;padding:0!important;overflow:hidden!important}
+ body.study-room-fullscreen .study-room-panel{position:absolute;inset:0;width:100vw;height:100dvh;padding:0!important;margin:0!important}
+ body.study-room-fullscreen .little-planet-view{position:absolute;inset:0;width:100vw;height:100dvh;min-height:0!important;border:0!important;border-radius:0!important;padding:clamp(12px,2.1vw,28px)!important}
+ body.study-room-fullscreen .planet-landscape,body.study-room-fullscreen .cosmic-motion,body.study-room-fullscreen .earned-sky{position:absolute;inset:0;width:100%;height:100%}
+ body.study-room-fullscreen .study-room-top{padding-top:max(4px,env(safe-area-inset-top));padding-left:max(4px,env(safe-area-inset-left));padding-right:max(4px,env(safe-area-inset-right))}
+ body.study-room-fullscreen .study-room-bottom{padding-bottom:max(4px,env(safe-area-inset-bottom))}
+ body.study-room-fullscreen .planet-hourglass{bottom:clamp(18px,5vh,48px)!important;right:clamp(18px,4vw,48px)!important}
+}
 /* Daily study time gently reveals more of the night sky */
 .earned-sky{position:absolute;inset:0;width:100%;height:100%;z-index:3;pointer-events:none;overflow:visible}
 .earned-milkyway,.earned-star-dust,.earned-meteors{opacity:0;transition:opacity 2.4s ease}
@@ -1072,7 +1082,7 @@ let durations={focus:25,short:5,long:15},mode='focus',remaining=1500,total=1500,
 const labels={focus:'集中する時間',short:'短い休憩',long:'長い休憩'},hints={focus:'ひとつのことに集中しよう。',short:'少し頭を休めよう。',long:'ゆっくり休んで次のセットに備えよう。'},circ=2*Math.PI*88;
 function cycle(){return Math.max(2,Math.min(8,+$('cycleDuration').value||4))}
 function fmt(s){return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0')}
-function stop(){clearInterval(interval);interval=null;running=false}
+function stop(){clearInterval(interval);interval=null;running=false;if(typeof persistTimer==='function')persistTimer()}
 function dateKey(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
 function getWeekData(){const today=new Date(),data=[];for(let i=6;i>=0;i--){const d=new Date(today.getFullYear(),today.getMonth(),today.getDate()-i);data.push({key:dateKey(d),label:['日','月','火','水','木','金','土'][d.getDay()],minutes:Math.max(0,Number(history[dateKey(d)]||0))})}return data}
 function updateStudySky(){
@@ -1117,19 +1127,22 @@ function update(){
  document.title=fmt(remaining)+' | FOCUS';
  document.querySelectorAll('[data-mode]').forEach(b=>b.classList.toggle('active',b.dataset.mode===mode));
 }
-function setMode(m){if(running&&!confirm('タイマーを停止してモードを切り替える？'))return;stop();mode=m;finished=false;remaining=durations[m]*60;total=remaining;update();}
+function setMode(m){if(running&&!confirm('タイマーを停止してモードを切り替える？'))return;stop();mode=m;finished=false;remaining=durations[m]*60;total=remaining;persistTimer();update();}
 let notificationsEnabled=localStorage.getItem('focus-notifications')==='true';
 function updateNotificationButton(){$('notificationToggle').textContent='完了通知：'+(notificationsEnabled?'オン':'オフ');$('notificationToggle').setAttribute('aria-pressed',String(notificationsEnabled))}
 $('notificationToggle').onclick=async()=>{if(!notificationsEnabled){if(!('Notification'in window)){$('toast').textContent='このブラウザは通知に対応していないようだよ。';return}const permission=Notification.permission==='default'?await Notification.requestPermission():Notification.permission;if(permission!=='granted'){$('toast').textContent='通知は許可されなかったため、オフのままだよ。';return}notificationsEnabled=true}else notificationsEnabled=false;localStorage.setItem('focus-notifications',String(notificationsEnabled));updateNotificationButton();$('toast').textContent='通知設定を保存したよ。'};
 function notify(title){if(notificationsEnabled&&'Notification'in window&&Notification.permission==='granted'){try{new Notification(title,{body:'FOCUS — 学習タイマー'})}catch(e){}}$('toast').textContent=title}
 updateNotificationButton();
-function complete(){stop();remaining=0;finished=true;if(mode==='focus'){completed++;minutes+=durations.focus;const key=dateKey(new Date());history[key]=(Number(history[key])||0)+durations.focus;save()}update();updateChart();notify(mode==='focus'?'集中セッション完了！お疲れさま。':'休憩終了！次の集中に備えよう。');try{let C=window.AudioContext||window.webkitAudioContext;if(C){let c=new C(),o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);g.gain.value=.07;o.frequency.value=660;o.start();o.stop(c.currentTime+.3)}}catch(e){}}
-function tick(){remaining=Math.max(0,Math.ceil((deadline-Date.now())/1000));if(!remaining)complete();else update()}
-$('start').onclick=()=>{if(running){stop();update();return}if(finished){$('toast').textContent='次のモードを選んでスタートしよう。';return}running=true;deadline=Date.now()+remaining*1000;interval=setInterval(tick,250);update()};
+function persistTimer(){try{localStorage.setItem('focus-timer-runtime',JSON.stringify({mode,remaining,deadline,running,finished,updatedAt:Date.now()}))}catch(e){}}
+function startTimer(){if(remaining<=0)remaining=durations[mode]*60;finished=false;running=true;deadline=Date.now()+remaining*1000;if(interval)clearInterval(interval);interval=setInterval(tick,250);persistTimer();update()}
+function playCompletionSound(){try{const C=window.AudioContext||window.webkitAudioContext;if(!C)return;const c=audioContext||new C();audioContext=c;c.resume().then(()=>{[660,880].forEach((hz,i)=>{const o=c.createOscillator(),g=c.createGain(),t=c.currentTime+i*.16;o.type='sine';o.frequency.value=hz;g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.12,t+.025);g.gain.exponentialRampToValueAtTime(.0001,t+.42);o.connect(g);g.connect(c.destination);o.start(t);o.stop(t+.45)})}).catch(()=>{})}catch(e){}}
+function complete(){const endedMode=mode;stop();remaining=0;if(endedMode==='focus'){completed++;minutes+=durations.focus;const key=dateKey(new Date());history[key]=(Number(history[key])||0)+durations.focus;save();mode=(completed%cycle()===0)?'long':'short';finished=false;remaining=durations[mode]*60;total=remaining;update();updateChart();notify('集中セッション完了！休憩を始めよう。');playCompletionSound();startTimer()}else{finished=true;update();notify('休憩終了！お疲れさま。');playCompletionSound();persistTimer()}}
+function tick(){if(!running)return;remaining=Math.max(0,Math.ceil((deadline-Date.now())/1000));if(!remaining)complete();else{update();persistTimer()}}
+$('start').onclick=()=>{if(running){stop();persistTimer();update();return}if(finished){$('toast').textContent='次のモードを選んでスタートしよう。';return}startTimer()};
 function setLargeMode(enabled){document.body.classList.toggle('timer-large-mode',enabled);$('largeToggle').setAttribute('aria-pressed',String(enabled));$('largeToggle').textContent=enabled?'⤢ 通常表示':'⛶ 大画面';}
 $('largeToggle').onclick=()=>setLargeMode(!document.body.classList.contains('timer-large-mode'));
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&document.body.classList.contains('timer-large-mode'))setLargeMode(false)});
-$('reset').onclick=()=>{if(running&&!confirm('進行中のタイマーをリセットする？'))return;stop();finished=false;remaining=durations[mode]*60;total=remaining;$('toast').textContent='タイマーをリセットしたよ。';update()};
+$('reset').onclick=()=>{if(running&&!confirm('進行中のタイマーをリセットする？'))return;stop();finished=false;remaining=durations[mode]*60;total=remaining;persistTimer();$('toast').textContent='タイマーをリセットしたよ。';update()};
 $('skip').onclick=()=>{if(mode==='focus')setMode((completed+1)%cycle()===0?'long':'short');else setMode('focus');$('toast').textContent='次の時間に切り替えたよ。'};
 document.querySelectorAll('[data-mode]').forEach(b=>b.onclick=()=>setMode(b.dataset.mode));
 $('apply').onclick=()=>{let vals={focus:+$('focusDuration').value,short:+$('shortDuration').value,long:+$('longDuration').value,cycle:+$('cycleDuration').value};if(vals.focus<1||vals.focus>120||vals.short<1||vals.short>60||vals.long<1||vals.long>90||vals.cycle<2||vals.cycle>8||Object.values(vals).some(v=>!Number.isInteger(v))){$('toast').textContent='設定値を範囲内の整数で入力してね。';return}durations={focus:vals.focus,short:vals.short,long:vals.long};stop();finished=false;remaining=durations[mode]*60;total=remaining;localStorage.setItem('focus-timer-settings',JSON.stringify(vals));$('toast').textContent='タイマー設定を保存したよ。';update()};
@@ -1244,7 +1257,7 @@ function updateStudyRoom(){
 }
 updateStudyRoom();
 window.setInterval(updateStudyRoom,60000);
-document.addEventListener('visibilitychange',()=>{if(!document.hidden)updateStudyRoom()});
+document.addEventListener('visibilitychange',()=>{if(!document.hidden){if(running)tick();updateStudyRoom()}});
 const themes={
  green:{bg:'#101915',panel:'#19251f',deep:'#111b16',line:'#304138',text:'#edf4ef',muted:'#9eafa4',accent:'#8ec5a3',accent2:'#294b38',tab:'rgba(16,25,21,.96)'},
  blue:{bg:'#101923',panel:'#192838',deep:'#111d29',line:'#30475a',text:'#edf4fb',muted:'#9eafc1',accent:'#8ab9e8',accent2:'#244765',tab:'rgba(16,25,35,.96)'},
@@ -1267,6 +1280,7 @@ try{const ap=JSON.parse(localStorage.getItem('focus-appearance')||'null');if(ap&
 
 $('clear').onclick=()=>{stop();completed=0;minutes=0;history[dateKey(new Date())]=0;finished=false;remaining=durations[mode]*60;total=remaining;save();$('toast').textContent='今日の記録をリセットしたよ。';update();updateChart()};
 try{let s=JSON.parse(localStorage.getItem('focus-stats')||'{}');completed=s.completed||0;minutes=s.minutes||0;history=s.history&&typeof s.history==='object'?s.history:{};records=Array.isArray(s.records)?s.records:[];const recordTotals={};records.forEach(r=>{const k=r.date||dateKey(new Date(r.timestamp));recordTotals[k]=(recordTotals[k]||0)+(Number(r.minutes)||0)});legacyCompleted=Number.isFinite(s.legacyCompleted)?s.legacyCompleted:Math.max(0,(s.completed||0)-records.length);legacyMinutes=Number.isFinite(s.legacyMinutes)?s.legacyMinutes:Math.max(0,(s.minutes||0)-records.reduce((a,r)=>a+(Number(r.minutes)||0),0));legacyHistory=s.legacyHistory&&typeof s.legacyHistory==='object'?s.legacyHistory:Object.fromEntries(Object.entries(s.history||{}).map(([k,v])=>[k,Math.max(0,Number(v||0)-(recordTotals[k]||0))]));dailyGoal=Number(s.dailyGoal)||60;weeklyGoal=Number(s.weeklyGoal)||300}catch(e){}
+restoreTimerRuntime();
 
 $('dailyGoal').value=dailyGoal;$('weeklyGoal').value=weeklyGoal;
 $('saveGoals').onclick=()=>{const d=Number($('dailyGoal').value),w=Number($('weeklyGoal').value);if(!Number.isInteger(d)||!Number.isInteger(w)||d<0||w<0||d>1440||w>10080){$('toast').textContent='目標は範囲内の整数で入力してね。';return}dailyGoal=d;weeklyGoal=w;save();renderGoals();$('toast').textContent='目標を保存したよ。'};
