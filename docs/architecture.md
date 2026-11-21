@@ -24,7 +24,7 @@
 - タイマー計算: `src/core/timer.js`（絶対時刻からの残り時間、不正値の防御、休憩モードの選択）
 - 保存層: `src/data/storage.js`（文字列・JSONの読み書き、利用不可・不正JSONへの防御処理）
 - 学習記録集計: `src/data/records.js`（累計・日別履歴の再計算、重複ID排除）
-- 品質保証: `tests/app-integrity.test.mjs`（Node.js標準テスト32項目、HTML/DOM契約・移行・タイマー・記録・保存の検証）
+- 品質保証: `tests/app-integrity.test.mjs`（Node.js標準テスト35項目、HTML/DOM契約・移行・タイマー・記録・保存の検証）
 - アプリ本体の保存API直接呼び出し: 0件
 
 ## 画面
@@ -99,4 +99,5 @@
 - `public/` のマニフェスト・Service Worker・SVGアイコンをそのまま配信し、PNGアイコンはビルド時に元ファイルからコピー。
 - `scripts/build.mjs` が `dist/assets/` の生成物を列挙し、Service Workerのプリキャッシュ配列へ注入。
 - CIは `npm test` に加えて `npm run build` を実行する。
-- このブランチはまだGitHub Pagesへデプロイしない。公開元の設定と成果物を確認後に切り替える。
+- GitHub Actionsのビルド成果物をダウンロードして検査済み。相対URL、マニフェスト、PNG/SVG、ハッシュ付きJS、Service Workerのプリキャッシュを確認。
+- このブランチはまだGitHub Pagesへデプロイしない。現在の公開元設定とiPhone実機を確認後に切り替える。
