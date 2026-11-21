@@ -12,6 +12,7 @@ import { createStorage } from "../src/data/storage.js";
 import { getRemainingSeconds, getNextBreakMode } from "../src/core/timer.js";
 import { calculateStats } from "../src/data/records.js";
 import { normalizeStatsData, normalizeTimerSettings, validateBackupPayload, CURRENT_DATA_SCHEMA_VERSION, CURRENT_BACKUP_VERSION } from "../src/data/schema.js";
+import { inspectRecoverySnapshots } from "../src/data/recovery.js";
 
 const read = (path) => readFile(new URL(path, import.meta.url), "utf8");
 
@@ -450,4 +451,54 @@ test("package scripts expose development, build, and preview commands", async ()
   assert.equal(pkg.scripts.build, "node scripts/build.mjs");
   assert.equal(pkg.scripts.preview, "vite preview --host 0.0.0.0");
   assert.equal(pkg.devDependencies.vite, "6.4.6");
+});
+
+
+test("recovery inspection exposes restorable snapshots and preserves corrupt originals", () => {
+  const values = new Map([
+    ["focus-preimport-backup", JSON.stringify({
+      app: "FOCUS", version: 2,
+      stats: { completed: 1, minutes: 25, history: { "2026-11-21": 25 }, records: [] }
+    })],
+    ["focus-pre-migration-backup", JSON.stringify({
+      completed: 2, minutes: 50, history: { "2026-11-21": 50 }, records: []
+    })],
+    ["focus-corrupt-stats-backup", "{broken"]
+  ]);
+  const store = {
+    getText: (key, fallback = null) => values.has(key) ? values.get(key) : fallback
+  };
+  const items = inspectRecoverySnapshots(store);
+  const imported = items.find(item => item.key === "focus-preimport-backup");
+  const migrated = items.find(item => item.key === "focus-pre-migration-backup");
+  const corrupt = items.find(item => item.key === "focus-corrupt-stats-backup");
+  assert.equal(imported.restorable, true);
+  assert.equal(imported.stats.legacyCompleted, 1);
+  assert.equal(migrated.restorable, true);
+  assert.equal(migrated.stats.legacyMinutes, 50);
+  assert.equal(corrupt.available, true);
+  assert.equal(corrupt.restorable, false);
+  assert.equal(corrupt.rawText, "{broken");
+});
+
+test("recovery inspection refuses to downgrade a future data schema", () => {
+  const store = {
+    getText: (key, fallback = null) => key === "focus-pre-migration-backup"
+      ? JSON.stringify({ schemaVersion: CURRENT_DATA_SCHEMA_VERSION + 1, records: [] })
+      : fallback
+  };
+  const item = inspectRecoverySnapshots(store).find(entry => entry.key === "focus-pre-migration-backup");
+  assert.equal(item.available, true);
+  assert.equal(item.restorable, false);
+});
+
+test("settings expose recovery controls and main wires safe restore/export actions", async () => {
+  const html = await read("../index.html");
+  const main = await read("../src/main.js");
+  assert.ok(html.includes('id="recoveryList"'));
+  assert.ok(html.includes("復旧用データの確認・復元"));
+  assert.ok(main.includes("focus-pre-recovery-raw-stats"));
+  assert.ok(main.includes("復元直前のデータを保護できなかったため、復元を中止"));
+  assert.ok(main.includes("downloadRecoverySnapshot"));
+  assert.ok(main.includes("restoreRecoverySnapshot"));
 });
