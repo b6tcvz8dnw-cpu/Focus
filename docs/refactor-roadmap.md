@@ -41,7 +41,7 @@
 - [x] インポート前のバックアップと検証（端末内 `focus-preimport-backup` へ退避してから反映）
 - [x] 既存JSONバックアップとの互換性テスト（従来の version 2 を受け入れ、version 3 で書き出し）
 - [x] 端末内退避データの確認・復元UI（復元前スナップショット保護、破損原文と将来スキーマの現在データの書き出し、将来スキーマの復元拒否）
-- [ ] 実データを使ったiPhoneでの移行確認
+- [ ] 実データを使ったiPhoneでの移行確認（手順を `docs/iphone-smoke-test.md` に用意）
 
 ### Phase 3 — 品質保証
 - [x] タイマー境界条件テスト（丸め・期限切れ・不正な時刻値）
@@ -49,7 +49,7 @@
 - [x] 保存・復元テスト（タイマー状態・バックアップ往復）
 - [x] 画面操作のスモークテスト（DOM ID・画面遷移先の整合性）
 - [x] GitHub Actionsで自動チェック（Node.js標準テスト）
-- [ ] iPhone Safari/PWAでの実機操作確認
+- [ ] iPhone Safari/PWAでの実機操作確認（`docs/iphone-smoke-test.md` のチェックリスト）
 
 ### Phase 4 — ビルド基盤
 - [x] Vite導入（dev / build / preview scripts）
