@@ -888,6 +888,7 @@ details summary{min-height:26px;display:flex;align-items:center}
  .cosmic-motion .wind-ribbons,.cosmic-motion .wind-dust,.cosmic-motion .shooting-star{animation:none!important;opacity:0!important}
 }
 
+.recovery-list{display:grid;gap:12px;margin-top:12px}.recovery-item{padding:12px;border:1px solid var(--border);border-radius:12px}.recovery-item strong{display:block}.recovery-item p{margin:6px 0 10px}.recovery-actions{display:flex;flex-wrap:wrap;gap:8px}.recovery-actions button{flex:1 1 140px}
 </style>
 </head>
 <body>
@@ -1064,6 +1065,10 @@ details summary{min-height:26px;display:flex;align-items:center}
  </details>
  <details class="panel"><summary>目標設定</summary><div class="settings"><label>1日の目標（分）<input id="dailyGoal" type="number" min="0" max="1440" value="60"></label><label>1週間の目標（分）<input id="weeklyGoal" type="number" min="0" max="10080" value="300"></label></div><button class="secondary wide" id="saveGoals">目標を保存</button></details>
 <details class="panel"><summary>データ管理</summary><p class="muted">学習記録はこの端末のブラウザ内に保存されるよ。バックアップを保存しておけば、機種変更時などに手動で引き継げるよ。</p><button class="secondary wide" id="exportData">学習データを書き出す（JSON）</button><label class="import-label">バックアップを読み込む<input id="importData" type="file" accept="application/json,.json" style="display:none"></label><button class="secondary wide" id="clear">今日の記録をリセット</button></details>
+<details class="panel" id="recoveryPanel"><summary>復旧用データの確認・復元</summary>
+ <p class="muted">移行前や読み込み前に端末内へ保護したデータを確認できるよ。復元できるものは、現在の学習記録を置き換える前に確認を表示するよ。破損した元データは削除せず、そのまま書き出せるよ。</p>
+ <div id="recoveryList" class="recovery-list" aria-live="polite"><p class="muted">復旧用データを確認中…</p></div>
+</details>
 </div>
 </section>
 <nav class="tabbar" aria-label="ページ切り替え">
