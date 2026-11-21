@@ -250,6 +250,9 @@ function renderAnalytics(){const bySubject={},byWeekday=Array(7).fill(0);records
 function renderAllRecords(){update();updateChart();renderGoals();renderCalendar();renderHistory();renderAnalytics()}
 function saveReflection(){const r=[...records].sort((a,b)=>b.timestamp-a.timestamp)[0];if(!r){$('toast').textContent='先に集中セッションを完了してね。';return}r.note=$('reflection').value.trim();save();renderHistory();$('toast').textContent='振り返りを保存したよ。'}
 $('saveReflection').onclick=saveReflection;
+
+$('clear').onclick=()=>{if(!confirm('今日の詳細な学習記録を消去する？累計の集中時間と達成状況は残るよ。'))return;stop();const today=dateKey(new Date()),removed=records.filter(r=>(r.date||dateKey(new Date(r.timestamp)))===today);records=records.filter(r=>(r.date||dateKey(new Date(r.timestamp)))!==today);legacyMinutes+=removed.reduce((a,r)=>a+(Number(r.minutes)||0),0);legacyCompleted+=removed.length;legacyHistory[today]=0;history[today]=0;finished=false;remaining=durations[mode]*60;total=remaining;recalculateStats();save();$('toast').textContent='今日の詳細な記録を消去したよ。累計時間は保持されているよ。';renderAllRecords();};
+
 const originalComplete=complete;
 complete=function(){const old=completed;originalComplete();if(completed>old){const r={id:String(Date.now())+'-'+Math.random().toString(36).slice(2,7),timestamp:Date.now(),date:dateKey(new Date()),minutes:durations.focus,subject:$('subject').value||'その他',task:$('task').value.trim(),note:''};records.push(r);$('reflection').value='';$('reflectionPrompt').textContent='今のセッションで気づいたことを残してみよう。';save();renderAllRecords();$('reflectionPanel').scrollIntoView({behavior:'smooth',block:'nearest'})}};
 function stopAmbient(){const oldSource=audioSource;if(audioGain&&audioContext){audioGain.gain.setTargetAtTime(0,audioContext.currentTime,.15);setTimeout(()=>{try{oldSource&&oldSource.stop()}catch(e){}},600)}audioSource=null;currentSound='off';document.querySelectorAll('[data-sound]').forEach(b=>b.classList.toggle('selected',b.dataset.sound==='off'))}
