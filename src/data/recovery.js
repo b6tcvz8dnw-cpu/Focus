@@ -12,7 +12,7 @@ const SOURCES = [
  * Raw corrupt content remains downloadable even when it cannot be restored.
  */
 export function inspectRecoverySnapshots(store) {
-  return SOURCES.map((source) => {
+  const items = SOURCES.map((source) => {
     const rawText = store.getText(source.key, null);
     if (rawText === null) return { ...source, available: false, restorable: false };
 
@@ -55,4 +55,32 @@ export function inspectRecoverySnapshots(store) {
       status: "破損時の原文です。内容を確認できるよう書き出せますが、自動復元はできません。"
     };
   });
+
+  // A future-version live payload is deliberately not restorable here, but it
+  // must remain exportable so the user can preserve it before updating FOCUS.
+  const currentRaw = store.getText("focus-stats", null);
+  if (currentRaw !== null) {
+    let current;
+    try {
+      current = JSON.parse(currentRaw);
+    } catch {
+      current = null;
+    }
+    if (!current || typeof current !== "object" || Array.isArray(current)
+      || Number(current.schemaVersion) > CURRENT_DATA_SCHEMA_VERSION) {
+      items.push({
+        key: "focus-current-protected-stats",
+        label: "現在の保存データ（保護中）",
+        kind: "raw",
+        available: true,
+        restorable: false,
+        rawText: currentRaw,
+        status: current && Number(current.schemaVersion) > CURRENT_DATA_SCHEMA_VERSION
+          ? "新しい形式のデータです。この版では変更・復元せず、元データの書き出しだけ行えます。"
+          : "現在の保存データを正常に解析できません。元データの書き出しだけ行えます。"
+      });
+    }
+  }
+
+  return items;
 }
