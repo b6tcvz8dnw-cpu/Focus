@@ -518,3 +518,16 @@ test("recovery exposes future-version live stats as downloadable but never resto
   assert.equal(item.rawText, futurePayload);
   assert.match(item.status, /新しい形式/);
 });
+
+
+test("recovery exposes malformed live stats as export-only raw data", () => {
+  const malformed = "{partial-current-json";
+  const store = {
+    getText: (key, fallback = null) => key === "focus-stats" ? malformed : fallback
+  };
+  const item = inspectRecoverySnapshots(store).find(entry => entry.key === "focus-current-protected-stats");
+  assert.equal(item.available, true);
+  assert.equal(item.restorable, false);
+  assert.equal(item.rawText, malformed);
+  assert.match(item.status, /正常に解析できません/);
+});
