@@ -35,6 +35,12 @@ const html = await readFile(join(dist, "index.html"), "utf8");
 if (!/src=["']\.\/assets\/[^"']+\.js["']/.test(html)) {
   throw new Error("Built application entry module was not found in dist/index.html.");
 }
+for (const url of ["./manifest.webmanifest", "./icon.svg", "./icon-192.png"]) {
+  if (!html.includes(url)) throw new Error(`Built HTML is missing relative PWA URL ${url}.`);
+}
+if (/\b(?:src|href)=["']\/(?:manifest|icon)/.test(html)) {
+  throw new Error("Built PWA contains a domain-root asset URL that would break under /Focus/.");
+}
 for (const file of ["manifest.webmanifest", "sw.js", "icon.svg", "icon-192.png", "icon-512.png"]) {
   await readFile(join(dist, file));
 }
