@@ -40,7 +40,7 @@
 - [x] 壊れたJSON・不正値の復旧処理（原文を端末内に退避し、未来のスキーマは上書きしない）
 - [x] インポート前のバックアップと検証（端末内 `focus-preimport-backup` へ退避してから反映）
 - [x] 既存JSONバックアップとの互換性テスト（従来の version 2 を受け入れ、version 3 で書き出し）
-- [ ] 端末内退避データの復元UI
+- [x] 端末内退避データの確認・復元UI（復元前スナップショット保護、破損原文の書き出し、将来スキーマの復元拒否）
 - [ ] 実データを使ったiPhoneでの移行確認
 
 ### Phase 3 — 品質保証
@@ -59,7 +59,7 @@
 - [x] CIでテストと本番ビルドを実行する構成
 - [x] CIで生成された成果物をダウンロードして実体確認（相対URL、manifest、PNG/SVG、ハッシュ付きJS、Service Workerプリキャッシュ）
 - [x] main限定のGitHub Actionsデプロイworkflowを準備（PRではビルドのみ、main push/dispatch時のみdeploy）
-- [ ] GitHub PagesのSourceをGitHub Actionsに設定（現状は `Deploy from a branch` / `main` / `/ (root)`。移行PRのマージ前に管理画面で切替）
+- [x] GitHub PagesのSourceをGitHub Actionsに設定（ユーザー確認済み。PRマージ後の初回デプロイは未実施）
 - [ ] 既存URLを維持した段階的切替（Actions設定後にPRをマージし、Pagesデプロイ成功とiPhone実機を確認）
 - [x] Pages移行手順・切替順序・ロールバック上の注意を `docs/pages-migration.md` に記録
 
