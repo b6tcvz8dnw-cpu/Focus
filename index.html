@@ -173,6 +173,57 @@ textarea.field-select{font-family:inherit;resize:vertical;min-height:80px}
 @media(max-width:520px){.study-room-panel{padding:0}.study-room-view{min-height:clamp(560px,80vh,760px);padding:14px}.study-window{inset:14% 4% 31%;border-width:9px}.room-desk-scene{bottom:9%;height:31%}}
 @media(prefers-reduced-motion:reduce){.room-sun-disc,.room-cloud,.room-birds,.room-distant-trees,.room-floating-petals{animation:none!important}}
 
+/* Safe-area framing and richer animated scenery */
+.study-room-panel{padding:8px 10px 12px}
+.study-room-view{min-height:clamp(470px,67svh,620px);padding:calc(env(safe-area-inset-top,0px) + 18px) 18px 18px}
+.study-room-top{padding-top:2px;min-height:42px}
+.study-room-top-actions{gap:7px;flex-wrap:wrap;justify-content:flex-end}
+.study-room-weather{max-width:min(34vw,190px)}
+.study-window{inset:16% 6% 32%;border-width:12px}
+.room-landscape{filter:saturate(.94) contrast(.98)}
+.room-mountains{transform-box:fill-box;transform-origin:center bottom;animation:room-mountain-haze 18s ease-in-out infinite alternate}
+.room-river{transform-box:fill-box;animation:room-water-shimmer 7s ease-in-out infinite alternate}
+.room-woodland{transform-box:fill-box;transform-origin:bottom center;animation:room-woodland-sway 6.5s ease-in-out infinite alternate}
+.room-woodland circle:nth-child(2n){animation:room-leaf-glint 5s ease-in-out infinite alternate}
+.room-cloud-one{animation-duration:42s}
+.room-cloud-two{animation-duration:58s}
+.room-curtain{position:absolute;z-index:5;top:0;bottom:0;width:13%;pointer-events:none;opacity:.94;filter:drop-shadow(0 5px 8px rgba(34,24,18,.18))}
+.room-curtain-left{left:0;background:linear-gradient(90deg,#80604b 0%,#b38a68 42%,#8b674f 74%,rgba(83,60,46,.18) 100%);clip-path:polygon(0 0,100% 0,84% 18%,100% 38%,83% 60%,100% 82%,85% 100%,0 100%)}
+.room-curtain-right{right:0;background:linear-gradient(270deg,#80604b 0%,#b38a68 42%,#8b674f 74%,rgba(83,60,46,.18) 100%);clip-path:polygon(0 0,100% 0,100% 100%,15% 100%,0 82%,17% 60%,0 38%,16% 18%)}
+.room-curtain:after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(90deg,rgba(255,231,199,.12) 0 3px,transparent 3px 13px);opacity:.7}
+.study-window-cross{z-index:6}
+.study-window-glow{z-index:7}
+.study-weather-effects{z-index:4!important}
+.room-floating-petals ellipse{transform-box:fill-box;transform-origin:center;animation:room-petal-spin 8s ease-in-out infinite alternate}
+.room-floating-petals ellipse:nth-child(2){animation-delay:-3s;animation-duration:11s}
+.room-floating-petals ellipse:nth-child(3){animation-delay:-5s;animation-duration:9s}
+.room-birds{animation-duration:19s}
+.room-desk-scene{bottom:7%;height:32%}
+@keyframes room-mountain-haze{from{opacity:.42;translate:0 2px}to{opacity:.66;translate:0 -2px}}
+@keyframes room-water-shimmer{from{translate:-5px 0;opacity:.68}to{translate:8px -2px;opacity:.94}}
+@keyframes room-woodland-sway{from{transform:skewX(-1.6deg) scaleY(.99)}to{transform:skewX(1.8deg) scaleY(1.01)}}
+@keyframes room-leaf-glint{from{opacity:.58}to{opacity:1}}
+@keyframes room-petal-spin{from{rotate:-24deg;translate:-5px 3px}to{rotate:28deg;translate:9px -12px}}
+@media(max-width:520px){
+ .study-room-panel{padding:4px 5px 10px}
+ .study-room-view{min-height:clamp(465px,66svh,590px);padding:calc(env(safe-area-inset-top,0px) + 14px) 12px 14px;border-radius:18px}
+ .study-room-top{align-items:flex-start;min-height:48px}
+ .study-room-top-actions{gap:4px}
+ .study-room-weather{max-width:31vw;font-size:8px;padding:0 6px}
+ .room-text-toggle,.room-exit{flex:0 0 28px}
+ .study-window{inset:18% 4% 34%;border-width:9px}
+ .room-curtain{width:11%}
+ .room-desk-scene{bottom:8%;height:29%}
+}
+@media(orientation:landscape) and (max-height:520px){
+ .study-room-view{min-height:clamp(390px,82svh,500px);padding:calc(env(safe-area-inset-top,0px) + 10px) 14px 12px}
+ .study-window{inset:16% 7% 29%}
+ .room-desk-scene{bottom:5%;height:31%}
+}
+@media(prefers-reduced-motion:reduce){
+ .room-mountains,.room-river,.room-woodland,.room-woodland circle,.room-floating-petals ellipse{animation:none!important}
+}
+
 /* Compact settings shortcut on the timer page */
 .timer-page-tools{display:flex;justify-content:flex-end;margin:0 2px 8px}
 .small-settings{border:1px solid var(--line);background:var(--panel);color:var(--muted);border-radius:999px;padding:6px 10px;font-size:11px;letter-spacing:.3px;min-height:30px}
@@ -469,6 +520,20 @@ details summary{min-height:26px;display:flex;align-items:center}
        <path d="M55 390l34-92 34 92z M83 420l37-112 38 112z M830 385l43-112 42 112z M883 416l40-126 42 126z"/>
        <path d="M105 406h8v58h-8z M120 416h8v50h-8z M864 393h9v70h-9z M905 410h8v54h-8z" fill="#705e4b"/>
       </g>
+      <g class="room-mountains" opacity=".52">
+       <path d="M0 390L105 270l65 70 95-135 115 170 82-95 102 110 110-145 120 130 92-95 114 115v110H0Z" fill="#9baea0"/>
+       <path d="M55 335l50-65 29 35 31-39 32 48-31-18-26 21-28-20z M265 238l-38 54 40-22 25 24 25-32 38 49-47-21-25 16-27-20z M690 288l43-58 35 40 26-19 38 48-49-22-24 18-29-19z" fill="#e9e5d6" opacity=".7"/>
+      </g>
+      <g class="room-river">
+       <path d="M515 395 Q590 410 625 445 Q662 478 740 478 Q800 480 1000 438 L1000 560H520Q575 520 540 482Q510 445 515 395Z" fill="#9fc5c0" opacity=".75"/>
+       <path d="M550 445Q635 468 700 493T930 480" fill="none" stroke="#e0eee0" stroke-width="7" stroke-linecap="round" opacity=".65"/>
+       <path d="M590 466q35 4 62 18 M760 495q42 0 74-12 M850 474q22-4 44-12" fill="none" stroke="#f4f1d9" stroke-width="3" stroke-linecap="round" opacity=".7"/>
+      </g>
+      <g class="room-woodland" opacity=".9">
+       <g fill="#4e725c"><circle cx="90" cy="393" r="34"/><circle cx="125" cy="377" r="29"/><circle cx="157" cy="399" r="37"/><circle cx="860" cy="392" r="39"/><circle cx="900" cy="370" r="34"/><circle cx="942" cy="400" r="42"/></g>
+       <g fill="#789678"><circle cx="104" cy="377" r="17"/><circle cx="146" cy="386" r="19"/><circle cx="879" cy="378" r="20"/><circle cx="927" cy="391" r="18"/></g>
+       <g stroke="#6b5945" stroke-width="9" stroke-linecap="round" fill="none"><path d="M122 406v72m0-50l-24-24m24 10l25-28 M900 405v72m0-47l-25-25m25 12l26-29"/></g>
+      </g>
       <path d="M0 460 Q170 400 330 455 T650 442 T1000 425 V560 H0Z" fill="url(#roomHillNear)"/>
       <g class="room-meadow" opacity=".9">
        <path d="M0 500q130-48 250 0t250-4q130-42 250 0t250-5v69H0z" fill="#52785b"/>
@@ -482,7 +547,8 @@ details summary{min-height:26px;display:flex;align-items:center}
       </g>
      </g>
     </svg>
-    <div class="study-sun"></div><div class="study-clouds"></div><div class="study-weather-effects"></div><div class="study-hills"></div>
+    <div class="room-curtain room-curtain-left"></div><div class="room-curtain room-curtain-right"></div>
+   <div class="study-sun"></div><div class="study-clouds"></div><div class="study-weather-effects"></div><div class="study-hills"></div>
     <div class="study-window-cross"></div><div class="study-window-glow"></div>
    </div>
    <div class="room-desk-scene" aria-label="窓際の机と砂時計">
