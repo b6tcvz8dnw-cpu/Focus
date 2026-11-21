@@ -502,3 +502,19 @@ test("settings expose recovery controls and main wires safe restore/export actio
   assert.ok(main.includes("downloadRecoverySnapshot"));
   assert.ok(main.includes("restoreRecoverySnapshot"));
 });
+
+
+test("recovery exposes future-version live stats as downloadable but never restorable", () => {
+  const futurePayload = JSON.stringify({
+    schemaVersion: CURRENT_DATA_SCHEMA_VERSION + 1,
+    records: [{ id: "future", minutes: 25 }]
+  });
+  const store = {
+    getText: (key, fallback = null) => key === "focus-stats" ? futurePayload : fallback
+  };
+  const item = inspectRecoverySnapshots(store).find(entry => entry.key === "focus-current-protected-stats");
+  assert.equal(item.available, true);
+  assert.equal(item.restorable, false);
+  assert.equal(item.rawText, futurePayload);
+  assert.match(item.status, /新しい形式/);
+});
