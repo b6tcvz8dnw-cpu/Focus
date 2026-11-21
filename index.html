@@ -111,6 +111,7 @@ textarea.field-select{font-family:inherit;resize:vertical;min-height:80px}
 .study-room-view.season-autumn{--season:#c58c62;--season-soft:#d7ad7d}
 .study-room-view.season-winter{--season:#a9bdce;--season-soft:#d1dce4}
 .study-room-top,.study-room-bottom{position:relative;z-index:3;display:flex;justify-content:space-between;align-items:center;gap:12px}
+.study-room-bottom{z-index:8;isolation:isolate}.study-room-clock,.study-room-date{position:relative;z-index:9}
 .study-room-kicker{font-size:10px;letter-spacing:2px;opacity:.78}
 .study-room-clock{font-size:clamp(26px,7vw,38px);font-weight:300;letter-spacing:1px;font-variant-numeric:tabular-nums}
 .study-room-date{font-size:11px;opacity:.78;margin-top:3px}
@@ -611,7 +612,8 @@ details summary{min-height:26px;display:flex;align-items:center}
  <button class="tab" data-page="overviewPage"><span>▥</span>概要</button>
  <button class="tab" data-page="calendarPage"><span>▦</span>カレンダー</button>
   <button class="tab" data-page="analyticsPage"><span>⌁</span>分析</button>
- <button class="tab" data-page="studyRoomPage"><span>⌂</span>書斎</button>\n
+ <button class="tab" data-page="studyRoomPage"><span>⌂</span>書斎</button>
+
 </nav>
 <div class="foot"><span>FOCUS · STUDY TIMER</span></div><div id="toast" role="status" aria-live="polite"></div>
 </main>
