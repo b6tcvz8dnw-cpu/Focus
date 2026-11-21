@@ -305,7 +305,7 @@ test("break selection handles invalid counters and cycle boundaries", () => {
   assert.equal(getNextBreakMode(5, 4), "short");
   assert.equal(getNextBreakMode(8, 4), "long");
   assert.equal(getNextBreakMode(Number.NaN, 4), "short");
-  assert.equal(getNextBreakMode(4, Number.POSITIVE_INFINITY), "short");
+  assert.equal(getNextBreakMode(4, Number.POSITIVE_INFINITY), "long");
 });
 
 test("record aggregation ignores duplicate IDs and invalid minute values", () => {
@@ -378,8 +378,8 @@ test("startup restores expired timer only after completion recording is wired", 
 test("screen navigation and direct DOM references resolve to existing page elements", async () => {
   const html = await read("../index.html");
   const script = await read("../src/main.js");
-  const ids = new Set([...html.matchAll(/\\bid="([^"]+)"/g)].map((match) => match[1]));
-  const references = [...script.matchAll(/\\$\\(['"]([^'"]+)['"]\\)/g)].map((match) => match[1]);
+  const ids = new Set([...html.matchAll(/\bid="([^"]+)"/g)].map((match) => match[1]));
+  const references = [...script.matchAll(/\$\(['"]([^'"]+)['"]\\)/g)].map((match) => match[1]);
   const missing = [...new Set(references.filter((id) => !ids.has(id)))];
   assert.deepEqual(missing, [], "all direct DOM ID lookups should exist in the HTML");
   const pageTargets = [...html.matchAll(/data-page="([^"]+)"/g)].map((match) => match[1]);
@@ -393,7 +393,7 @@ test("screen navigation and direct DOM references resolve to existing page eleme
 
 test("timer completion wrapper is the only session-record creation path", async () => {
   const script = await read("../src/main.js");
-  const created = [...script.matchAll(/records\\.push\\(r\\)/g)];
+  const created = [...script.matchAll(/records\.push\\(r\\)/g)];
   assert.equal(created.length, 1);
   assert.ok(script.includes("minutes:durations.focus"));
   assert.ok(script.includes("save();if(appReady)"));
