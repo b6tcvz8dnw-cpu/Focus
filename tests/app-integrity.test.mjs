@@ -30,21 +30,11 @@ test("all HTML IDs are unique", async () => {
 test("essential pages and controls remain present", async () => {
   const html = await read("../index.html");
   for (const id of [
-    "timerPage",
-    "overviewPage",
-    "calendarPage",
-    "analyticsPage",
-    "studyRoomPage",
-    "settingsPage",
-    "start",
-    "reset",
-    "hourglassStart",
-    "hourglassSandTop",
-    "hourglassSandBottom",
-    "exportData",
-    "importData"
+    "timerPage", "overviewPage", "calendarPage", "analyticsPage",
+    "studyRoomPage", "settingsPage", "start", "reset", "hourglassStart",
+    "hourglassSandTop", "hourglassSandBottom", "exportData", "importData"
   ]) {
-    assert.ok(html.includes(\`id="\${id}"\`), \`missing #\${id}\`);
+    assert.ok(html.includes('id="' + id + '"'), "missing #" + id);
   }
 });
 
@@ -64,32 +54,22 @@ test("application entrypoint is a module and parses after its imports", async ()
 test("core timer and Study Room functions remain present", async () => {
   const html = await read("../index.html");
   for (const name of [
-    "startTimer",
-    "persistTimer",
-    "restoreTimerRuntime",
-    "complete",
-    "tick",
-    "startHourglass",
-    "updateStudyRoom",
-    "updateStudySky",
+    "startTimer", "persistTimer", "restoreTimerRuntime", "complete",
+    "tick", "startHourglass", "updateStudyRoom", "updateStudySky",
     "loadStudyRoomWeather"
   ]) {
-    assert.ok(html.includes(\`function \${name}(\`), \`missing function \${name}\`);
+    assert.ok(html.includes("function " + name + "("), "missing function " + name);
   }
 });
 
 test("existing local storage keys are preserved", async () => {
   const html = await read("../index.html");
   for (const key of [
-    "focus-stats",
-    "focus-notifications",
-    "focus-timer-runtime",
-    "focus-timer-settings",
-    "focus-room-quiet-text",
-    "focus-appearance",
-    "focus-mark"
+    "focus-stats", "focus-notifications", "focus-timer-runtime",
+    "focus-timer-settings", "focus-room-quiet-text",
+    "focus-appearance", "focus-mark"
   ]) {
-    assert.ok(html.includes(key), \`missing storage key: \${key}\`);
+    assert.ok(html.includes(key), "missing storage key: " + key);
   }
 });
 
@@ -105,13 +85,10 @@ test("service worker caches the extracted modules with a new version", async () 
   const cacheName = sw.match(/const CACHE='([^']+)'/)?.[1];
   assert.equal(cacheName, "focus-pwa-v32");
   for (const asset of [
-    "./index.html",
-    "./manifest.webmanifest",
-    "./icon.svg",
-    "./src/core/date-time.js",
-    "./src/data/storage.js"
+    "./index.html", "./manifest.webmanifest", "./icon.svg",
+    "./src/core/date-time.js", "./src/data/storage.js"
   ]) {
-    assert.ok(sw.includes(asset), \`service worker should cache \${asset}\`);
+    assert.ok(sw.includes(asset), "service worker should cache " + asset);
   }
   assert.ok(sw.includes("caches.match"), "service worker should have a cache lookup");
 });
@@ -134,13 +111,8 @@ test("buildWeekData returns seven chronological days without mutating history", 
   const week = buildWeekData(history, new Date(2026, 10, 21, 12));
   assert.equal(week.length, 7);
   assert.deepEqual(week.map((day) => day.key), [
-    "2026-11-15",
-    "2026-11-16",
-    "2026-11-17",
-    "2026-11-18",
-    "2026-11-19",
-    "2026-11-20",
-    "2026-11-21"
+    "2026-11-15", "2026-11-16", "2026-11-17", "2026-11-18",
+    "2026-11-19", "2026-11-20", "2026-11-21"
   ]);
   assert.equal(week[4].minutes, 25);
   assert.equal(week[6].minutes, 40);
