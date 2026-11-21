@@ -197,7 +197,6 @@ body.study-room-fullscreen .study-room-view{min-height:calc(100dvh - 20px);borde
 body.study-room-fullscreen .room-controls{display:none}
 .study-room-note{position:relative;z-index:8;background:rgba(13,20,18,.22);padding:8px 12px;border-radius:10px;max-width:90%;margin:0 auto;text-align:center}
 @media(max-width:420px){.desk-hourglass{right:15%;transform:scale(.92);transform-origin:bottom center}.desk-lamp{left:43%}.room-plant{left:5%}}
-@media(prefers-reduced-motion:reduce){.chill-content:before,.chill-scene:before,.chill-scene:after{animation:none!important}}
 
 /* Weather-aware window and quiet ambient motion */
 .study-room-top-actions{gap:6px;flex-wrap:wrap;justify-content:flex-end}
@@ -296,7 +295,7 @@ body.study-room-fullscreen .room-controls{display:none}
     </button>
     <div class="desk-surface"></div><div class="desk-front"></div>
    </div>
-   <div class="study-room-bottom"><div><div class="study-room-clock" id="studyRoomClock">15:00</div><div class="study-room-date" id="studyRoomDate">11月21日 土曜日</div></div><div class="study-room-foot">NO TASKS · NO GOALS</div></div>
+   <div class="study-room-bottom"><div><div class="study-room-clock" id="studyRoomClock">15:00</div><div class="study-room-date" id="studyRoomDate">11月21日 土曜日</div></div><div class="study-room-foot">NO TASKS · NO GOALS · WEATHER: OPEN-METEO</div></div>
    <p class="study-room-note" id="studyRoomMessage">窓の外を眺めて、ただ過ごす。それだけでいい時間。</p>
   </div>
   <div class="room-controls"><span class="muted">5分だけ、何もしない時間。</span></div>
@@ -372,7 +371,7 @@ function updateAchievements(){
  $('achievementNext').textContent=next?'次の達成まで：あと'+(next.minutes-minutes)+'分':'すべてのアチーブメントを達成！';
 }
 function update(){
- $('clock').textContent=fmt(remaining);if($('chillOverlay')&&$('chillOverlay').classList.contains('open'))updateChillClock();$('modeLabel').textContent=labels[mode];$('hint').textContent=hints[mode];
+ $('clock').textContent=fmt(remaining);$('modeLabel').textContent=labels[mode];$('hint').textContent=hints[mode];
  $('status').textContent=running?'● FOCUSING':finished?'● COMPLETED':'● READY';
  $('start').textContent=running?'Ⅱ 一時停止':'▶ スタート';
  $('progress').style.strokeDasharray=circ;$('progress').style.strokeDashoffset=circ*(1-remaining/total);
