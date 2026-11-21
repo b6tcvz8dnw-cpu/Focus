@@ -202,6 +202,11 @@ body.study-room-fullscreen .room-controls{display:none}
 .study-room-top-actions{gap:6px;flex-wrap:wrap;justify-content:flex-end}
 .room-exit,.room-reset,.study-room-weather{height:27px;min-width:27px;border:1px solid rgba(255,255,255,.25);background:rgba(12,18,17,.2);color:#fff;border-radius:18px;backdrop-filter:blur(8px);font-size:10px}
 .room-exit{width:27px;padding:0;font-size:15px;line-height:1}
+.room-text-toggle{width:34px;padding:0;font-size:10px;letter-spacing:-.5px}
+.study-room-view.room-quiet-text .study-room-kicker,.study-room-view.room-quiet-text .study-room-title,.study-room-view.room-quiet-text .study-room-season,.study-room-view.room-quiet-text #studyRoomWeather,.study-room-view.room-quiet-text .study-room-bottom,.study-room-view.room-quiet-text .study-room-note,.study-room-view.room-quiet-text .desk-hourglass-time,.study-room-view.room-quiet-text .desk-hourglass-label{display:none!important}
+.study-room-view.room-quiet-text .study-room-top{justify-content:flex-end}
+.study-room-view.room-quiet-text .study-room-top-actions{gap:7px}
+.study-room-view.room-quiet-text .room-text-toggle{border-color:rgba(255,255,255,.55);background:rgba(12,18,17,.48)}
 .room-reset{width:27px;padding:0;font-size:15px;line-height:1}
 .study-room-weather{padding:0 9px;font-size:9px;max-width:190px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .study-sun{animation:sun-breathe 7s ease-in-out infinite alternate;will-change:transform}
@@ -303,7 +308,7 @@ body.study-room-fullscreen .study-room-view{width:100vw;height:100dvh;min-height
 <div class="page" id="studyRoomPage" hidden>
  <section class="study-room-panel">
   <div class="study-room-view season-autumn time-day" id="studyRoomView">
-   <div class="study-room-top"><div><div class="study-room-kicker">A LITTLE PLACE OF YOUR OWN</div><div class="study-room-title">小さな書斎</div></div><div class="study-room-top-actions"><div class="study-room-season" id="studyRoomSeason">秋 · 昼</div><button class="study-room-weather" id="studyRoomWeather" type="button" aria-label="名古屋市の今日の天気を再取得">名古屋市 · 天気を取得</button><button class="room-exit" id="roomExit" type="button" aria-label="書斎を閉じる" title="書斎を閉じる">×</button></div></div>
+   <div class="study-room-top"><div><div class="study-room-kicker">A LITTLE PLACE OF YOUR OWN</div><div class="study-room-title">小さな書斎</div></div><div class="study-room-top-actions"><div class="study-room-season" id="studyRoomSeason">秋 · 昼</div><button class="room-text-toggle" id="roomTextToggle" type="button" aria-label="文字情報を隠す" aria-pressed="false" title="文字情報の表示切替">Aa</button><button class="study-room-weather" id="studyRoomWeather" type="button" aria-label="名古屋市の今日の天気を再取得">名古屋市 · 天気を取得</button><button class="room-exit" id="roomExit" type="button" aria-label="書斎を閉じる" title="書斎を閉じる">×</button></div></div>
    <div class="study-window" aria-hidden="true"><div class="study-sun"></div><div class="study-clouds"></div><div class="study-weather-effects"></div><div class="study-hills"></div><div class="study-window-cross"></div><div class="study-window-glow"></div></div>
    <div class="room-desk-scene" aria-label="窓際の机と砂時計">
     <div class="room-plant"><i></i><i></i><i></i></div>
@@ -439,6 +444,8 @@ const studyRoomTimes=[
 ];
 
 let hourglassDuration=300,hourglassRemaining=300,hourglassDeadline=0,hourglassInterval=null,hourglassRunning=false;
+const hourglassButton=$('hourglassStart');
+let hourglassPressTimer=null,hourglassLongPressed=false;
 function renderHourglass(){
  const s=Math.max(0,hourglassRemaining);
  $('hourglassTime').textContent=String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');
@@ -465,8 +472,6 @@ function tickHourglass(){
 }
 function resetHourglass(){stopHourglass();hourglassDuration=300;hourglassRemaining=300;hourglassDeadline=0;renderHourglass()}
 hourglassButton.addEventListener('click',()=>{if(hourglassLongPressed){hourglassLongPressed=false;return}if(hourglassRunning){tickHourglass();if(hourglassRemaining>0){stopHourglass();renderHourglass()}}else startHourglass()});
-let hourglassPressTimer=null,hourglassLongPressed=false;
-const hourglassButton=$('hourglassStart');
 hourglassButton.addEventListener('pointerdown',e=>{
  if(e.pointerType==='mouse'&&e.button!==0)return;
  hourglassLongPressed=false;
@@ -486,6 +491,7 @@ function setStudyRoomMode(enabled){
  if(!enabled&&screen.orientation&&typeof screen.orientation.unlock==='function'){try{screen.orientation.unlock()}catch(e){}}
 }
 $('roomExit').addEventListener('click',()=>setStudyRoomMode(false));
+$('roomTextToggle').addEventListener('click',()=>{const view=$('studyRoomView'),hidden=view.classList.toggle('room-quiet-text'),button=$('roomTextToggle');button.setAttribute('aria-pressed',String(hidden));button.setAttribute('aria-label',hidden?'文字情報を表示する':'文字情報を隠す');button.title=hidden?'文字情報を表示する':'文字情報を隠す'});
 let roomWeather=null,roomWeatherLoading=false,roomWeatherAttempted=false,roomWeatherFetchedAt=0;
 const roomWeatherLabels=code=>{if(code===0)return ['晴れ','☀'];if(code===1)return ['おおむね晴れ','🌤'];if(code===2)return ['晴れ時々くもり','⛅'];if(code===3)return ['くもり','☁'];if(code===45||code===48)return ['霧','🌫'];if([51,53,55,56,57].includes(code))return ['霧雨','🌦'];if([61,63,65,66,67,80,81,82].includes(code))return ['雨','🌧'];if([71,73,75,77,85,86].includes(code))return ['雪','❄'];if([95,96,99].includes(code))return ['雷雨','⛈'];return ['天気','☁']};
 function showRoomWeather(textValue){$('studyRoomWeather').textContent=textValue}
