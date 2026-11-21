@@ -59,8 +59,9 @@
 - [x] CIでテストと本番ビルドを実行する構成
 - [x] CIで生成された成果物をダウンロードして実体確認（相対URL、manifest、PNG/SVG、ハッシュ付きJS、Service Workerプリキャッシュ）
 - [x] main限定のGitHub Actionsデプロイworkflowを準備（PRではビルドのみ、main push/dispatch時のみdeploy）
-- [ ] GitHub PagesのSourceをGitHub Actionsに設定（管理画面での確認が必要）
-- [ ] 既存URLを維持した段階的切替（実機・公開元設定の確認後）
+- [ ] GitHub PagesのSourceをGitHub Actionsに設定（現状は `Deploy from a branch` / `main` / `/ (root)`。移行PRのマージ前に管理画面で切替）
+- [ ] 既存URLを維持した段階的切替（Actions設定後にPRをマージし、Pagesデプロイ成功とiPhone実機を確認）
+- [x] Pages移行手順・切替順序・ロールバック上の注意を `docs/pages-migration.md` に記録
 
 ### Phase 5 — iOSアプリ化
 - [ ] Capacitor導入
