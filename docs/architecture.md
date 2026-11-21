@@ -1,0 +1,73 @@
+# FOCUS — 現状アーキテクチャ調査
+
+調査日: 2026-11-21  
+対象ブランチ: `main`  
+本番URL: https://b6tcvz8dnw-cpu.github.io/Focus/
+
+## 現状
+
+- エントリーポイント: `index.html`
+- HTML/CSS/JavaScript: 現在は単一HTMLに集約
+- `index.html`: 約128 KB / 約1,336行
+- インラインJavaScript: 約254行、約40個の関数
+- CSS: 1つのインライン `<style>`
+- PWAマニフェスト: `manifest.webmanifest`
+- Service Worker: `sw.js`
+- アイコン: `icon.svg`、PNGアイコン
+- データ保存: ブラウザの `localStorage`
+- 外部ライブラリ: 現行エントリーポイントに外部script参照なし
+
+## 画面
+
+- Timer: `timerPage`
+- Overview: `overviewPage`
+- Calendar: `calendarPage`
+- Analytics: `analyticsPage`
+- Study Room: `studyRoomPage`
+- Settings: `settingsPage`
+
+## JavaScriptの主要責務
+
+| 領域 | 現在の関数例 |
+|---|---|
+| タイマー | `startTimer`, `stop`, `tick`, `complete`, `restoreTimerRuntime` |
+| 学習統計 | `save`, `recalculateStats`, `getWeekData` |
+| カレンダー・履歴 | `renderCalendar`, `renderHistory`, `renderAllRecords` |
+| 分析 | `renderAnalytics`, `updateChart` |
+| 書斎 | `updateStudyRoom`, `updateStudySky`, `loadStudyRoomWeather` |
+| 砂時計 | `startHourglass`, `tickHourglass`, `resetHourglass` |
+| 外観・設定 | `setTheme`, `setMark`, `setStudyRoomMode` |
+| 環境音 | `startAmbient`, `setAmbientLayer`, `stopAmbient` |
+| バックアップ | `exportData` / `importData` のイベント処理 |
+
+## 既存localStorageキー
+
+- `focus-stats`
+- `focus-notifications`
+- `focus-timer-runtime`
+- `focus-timer-settings`
+- `focus-room-quiet-text`
+- `focus-appearance`
+- `focus-mark`
+
+これらは移行時に削除・改名しない。新しい保存層を導入する場合も、旧キーからの読み込みと移行テストを用意する。
+
+## 主なリスク
+
+1. タイマー、統計、履歴、表示が同じスクリプト内で相互参照している。
+2. `localStorage` の直接操作が複数箇所にある。
+3. 画面要素IDを使ったDOM操作が広範囲にある。
+4. Service Workerのキャッシュ更新とGitHub Pagesの公開を同時に変更すると、古い資産が残る可能性がある。
+5. 書斎の描画・天候取得・砂時計は既存挙動を保ったまま切り離す必要がある。
+
+## 推奨分割順
+
+1. 純粋関数（日付・時間フォーマットなど）
+2. 保存層とデータ形式
+3. タイマー状態管理
+4. 学習記録・統計
+5. 書斎・砂時計
+6. 画面表示とイベント登録
+7. CSSの責務別分割
+
+最初からすべてを分割しない。各段階でテストと実機確認を行う。
