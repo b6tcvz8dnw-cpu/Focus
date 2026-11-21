@@ -7,10 +7,10 @@ const read = (path) => readFile(new URL(path, import.meta.url), "utf8");
 
 test("main document has a valid Japanese HTML shell", async () => {
   const html = await read("../index.html");
-  assert.match(html, /<!doctype html>/i);
-  assert.match(html, /<html lang="ja">/i);
-  assert.match(html, /<meta name="viewport"[^>]*viewport-fit=cover/i);
-  assert.match(html, /<title>FOCUS/);
+  assert.ok(html.toLowerCase().includes("<!doctype html>"));
+  assert.ok(html.includes('<html lang="ja">'));
+  assert.ok(html.includes("viewport-fit=cover"));
+  assert.ok(html.includes("<title>FOCUS"));
 });
 
 test("all HTML IDs are unique", async () => {
@@ -37,15 +37,17 @@ test("essential pages and controls remain present", async () => {
     "exportData",
     "importData"
   ]) {
-    assert.match(html, new RegExp(`\\bid=["']${id}["']`), `missing #${id}`);
+    assert.ok(html.includes(`id="${id}"`), `missing #${id}`);
   }
 });
 
 test("inline application JavaScript parses without syntax errors", async () => {
   const html = await read("../index.html");
-  const match = html.match(/<script\\b[^>]*>([\\s\\S]*?)<\\/script>/i);
-  assert.ok(match, "inline application script should exist");
-  assert.doesNotThrow(() => new vm.Script(match[1], { filename: "index.html:inline-script" }));
+  const start = html.indexOf("<script>");
+  const end = html.lastIndexOf("</script>");
+  assert.ok(start >= 0 && end > start, "inline application script should exist");
+  const script = html.slice(start + "<script>".length, end);
+  assert.doesNotThrow(() => new vm.Script(script, { filename: "index.html:inline-script" }));
 });
 
 test("core timer, study room, and recovery functions remain present", async () => {
@@ -61,7 +63,7 @@ test("core timer, study room, and recovery functions remain present", async () =
     "updateStudySky",
     "loadStudyRoomWeather"
   ]) {
-    assert.match(html, new RegExp(`function\\s+${name}\\s*\\(`), `missing function ${name}`);
+    assert.ok(html.includes(`function ${name}(`), `missing function ${name}`);
   }
 });
 
@@ -89,9 +91,10 @@ test("PWA manifest remains valid and standalone-capable", async () => {
 
 test("service worker retains versioned cache and offline assets", async () => {
   const sw = await read("../sw.js");
-  assert.match(sw, /const CACHE=['"]focus-pwa-v\\d+['"]/);
+  const cacheName = sw.match(/const CACHE='([^']+)'/)?.[1];
+  assert.ok(cacheName?.startsWith("focus-pwa-v"), "service worker cache should be versioned");
   for (const asset of ["./index.html", "./manifest.webmanifest", "./icon.svg"]) {
     assert.ok(sw.includes(asset), `service worker should cache ${asset}`);
   }
-  assert.match(sw, /caches\\.match/);
+  assert.ok(sw.includes("caches.match"), "service worker should have a cache lookup");
 });
