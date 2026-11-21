@@ -55,7 +55,7 @@ test("application entrypoint is a module and parses after its import", async () 
   const script = html.slice(start + '<script type="module">'.length, end);
   const executable = script.replace(/^\s*import\s+[^;]+;\s*/, "");
   assert.doesNotThrow(() => new vm.Script(executable, { filename: "index.html:module-body" }));
-  assert.ok(script.includes("./src/core/date-time.js"), "date-time module should be imported");
+  assert.ok(script.includes("./src/core/date-time.js"), "date-time module should be imported");\n  assert.ok(script.includes("./src/data/storage.js"), "storage module should be imported");\n  assert.ok(!script.includes("localStorage."), "app should use the storage adapter");
 });
 
 test("core timer and Study Room functions remain present", async () => {
@@ -100,12 +100,12 @@ test("PWA manifest remains valid and standalone-capable", async () => {
 test("service worker caches the extracted module with a new version", async () => {
   const sw = await read("../sw.js");
   const cacheName = sw.match(/const CACHE='([^']+)'/)?.[1];
-  assert.equal(cacheName, "focus-pwa-v31");
+  assert.equal(cacheName, "focus-pwa-v32");
   for (const asset of [
     "./index.html",
     "./manifest.webmanifest",
     "./icon.svg",
-    "./src/core/date-time.js"
+    "./src/core/date-time.js",\n    "./src/data/storage.js"
   ]) {
     assert.ok(sw.includes(asset), `service worker should cache ${asset}`);
   }
@@ -162,4 +162,31 @@ test("Study Room sky progression preserves all existing thresholds", () => {
   assert.equal(getStudySkyLevel(120), 3);
   assert.equal(getStudySkyLevel(179), 3);
   assert.equal(getStudySkyLevel(180), 4);
+});
+
+test("storage adapter reads and writes text and JSON", () => {
+  const values = new Map();
+  const fakeStorage = {
+    getItem: (key) => values.has(key) ? values.get(key) : null,
+    setItem: (key, value) => values.set(key, String(value))
+  };
+  const store = createStorage(() => fakeStorage);
+  assert.equal(store.getText("missing", "fallback"), "fallback");
+  assert.equal(store.setText("theme", "night"), true);
+  assert.equal(store.getText("theme"), "night");
+  assert.equal(store.setJSON("settings", { focus: 25 }), true);
+  assert.deepEqual(store.getJSON("settings"), { focus: 25 });
+});
+
+test("storage adapter safely handles malformed JSON and unavailable storage", () => {
+  const fakeStorage = {
+    getItem: () => "{broken",
+    setItem: () => { throw new Error("quota exceeded"); }
+  };
+  const store = createStorage(() => fakeStorage);
+  assert.deepEqual(store.getJSON("broken", { safe: true }), { safe: true });
+  assert.equal(store.setText("blocked", "value"), false);
+  const unavailable = createStorage(() => { throw new Error("storage blocked"); });
+  assert.equal(unavailable.getText("key", "fallback"), "fallback");
+  assert.equal(unavailable.setText("key", "value"), false);
 });
