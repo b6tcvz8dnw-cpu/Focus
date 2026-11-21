@@ -652,6 +652,15 @@ details summary{min-height:26px;display:flex;align-items:center}
 @media(orientation:landscape){.room-window-shelf{left:7%;bottom:calc(5% + 24px)}.room-hourglass-shelf{top:-88px!important;transform:scale(.72)!important}}
 
 
+
+/* Geometry redesign: arched observatory window and sculpted valley */
+.study-window{inset:14% 7% 30%!important;border-radius:48% 48% 9px 9px/15% 15% 7px 7px!important;border:11px solid #bca77e!important;border-image:none!important;box-shadow:0 0 0 2px rgba(248,231,190,.58),0 0 0 7px rgba(33,51,65,.78),inset 0 0 0 2px rgba(255,248,222,.36),0 24px 48px rgba(0,0,0,.42),0 0 44px rgba(169,218,238,.2)!important}
+.study-window:before{border-radius:inherit;background:radial-gradient(ellipse at 50% 4%,rgba(255,245,216,.2),transparent 42%),linear-gradient(115deg,rgba(255,255,255,.12),transparent 28% 70%,rgba(255,226,181,.1))!important}
+.study-window-cross{border-radius:inherit;background:linear-gradient(90deg,transparent 49.55%,rgba(57,49,43,.78) 49.8% 50.2%,transparent 50.45%),linear-gradient(0deg,transparent 49.55%,rgba(57,49,43,.78) 49.8% 50.2%,transparent 50.45%),linear-gradient(34deg,transparent 49.7%,rgba(57,49,43,.42) 49.9% 50.1%,transparent 50.3%),linear-gradient(-34deg,transparent 49.7%,rgba(57,49,43,.42) 49.9% 50.1%,transparent 50.3%)!important}
+.room-landscape{filter:saturate(1.04) contrast(1.03)!important}.room-mountains{filter:drop-shadow(0 8px 14px rgba(42,67,78,.16))}.room-river{filter:drop-shadow(0 0 9px rgba(219,246,246,.28))}.room-meadow{filter:saturate(1.12)}
+.room-desk-scene .desk-surface{clip-path:polygon(0 0,100% 0,97% 100%,3% 100%)}.room-desk-scene .desk-front{clip-path:polygon(3% 0,97% 0,88% 100%,12% 100%)!important}
+@media(max-width:520px){.study-window{inset:17% 3% 33%!important;border-width:8px!important}}
+@media(orientation:landscape){body.study-room-fullscreen .study-window{inset:10% 12% 27%!important}}
 /* Ethereal sky-inspired visual language: luminous, quiet, celestial */
 .study-room-view{
  --sky1:#8bb9ce;--sky2:#e8c9c0;--land:#526f69;
@@ -788,8 +797,8 @@ details summary{min-height:26px;display:flex;align-items:center}
       <circle class="room-sun-disc" cx="735" cy="160" r="48" fill="#f8e5b6"/>
       <g class="room-cloud cloud-one" fill="#f8f4e9" opacity=".82"><ellipse cx="190" cy="150" rx="83" ry="27"/><circle cx="145" cy="137" r="31"/><circle cx="193" cy="119" r="42"/><circle cx="239" cy="139" r="31"/></g>
       <g class="room-cloud cloud-two" fill="#f8f4e9" opacity=".64"><ellipse cx="650" cy="245" rx="72" ry="21"/><circle cx="614" cy="235" r="25"/><circle cx="654" cy="220" r="32"/><circle cx="690" cy="239" r="24"/></g>
-      <path d="M0 350 Q120 280 240 340 T490 325 T760 335 T1000 300 V560 H0Z" fill="url(#roomHillFar)" opacity=".86"/>
-      <path d="M0 405 Q140 330 280 390 T560 380 T820 365 T1000 390 V560 H0Z" fill="#789778" opacity=".82"/>
+      <path d="M-30 365 C90 290 155 300 235 337 C300 230 390 225 470 330 C560 265 640 275 710 328 C790 250 890 260 1030 330 L1030 560H-30Z" fill="url(#roomHillFar)" opacity=".78"/><path d="M-20 386 C110 330 170 340 255 370 C350 300 420 300 510 366 C610 315 700 315 780 365 C870 315 940 325 1020 370" fill="none" stroke="#d6e2d7" stroke-opacity=".34" stroke-width="5"/>
+      <path d="M-20 420 C90 365 175 365 260 407 C350 360 450 355 535 405 C640 350 735 355 820 400 C900 370 955 380 1020 415 L1020 560H-20Z" fill="#789778" opacity=".82"/><path d="M0 432 C160 390 215 407 300 430 S470 390 560 427 S760 385 870 420 S960 400 1000 424" fill="none" stroke="#d3d8c0" stroke-opacity=".22" stroke-width="4"/>
       <g class="room-distant-trees" fill="#55765f" opacity=".76">
        <path d="M55 390l34-92 34 92z M83 420l37-112 38 112z M830 385l43-112 42 112z M883 416l40-126 42 126z"/>
        <path d="M105 406h8v58h-8z M120 416h8v50h-8z M864 393h9v70h-9z M905 410h8v54h-8z" fill="#705e4b"/>
@@ -808,7 +817,7 @@ details summary{min-height:26px;display:flex;align-items:center}
        <g fill="#789678"><circle cx="104" cy="377" r="17"/><circle cx="146" cy="386" r="19"/><circle cx="879" cy="378" r="20"/><circle cx="927" cy="391" r="18"/></g>
        <g stroke="#6b5945" stroke-width="9" stroke-linecap="round" fill="none"><path d="M122 406v72m0-50l-24-24m24 10l25-28 M900 405v72m0-47l-25-25m25 12l26-29"/></g>
       </g>
-      <path d="M0 460 Q170 400 330 455 T650 442 T1000 425 V560 H0Z" fill="url(#roomHillNear)"/>
+      <path d="M-20 475 C105 425 205 438 300 470 C390 430 495 430 590 468 C700 420 810 420 900 458 C960 438 1000 440 1020 450V560H-20Z" fill="url(#roomHillNear)"/><path d="M-10 492 C120 455 215 463 310 490 S490 456 610 488 S830 450 1010 480" fill="none" stroke="#b4c99d" stroke-opacity=".35" stroke-width="4"/>
       <g class="room-meadow" opacity=".9">
        <path d="M0 500q130-48 250 0t250-4q130-42 250 0t250-5v69H0z" fill="#52785b"/>
        <g fill="#f4d9d2"><circle cx="120" cy="480" r="7"/><circle cx="135" cy="492" r="5"/><circle cx="285" cy="468" r="6"/><circle cx="805" cy="472" r="7"/><circle cx="830" cy="488" r="5"/></g>
