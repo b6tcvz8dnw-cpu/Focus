@@ -4,7 +4,7 @@ import { getRemainingSeconds, getNextBreakMode } from './core/timer.js';
 import { calculateStats } from './data/records.js';
 import { normalizeStatsData, normalizeTimerSettings, validateBackupPayload, CURRENT_DATA_SCHEMA_VERSION, CURRENT_BACKUP_VERSION } from './data/schema.js';
 const $=id=>document.getElementById(id);
-let durations={focus:25,short:5,long:15},mode='focus',remaining=1500,total=1500,running=false,deadline=0,interval=null,completed=0,minutes=0,finished=false,history={},records=[],legacyCompleted=0,legacyMinutes=0,legacyHistory={},dailyGoal=60,weeklyGoal=300,calendarCursor=new Date(new Date().getFullYear(),new Date().getMonth(),1),audioContext=null,audioSource=null,audioGain=null,currentSound='off';
+let durations={focus:25,short:5,long:15},mode='focus',remaining=1500,total=1500,running=false,deadline=0,interval=null,completed=0,minutes=0,finished=false,history={},records=[],legacyCompleted=0,legacyMinutes=0,legacyHistory={},statsWriteBlocked=false,dailyGoal=60,weeklyGoal=300,calendarCursor=new Date(new Date().getFullYear(),new Date().getMonth(),1),audioContext=null,audioSource=null,audioGain=null,currentSound='off';
 const labels={focus:'集中する時間',short:'短い休憩',long:'長い休憩'},hints={focus:'ひとつのことに集中しよう。',short:'少し頭を休めよう。',long:'ゆっくり休んで次のセットに備えよう。'},circ=2*Math.PI*88;
 function cycle(){return Math.max(2,Math.min(8,+$('cycleDuration').value||4))}
 function stop(){clearInterval(interval);interval=null;running=false;if(typeof persistTimer==='function')persistTimer()}
@@ -20,7 +20,7 @@ function updateStudySky(){
  const label=$('skyProgressLabel');if(label)label.textContent=labels[level];
 }
 function updateChart(){updateStudySky();const data=getWeekData(),sum=data.reduce((a,d)=>a+d.minutes,0),max=Math.max(30,...data.map(d=>d.minutes));$('todayMinutes').textContent=Number(history[dateKey(new Date())]||0);$('weekTotal').textContent=sum>=60?Math.floor(sum/60)+'時間'+(sum%60?sum%60+'分':''):sum+'分';$('weekRange').textContent=data[0].key.slice(5).replace('-','/')+' 〜 '+data[6].key.slice(5).replace('-','/');$('weekChart').innerHTML=data.map(d=>{const h=d.minutes?Math.max(5,d.minutes/max*100):0;return '<div class="day-col" aria-label="'+d.key+' '+d.minutes+'分"><div class="day-value">'+(d.minutes?d.minutes+'分':'–')+'</div><div class="bar-track"><div class="day-bar" style="height:'+h+'%"></div></div><div class="day-label">'+d.label+'</div></div>'}).join('')}
-function save(){storage.setJSON('focus-stats',{schemaVersion:CURRENT_DATA_SCHEMA_VERSION,completed,minutes,history,records,legacyCompleted,legacyMinutes,legacyHistory,dailyGoal,weeklyGoal})}
+function save(){if(statsWriteBlocked)return false;return storage.setJSON('focus-stats',{schemaVersion:CURRENT_DATA_SCHEMA_VERSION,completed,minutes,history,records,legacyCompleted,legacyMinutes,legacyHistory,dailyGoal,weeklyGoal})}
 const achievements=[
  {minutes:30,title:'はじめの一歩',description:'集中時間を合計30分達成',icon:'✦'},
  {minutes:180,title:'積み重ね',description:'集中時間を合計3時間達成',icon:'◆'},
@@ -204,7 +204,7 @@ try{const ts=normalizeTimerSettings(storage.getJSON('focus-timer-settings',null)
 try{const ap=storage.getJSON('focus-appearance',null);if(ap&&ap.theme)setTheme(ap.theme,false);setMark(storage.getText('focus-mark')||'dot',false)}catch(e){}
 
 $('clear').onclick=()=>{stop();completed=0;minutes=0;history[dateKey(new Date())]=0;finished=false;remaining=durations[mode]*60;total=remaining;save();$('toast').textContent='今日の記録をリセットしたよ。';update();updateChart()};
-try{const rawStats=storage.getJSON('focus-stats',{}),s=normalizeStatsData(rawStats);records=s.records;legacyCompleted=s.legacyCompleted;legacyMinutes=s.legacyMinutes;legacyHistory=s.legacyHistory;dailyGoal=s.dailyGoal;weeklyGoal=s.weeklyGoal;recalculateStats();save()}catch(e){}
+try{const rawText=storage.getText('focus-stats',null);let rawStats={},persistNormalized=true;if(rawText!==null){try{rawStats=JSON.parse(rawText);if(!rawStats||typeof rawStats!=='object'||Array.isArray(rawStats))throw new Error('invalid stats')}catch(e){const exists=storage.getText('focus-corrupt-stats-backup',null)!==null;persistNormalized=exists||storage.setText('focus-corrupt-stats-backup',rawText);rawStats={};$('toast').textContent=persistNormalized?'保存データの形式が壊れていたため、元データを端末内に退避して初期化したよ。':'保存データが壊れていたよ。元データを保護できなかったため、上書き保存を停止しているよ。'};}if(rawStats.schemaVersion> CURRENT_DATA_SCHEMA_VERSION){persistNormalized=false;$('toast').textContent='この保存データは新しいFOCUSで作られているため、上書きせずに保護しているよ。'}else if(rawText!==null&&rawStats.schemaVersion!==CURRENT_DATA_SCHEMA_VERSION&&persistNormalized){const exists=storage.getText('focus-pre-migration-backup',null)!==null;persistNormalized=exists||storage.setText('focus-pre-migration-backup',rawText);if(!persistNormalized)$('toast').textContent='旧データの退避に失敗したため、上書き保存を停止しているよ。'}if(!persistNormalized)statsWriteBlocked=true;const s=normalizeStatsData(rawStats);records=s.records;legacyCompleted=s.legacyCompleted;legacyMinutes=s.legacyMinutes;legacyHistory=s.legacyHistory;dailyGoal=s.dailyGoal;weeklyGoal=s.weeklyGoal;recalculateStats();if(persistNormalized)save()}catch(e){}
 restoreTimerRuntime();
 
 function restoreTimerRuntime(){
