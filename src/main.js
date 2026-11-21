@@ -4,7 +4,7 @@ import { getRemainingSeconds, getNextBreakMode } from './core/timer.js';
 import { calculateStats } from './data/records.js';
 import { normalizeStatsData, normalizeTimerSettings, validateBackupPayload, CURRENT_DATA_SCHEMA_VERSION, CURRENT_BACKUP_VERSION } from './data/schema.js';
 const $=id=>document.getElementById(id);
-let durations={focus:25,short:5,long:15},mode='focus',remaining=1500,total=1500,running=false,deadline=0,interval=null,completed=0,minutes=0,finished=false,history={},records=[],legacyCompleted=0,legacyMinutes=0,legacyHistory={},statsWriteBlocked=false,dailyGoal=60,weeklyGoal=300,calendarCursor=new Date(new Date().getFullYear(),new Date().getMonth(),1),audioContext=null,audioSource=null,audioGain=null,currentSound='off';
+let durations={focus:25,short:5,long:15},mode='focus',remaining=1500,total=1500,running=false,deadline=0,interval=null,completed=0,minutes=0,finished=false,history={},records=[],legacyCompleted=0,legacyMinutes=0,legacyHistory={},statsWriteBlocked=false,dailyGoal=60,weeklyGoal=300,calendarCursor=new Date(new Date().getFullYear(),new Date().getMonth(),1),audioContext=null,audioSource=null,audioGain=null,currentSound='off',appReady=false;
 const labels={focus:'集中する時間',short:'短い休憩',long:'長い休憩'},hints={focus:'ひとつのことに集中しよう。',short:'少し頭を休めよう。',long:'ゆっくり休んで次のセットに備えよう。'},circ=2*Math.PI*88;
 function cycle(){return Math.max(2,Math.min(8,+$('cycleDuration').value||4))}
 function stop(){clearInterval(interval);interval=null;running=false;if(typeof persistTimer==='function')persistTimer()}
@@ -205,6 +205,8 @@ try{const ap=storage.getJSON('focus-appearance',null);if(ap&&ap.theme)setTheme(a
 
 $('clear').onclick=()=>{stop();completed=0;minutes=0;history[dateKey(new Date())]=0;finished=false;remaining=durations[mode]*60;total=remaining;save();$('toast').textContent='今日の記録をリセットしたよ。';update();updateChart()};
 try{const rawText=storage.getText('focus-stats',null);let rawStats={},persistNormalized=true;if(rawText!==null){try{rawStats=JSON.parse(rawText);if(!rawStats||typeof rawStats!=='object'||Array.isArray(rawStats))throw new Error('invalid stats')}catch(e){const exists=storage.getText('focus-corrupt-stats-backup',null)!==null;persistNormalized=exists||storage.setText('focus-corrupt-stats-backup',rawText);rawStats={};$('toast').textContent=persistNormalized?'保存データの形式が壊れていたため、元データを端末内に退避して初期化したよ。':'保存データが壊れていたよ。元データを保護できなかったため、上書き保存を停止しているよ。'};}if(rawStats.schemaVersion> CURRENT_DATA_SCHEMA_VERSION){persistNormalized=false;$('toast').textContent='この保存データは新しいFOCUSで作られているため、上書きせずに保護しているよ。'}else if(rawText!==null&&rawStats.schemaVersion!==CURRENT_DATA_SCHEMA_VERSION&&persistNormalized){const exists=storage.getText('focus-pre-migration-backup',null)!==null;persistNormalized=exists||storage.setText('focus-pre-migration-backup',rawText);if(!persistNormalized)$('toast').textContent='旧データの退避に失敗したため、上書き保存を停止しているよ。'}if(!persistNormalized)statsWriteBlocked=true;const s=normalizeStatsData(rawStats);records=s.records;legacyCompleted=s.legacyCompleted;legacyMinutes=s.legacyMinutes;legacyHistory=s.legacyHistory;dailyGoal=s.dailyGoal;weeklyGoal=s.weeklyGoal;recalculateStats();if(persistNormalized)save()}catch(e){}
+const originalComplete=complete;
+complete=function(){const old=completed;originalComplete();if(completed>old){const r={id:String(Date.now())+'-'+Math.random().toString(36).slice(2,7),timestamp:Date.now(),date:dateKey(new Date()),minutes:durations.focus,note:''};records.push(r);save();if(appReady){$('reflection').value='';$('reflectionPrompt').textContent='今のセッションで気づいたことを残してみよう。';renderAllRecords();$('reflectionPanel').open=true;$('reflectionPanel').scrollIntoView({behavior:'smooth',block:'nearest'})}}};
 restoreTimerRuntime();
 
 function restoreTimerRuntime(){
@@ -212,7 +214,7 @@ function restoreTimerRuntime(){
   const saved=storage.getJSON('focus-timer-runtime',null);
   if(!saved||!['focus','short','long'].includes(saved.mode))return;
   mode=saved.mode;finished=!!saved.finished;total=durations[mode]*60;
-  if(saved.running&&Number(saved.deadline)>0){
+  if(saved.running&&Number.isFinite(Number(saved.deadline))&&Number(saved.deadline)>0){
    running=true;deadline=Number(saved.deadline);remaining=getRemainingSeconds(deadline);
    if(remaining>0)interval=setInterval(tick,250);else{running=false;complete()}
   }else{running=false;remaining=Math.max(0,Math.min(total,Number(saved.remaining)||total))}
@@ -238,8 +240,7 @@ $('saveReflection').onclick=saveReflection;
 
 $('clear').onclick=()=>{if(!confirm('今日の詳細な学習記録を消去する？累計の集中時間と達成状況は残るよ。'))return;stop();const today=dateKey(new Date()),removed=records.filter(r=>(r.date||dateKey(new Date(r.timestamp)))===today);records=records.filter(r=>(r.date||dateKey(new Date(r.timestamp)))!==today);legacyMinutes+=removed.reduce((a,r)=>a+(Number(r.minutes)||0),0);legacyCompleted+=removed.length;legacyHistory[today]=0;history[today]=0;finished=false;remaining=durations[mode]*60;total=remaining;recalculateStats();save();$('toast').textContent='今日の詳細な記録を消去したよ。累計時間は保持されているよ。';renderAllRecords();};
 
-const originalComplete=complete;
-complete=function(){const old=completed;originalComplete();if(completed>old){const r={id:String(Date.now())+'-'+Math.random().toString(36).slice(2,7),timestamp:Date.now(),date:dateKey(new Date()),minutes:durations.focus,note:''};records.push(r);$('reflection').value='';$('reflectionPrompt').textContent='今のセッションで気づいたことを残してみよう。';save();renderAllRecords();$('reflectionPanel').open=true;$('reflectionPanel').scrollIntoView({behavior:'smooth',block:'nearest'})}};
+
 const ambientLayers={};
 function stopAmbient(){Object.values(ambientLayers).forEach(layer=>{try{layer.gain.gain.setTargetAtTime(0,audioContext.currentTime,.12);layer.source.stop(audioContext.currentTime+.5)}catch(e){}});Object.keys(ambientLayers).forEach(k=>delete ambientLayers[k]);document.querySelectorAll('[data-sound]').forEach(b=>{b.classList.remove('selected');b.setAttribute('aria-pressed','false')});document.querySelectorAll('[data-sound-preset]').forEach(b=>b.classList.remove('selected'))}
 function setAmbientLayer(kind,on){if(on&&ambientLayers[kind])return;if(!on&&ambientLayers[kind]){const layer=ambientLayers[kind];try{layer.gain.gain.setTargetAtTime(0,audioContext.currentTime,.12);layer.source.stop(audioContext.currentTime+.5)}catch(e){}delete ambientLayers[kind]}else if(on){const AC=window.AudioContext||window.webkitAudioContext;if(!AC){$('toast').textContent='このブラウザでは環境音を再生できないようだよ。';return}audioContext=audioContext||new AC();audioContext.resume();const size=audioContext.sampleRate*4,buffer=audioContext.createBuffer(1,size,audioContext.sampleRate),data=buffer.getChannelData(0);let last=0;for(let i=0;i<size;i++){const white=Math.random()*2-1;if(kind==='wind'){last=.985*last+.015*white;data[i]=last*3}else if(kind==='rain')data[i]=white*.34;else data[i]=white*.16}const source=audioContext.createBufferSource();source.buffer=buffer;source.loop=true;const filter=audioContext.createBiquadFilter();filter.type=kind==='rain'?'lowpass':kind==='wind'?'lowpass':'bandpass';filter.frequency.value=kind==='rain'?1100:kind==='wind'?380:520;const gain=audioContext.createGain();gain.gain.value=Number($('soundVolume').value)/100/Math.max(1,Object.keys(ambientLayers).length+1);source.connect(filter);filter.connect(gain);gain.connect(audioContext.destination);source.start();ambientLayers[kind]={source,gain}}const button=document.querySelector('[data-sound="'+kind+'"]');if(button){button.classList.toggle('selected',!!ambientLayers[kind]);button.setAttribute('aria-pressed',String(!!ambientLayers[kind]))}}
@@ -254,4 +255,4 @@ $('importData').onchange=async e=>{const file=e.target.files[0];if(!file)return;
 
 if('serviceWorker'in navigator){let refreshing=false;navigator.serviceWorker.addEventListener('controllerchange',()=>{if(!refreshing){refreshing=true;window.location.reload();}});window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').then(reg=>reg.update()).catch(()=>{}));}
 $('calendarPage').appendChild($('calendarPanel'));$('analyticsPage').appendChild($('analyticsPanel'));
-update();updateChart();
+update();updateChart();appReady=true;
