@@ -618,6 +618,39 @@ details summary{min-height:26px;display:flex;align-items:center}
 }
 @media(prefers-reduced-motion:reduce){.desk-lamp:after{animation:none}}
 
+
+/* More frequent, layered motion beyond the study-room window */
+.room-cloud{animation-duration:19s!important}.room-cloud.cloud-two{animation-duration:25s!important}
+.room-birds{animation-duration:10s!important}
+.room-birds-extra{transform-box:fill-box;animation:room-birds-sweep 12s ease-in-out infinite alternate}
+.room-mountains{animation-duration:7s!important}.room-river{animation-duration:2.8s!important}
+.room-woodland{animation-duration:3.8s!important}.room-woodland circle:nth-child(2n){animation-duration:2.4s!important}
+.room-floating-petals{animation-duration:7s!important}.room-floating-petals ellipse{animation-duration:4.5s!important}
+.room-butterfly{transform-box:fill-box;transform-origin:center;animation:room-butterfly-flight 7s ease-in-out infinite alternate}
+.butterfly-two{animation-duration:9s;animation-delay:-4s}
+.room-fireflies circle{animation:room-firefly-glow 3s ease-in-out infinite alternate}
+.room-fireflies circle:nth-child(2n){animation-delay:-1.2s;animation-duration:4s}
+.room-fireflies circle:nth-child(3n){animation-delay:-2.1s}
+.room-river-glints{animation:room-glints 2.4s ease-in-out infinite alternate}
+.room-meadow-grass{transform-box:fill-box;transform-origin:bottom;animation:room-grass-sway 3.2s ease-in-out infinite alternate}
+@keyframes room-birds-sweep{from{translate:-12px 4px}to{translate:22px -12px}}
+@keyframes room-butterfly-flight{0%{translate:-8px 5px;rotate:-9deg}50%{translate:10px -15px;rotate:8deg}100%{translate:22px -3px;rotate:-4deg}}
+@keyframes room-firefly-glow{from{opacity:.2;filter:drop-shadow(0 0 1px #fff1b9)}to{opacity:1;filter:drop-shadow(0 0 9px #fff1b9)}}
+@keyframes room-glints{from{opacity:.25;translate:-8px 1px}to{opacity:.95;translate:10px -2px}}
+@keyframes room-grass-sway{from{transform:skewX(-5deg)}to{transform:skewX(6deg)}}
+@media(prefers-reduced-motion:reduce){.room-birds-extra,.room-butterfly,.room-fireflies circle,.room-river-glints,.room-meadow-grass{animation:none!important}}
+/* Only a small stack of books remains on the desk */
+.room-desk-scene .desk-books{position:absolute;z-index:8;left:42%;top:28%;display:flex;align-items:flex-end;gap:3px;transform:rotate(-2deg);filter:drop-shadow(0 5px 5px rgba(0,0,0,.3))}
+.room-desk-scene .desk-books i{display:block;width:27px;height:42px;border-radius:3px 4px 2px 2px;border:1px solid rgba(255,232,194,.32);background:linear-gradient(90deg,#435b50,#799078 42%,#34483f);box-shadow:inset 3px 0 4px rgba(255,255,255,.14),inset -3px 0 4px rgba(0,0,0,.2)}
+.room-desk-scene .desk-books i:nth-child(2){height:48px;background:linear-gradient(90deg,#80543f,#bd8960 42%,#684333);transform:rotate(3deg)}
+.room-desk-scene .desk-books i:nth-child(3){height:39px;background:linear-gradient(90deg,#4c526b,#8585a4 42%,#3d4159);transform:rotate(-2deg)}
+.room-desk-scene .desk-books i:nth-child(4){height:44px;background:linear-gradient(90deg,#a18b5e,#d2bb83 42%,#806b47);transform:rotate(2deg)}
+.room-desk-scene .desk-books i:after{content:"";display:block;height:1px;margin:8px 4px 0;background:rgba(248,231,194,.55);box-shadow:0 3px rgba(248,231,194,.18)}
+.room-window-shelf{position:absolute;z-index:9;left:5%;bottom:calc(7% + 30px);width:84px;height:10px;border-radius:2px;background:linear-gradient(180deg,#d1ae7f,#805b3d);box-shadow:0 4px 8px rgba(0,0,0,.3),inset 0 1px rgba(255,239,210,.55)}
+.room-hourglass-shelf{position:absolute!important;right:4px!important;top:-83px!important;left:auto!important;transform:scale(.66)!important;transform-origin:bottom right!important}
+.room-window-shelf .desk-hourglass-time,.room-window-shelf .desk-hourglass-label{display:none}
+@media(orientation:landscape){.room-window-shelf{left:7%;bottom:calc(5% + 24px)}.room-hourglass-shelf{top:-88px!important;transform:scale(.72)!important}}
+
 </style>
 </head>
 <body>
@@ -711,19 +744,27 @@ details summary{min-height:26px;display:flex;align-items:center}
        <ellipse cx="280" cy="310" rx="7" ry="3" fill="#f3d5d1"/><ellipse cx="690" cy="365" rx="6" ry="3" fill="#f6e2c0"/><ellipse cx="555" cy="290" rx="5" ry="3" fill="#f3d5d1"/>
       </g>
      </g>
-    </svg>
+    
+      <g class="room-birds-extra" fill="none" stroke="#435c5a" stroke-width="3.2" stroke-linecap="round">
+       <path d="M305 205q13-14 26 0q13-14 26 0"/><path d="M745 175q11-12 22 0q11-12 22 0"/><path d="M570 255q9-10 18 0q9-10 18 0"/>
+      </g>
+      <g class="room-butterflies">
+       <g class="room-butterfly butterfly-one" transform="translate(235 390)"><path d="M0 0Q-17-22-22-5Q-19 9 0 2Q19-13 20-1Q17 12 0 2" fill="#f4d1cb" stroke="#fff0dc" stroke-width="1.5"/><path d="M0 0v12" stroke="#705e4b" stroke-width="2"/></g>
+       <g class="room-butterfly butterfly-two" transform="translate(790 330) scale(.75)"><path d="M0 0Q-17-22-22-5Q-19 9 0 2Q19-13 20-1Q17 12 0 2" fill="#e8d9ad" stroke="#fff0dc" stroke-width="1.5"/><path d="M0 0v12" stroke="#705e4b" stroke-width="2"/></g>
+      </g>
+      <g class="room-fireflies" fill="#fff1b9"><circle cx="180" cy="420" r="3"/><circle cx="210" cy="445" r="2.4"/><circle cx="825" cy="430" r="3"/><circle cx="865" cy="450" r="2.2"/><circle cx="700" cy="405" r="2.5"/><circle cx="390" cy="440" r="2"/></g>
+      <g class="room-river-glints" fill="none" stroke="#f7f4df" stroke-linecap="round"><path d="M630 468h34 M700 489h22 M815 480h42 M900 458h24" stroke-width="3"/><path d="M670 505h18 M770 510h30 M925 493h20" stroke-width="2"/></g>
+      <g class="room-meadow-grass" fill="none" stroke="#b2c99a" stroke-width="2" stroke-linecap="round"><path d="M80 540q-8-25-2-42 M95 540q10-22 8-36 M310 540q-7-28 0-43 M330 540q13-24 18-35 M680 540q-9-27-5-42 M700 540q12-24 18-34 M940 540q-8-26-2-40"/></g>
+</svg>
     <div class="room-curtain room-curtain-left"></div><div class="room-curtain room-curtain-right"></div>
    <div class="study-sun"></div><div class="study-clouds"></div><div class="study-weather-effects"></div><div class="study-hills"></div>
     <div class="study-window-cross"></div><div class="study-window-glow"></div>
    </div>
-   <div class="room-desk-scene" aria-label="窓際の机と砂時計">
-    <div class="room-plant"><i></i><i></i><i></i></div>
-    <div class="desk-lamp"><i></i></div>
-    <div class="desk-books"><i></i><i></i><i></i></div>
-<!-- refined desk objects -->
-    <div class="desk-notebook" aria-hidden="true"><i></i><i></i><i></i></div>
-    <div class="desk-inkwell" aria-hidden="true"><i></i></div>
-    <button class="desk-hourglass" id="hourglassStart" type="button" aria-label="5分間の休憩を始める">
+   <div class="room-desk-scene" aria-label="数冊の本を置いた窓際の机">
+    <div class="desk-books" aria-label="机の上の本"><i></i><i></i><i></i><i></i></div>
+    <div class="desk-surface"></div><div class="desk-front"></div>
+   </div>
+   <div class="room-window-shelf" aria-label="窓辺の砂時計">    <button class="desk-hourglass room-hourglass-shelf" id="hourglassStart" type="button" aria-label="5分間の休憩を始める">
      <svg class="hourglass-art" id="hourglassArt" viewBox="0 0 100 120" role="img" aria-label="砂が落ちる砂時計">
       <path class="hourglass-frame" d="M27 7H73 M27 113H73 M31 9C31 35 48 43 50 60C52 77 69 85 69 111 M69 9C69 35 52 43 50 60C48 77 31 85 31 111"/>
       <path class="hourglass-glass" d="M32 12C32 34 47 43 50 58C53 43 68 34 68 12Z M50 62C47 78 32 87 32 108H68C68 87 53 78 50 62Z"/>
@@ -733,9 +774,7 @@ details summary{min-height:26px;display:flex;align-items:center}
      </svg>
      <span class="desk-hourglass-time" id="hourglassTime">05:00</span>
      <span class="desk-hourglass-label" id="hourglassState">タップで休憩 · 長押しでリセット</span>
-    </button>
-    <div class="desk-surface"></div><div class="desk-front"></div>
-   </div>
+    </button></div>
    <div class="study-room-bottom"><div><div class="study-room-clock" id="studyRoomClock">15:00</div><div class="study-room-date" id="studyRoomDate">11月21日 土曜日</div></div><div class="study-room-foot">NO TASKS · NO GOALS · WEATHER: OPEN-METEO</div></div>
    <p class="study-room-note" id="studyRoomMessage">窓の外を眺めて、ただ過ごす。それだけでいい時間。</p>
   </div>
