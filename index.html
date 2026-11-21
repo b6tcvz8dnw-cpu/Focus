@@ -516,6 +516,108 @@ details summary{min-height:26px;display:flex;align-items:center}
  }
 }
 
+
+/* Landscape composition: enlarge the notch-safe side margins only in landscape */
+@media (orientation:landscape) {
+ body.study-room-fullscreen #studyRoomPage{
+  padding-left:max(env(safe-area-inset-left,0px), 76px) !important;
+  padding-right:max(env(safe-area-inset-right,0px), 76px) !important;
+  padding-top:max(env(safe-area-inset-top,0px), 18px) !important;
+  padding-bottom:max(env(safe-area-inset-bottom,0px), 18px) !important;
+ }
+ body.study-room-fullscreen .study-room-panel{padding:0 8px !important}
+ body.study-room-fullscreen .study-room-view{
+  width:100% !important;
+  padding:clamp(18px,2.5vw,30px) !important;
+  border-radius:20px !important;
+ }
+ body.study-room-fullscreen .study-window{inset:9% 11% 28% !important}
+ body.study-room-fullscreen .room-desk-scene{left:0;right:0;bottom:5%;height:39%}
+ body.study-room-fullscreen .desk-hourglass{right:23%;transform:scale(1.2);transform-origin:bottom center}
+}
+@media (orientation:landscape) and (max-height:520px) {
+ body.study-room-fullscreen .study-room-view{padding-top:22px !important;padding-bottom:18px !important}
+ body.study-room-fullscreen .study-room-top{min-height:40px}
+ body.study-room-fullscreen .study-room-bottom{min-height:34px}
+}
+
+/* A more crafted, warm study desk: wood grain, brass, linen, ceramic and paper */
+.desk-surface{
+ background:
+  repeating-linear-gradient(2deg,transparent 0 9px,rgba(255,226,184,.055) 10px,transparent 11px 18px),
+  linear-gradient(180deg,#c49a70 0%,#98704e 18%,#745039 52%,#4a3326 100%) !important;
+ border-top:4px solid rgba(244,211,166,.82) !important;
+ box-shadow:0 -2px 0 rgba(255,241,213,.22),0 -12px 30px rgba(0,0,0,.22),0 18px 28px rgba(0,0,0,.34) !important;
+}
+.desk-surface:after{
+ content:"";position:absolute;left:5%;right:5%;top:12%;height:1px;
+ background:linear-gradient(90deg,transparent,rgba(255,231,194,.36),transparent);
+}
+.desk-front{
+ background:linear-gradient(90deg,#3b281f 0%,#79563c 18%,#5a3e2d 50%,#805b3d 82%,#38251d 100%) !important;
+ box-shadow:inset 0 3px 5px rgba(255,220,177,.15),0 14px 22px rgba(0,0,0,.32);
+}
+.desk-books{gap:3px;transform:rotate(-3deg) translateY(-2px)}
+.desk-books i{
+ width:18px;border-radius:3px 3px 1px 1px;
+ border:1px solid rgba(255,232,194,.22);
+ box-shadow:inset 3px 0 4px rgba(255,255,255,.14),inset -3px 0 4px rgba(0,0,0,.18),2px 3px 5px rgba(0,0,0,.3);
+}
+.desk-books i:after{
+ content:"";display:block;width:3px;height:72%;margin:6px auto 0;
+ border-left:1px solid rgba(245,221,181,.35);border-right:1px solid rgba(0,0,0,.12);
+}
+.desk-lamp:before{width:6px;background:linear-gradient(90deg,#5b432c,#e0c28a 48%,#80603d)}
+.desk-lamp:after{
+ background:linear-gradient(180deg,#f1dfb5 0%,#c6a36d 54%,#806044 100%);
+ border:1px solid rgba(255,239,202,.55);
+ filter:drop-shadow(0 0 12px rgba(255,218,151,.42));
+}
+.desk-lamp i{background:linear-gradient(180deg,#e0c18a,#80613d);box-shadow:0 2px 5px rgba(0,0,0,.28)}
+.room-plant:before{
+ background:linear-gradient(90deg,#72513b,#d4b08a 48%,#805c42);
+ box-shadow:inset 0 2px 3px rgba(255,239,208,.5),0 3px 5px rgba(0,0,0,.25);
+}
+.room-plant:after{
+ content:"";position:absolute;bottom:5px;left:8px;width:25px;height:2px;
+ background:rgba(245,220,183,.4);border-radius:50%;
+}
+.desk-hourglass .hourglass-art{filter:drop-shadow(0 3px 5px rgba(0,0,0,.28)) drop-shadow(0 0 7px rgba(238,210,159,.12))}
+.hourglass-frame{stroke:#c5a36c;stroke-width:4.4}
+.hourglass-glass{fill:rgba(222,235,231,.16);stroke:rgba(239,229,201,.78);stroke-width:1.2}
+.hourglass-sand-top,.hourglass-sand-bottom{fill:#e4c58b}
+.desk-notebook{
+ position:absolute;z-index:7;left:34%;top:39%;width:68px;height:42px;
+ transform:rotate(-7deg);border-radius:3px 5px 5px 3px;
+ background:linear-gradient(100deg,#d7c5a2,#f0e4c9 18%,#c7b18b 100%);
+ box-shadow:2px 4px 7px rgba(0,0,0,.3),inset 3px 0 0 rgba(115,83,53,.35);
+}
+.desk-notebook i{
+ position:relative;display:block;height:1px;margin:8px 8px 0 14px;
+ background:rgba(111,91,68,.34);
+}
+.desk-notebook i:first-child{margin-top:11px}
+.desk-inkwell{
+ position:absolute;z-index:8;left:57%;top:35%;width:20px;height:22px;
+ border-radius:5px 5px 7px 7px;
+ background:linear-gradient(90deg,#182b31,#526a70 48%,#182a30);
+ border:1px solid rgba(226,211,173,.65);
+ box-shadow:0 4px 7px rgba(0,0,0,.35);
+}
+.desk-inkwell:before{
+ content:"";position:absolute;left:4px;top:-5px;width:10px;height:6px;
+ border-radius:3px 3px 1px 1px;background:linear-gradient(90deg,#9b784c,#e1c18b,#8b6941);
+}
+.desk-inkwell i{
+ position:absolute;left:8px;top:-17px;width:2px;height:18px;
+ background:linear-gradient(#d8c18e,#725637);transform:rotate(8deg);
+}
+@media(prefers-reduced-motion:no-preference){
+ .desk-lamp:after{animation:lamp-warmth 5s ease-in-out infinite alternate}
+ @keyframes lamp-warmth{from{filter:drop-shadow(0 0 10px rgba(255,218,151,.28))}to{filter:drop-shadow(0 0 17px rgba(255,218,151,.52))}}
+}
+@media(prefers-reduced-motion:reduce){.desk-lamp:after{animation:none}}
+
 </style>
 </head>
 <body>
@@ -618,6 +720,9 @@ details summary{min-height:26px;display:flex;align-items:center}
     <div class="room-plant"><i></i><i></i><i></i></div>
     <div class="desk-lamp"><i></i></div>
     <div class="desk-books"><i></i><i></i><i></i></div>
+<!-- refined desk objects -->
+    <div class="desk-notebook" aria-hidden="true"><i></i><i></i><i></i></div>
+    <div class="desk-inkwell" aria-hidden="true"><i></i></div>
     <button class="desk-hourglass" id="hourglassStart" type="button" aria-label="5分間の休憩を始める">
      <svg class="hourglass-art" id="hourglassArt" viewBox="0 0 100 120" role="img" aria-label="砂が落ちる砂時計">
       <path class="hourglass-frame" d="M27 7H73 M27 113H73 M31 9C31 35 48 43 50 60C52 77 69 85 69 111 M69 9C69 35 52 43 50 60C48 77 31 85 31 111"/>
