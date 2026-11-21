@@ -1137,8 +1137,8 @@ function persistTimer(){try{localStorage.setItem('focus-timer-runtime',JSON.stri
 function startTimer(){if(remaining<=0)remaining=durations[mode]*60;finished=false;running=true;deadline=Date.now()+remaining*1000;if(interval)clearInterval(interval);interval=setInterval(tick,250);persistTimer();update()}
 function playCompletionSound(){try{const C=window.AudioContext||window.webkitAudioContext;if(!C)return;const c=audioContext||new C();audioContext=c;c.resume().then(()=>{[660,880].forEach((hz,i)=>{const o=c.createOscillator(),g=c.createGain(),t=c.currentTime+i*.16;o.type='sine';o.frequency.value=hz;g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.12,t+.025);g.gain.exponentialRampToValueAtTime(.0001,t+.42);o.connect(g);g.connect(c.destination);o.start(t);o.stop(t+.45)})}).catch(()=>{})}catch(e){}}
 function complete(){const endedMode=mode;stop();remaining=0;if(endedMode==='focus'){completed++;minutes+=durations.focus;const key=dateKey(new Date());history[key]=(Number(history[key])||0)+durations.focus;save();mode=(completed%cycle()===0)?'long':'short';finished=false;remaining=durations[mode]*60;total=remaining;update();updateChart();notify('集中セッション完了！休憩を始めよう。');playCompletionSound();startTimer()}else{finished=true;update();notify('休憩終了！お疲れさま。');playCompletionSound();persistTimer()}}
-function tick(){if(!running)return;remaining=Math.max(0,Math.ceil((deadline-Date.now())/1000));if(!remaining)complete();else{update();persistTimer()}}
-$('start').onclick=()=>{if(running){stop();persistTimer();update();return}if(finished){$('toast').textContent='次のモードを選んでスタートしよう。';return}startTimer()};
+function tick(){if(!running)return;remaining=Math.max(0,Math.ceil((deadline-Date.now())/1000));if(!remaining)complete();else{update()}}
+$('start').onclick=()=>{if(running){remaining=Math.max(0,Math.ceil((deadline-Date.now())/1000));stop();update();return}if(finished){$('toast').textContent='次のモードを選んでスタートしよう。';return}startTimer()};
 function setLargeMode(enabled){document.body.classList.toggle('timer-large-mode',enabled);$('largeToggle').setAttribute('aria-pressed',String(enabled));$('largeToggle').textContent=enabled?'⤢ 通常表示':'⛶ 大画面';}
 $('largeToggle').onclick=()=>setLargeMode(!document.body.classList.contains('timer-large-mode'));
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&document.body.classList.contains('timer-large-mode'))setLargeMode(false)});
@@ -1258,6 +1258,7 @@ function updateStudyRoom(){
 updateStudyRoom();
 window.setInterval(updateStudyRoom,60000);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden){if(running)tick();updateStudyRoom()}});
+window.addEventListener('pagehide',()=>{if(running)remaining=Math.max(0,Math.ceil((deadline-Date.now())/1000));persistTimer()});
 const themes={
  green:{bg:'#101915',panel:'#19251f',deep:'#111b16',line:'#304138',text:'#edf4ef',muted:'#9eafa4',accent:'#8ec5a3',accent2:'#294b38',tab:'rgba(16,25,21,.96)'},
  blue:{bg:'#101923',panel:'#192838',deep:'#111d29',line:'#30475a',text:'#edf4fb',muted:'#9eafc1',accent:'#8ab9e8',accent2:'#244765',tab:'rgba(16,25,35,.96)'},
