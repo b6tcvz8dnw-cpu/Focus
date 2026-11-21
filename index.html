@@ -42,6 +42,18 @@ details summary{cursor:pointer;font-weight:700;font-size:14px} .settings{display
 .day-label{font-size:11px;color:var(--muted)}
 
 
+/* Immersive timer view */
+body.timer-large-mode{overflow:hidden}
+body.timer-large-mode #timerPanel{position:fixed;inset:0;z-index:100;width:100%;height:100vh;height:100dvh;max-width:none;margin:0;border:0;border-radius:0;display:flex;flex-direction:column;justify-content:center;gap:clamp(12px,3vh,28px);padding:calc(18px + env(safe-area-inset-top)) 18px calc(22px + env(safe-area-inset-bottom));background:var(--bg);overflow-y:auto}
+body.timer-large-mode #timerPanel .timer{width:min(78vw,58vh,520px);margin:clamp(8px,2vh,22px) auto}
+body.timer-large-mode #timerPanel .clock{font-size:clamp(64px,18vw,138px);letter-spacing:-5px}
+body.timer-large-mode #timerPanel .mode-label{font-size:clamp(14px,2.5vw,20px)}
+body.timer-large-mode #timerPanel .modes{width:min(100%,620px);margin:0 auto}
+body.timer-large-mode #timerPanel .controls{width:min(100%,620px);margin:0 auto}
+body.timer-large-mode #timerPanel .hint{margin:0}
+body.timer-large-mode #timerPage>details,body.timer-large-mode .tabbar,body.timer-large-mode header,body.timer-large-mode .foot,body.timer-large-mode #toast{visibility:hidden}
+body.timer-large-mode #timerPanel #largeToggle{border-color:var(--accent);background:var(--accent2);color:var(--text)}
+@media (orientation:landscape){body.timer-large-mode #timerPanel{gap:8px}body.timer-large-mode #timerPanel .timer{width:min(48vh,360px);margin:4px auto}body.timer-large-mode #timerPanel .clock{font-size:clamp(58px,12vw,100px)}}
 [hidden]{display:none!important}
 main{padding-bottom:calc(104px + env(safe-area-inset-bottom))}
 .page{display:flex;flex-direction:column;gap:16px}
@@ -87,10 +99,10 @@ textarea.field-select{font-family:inherit;resize:vertical;min-height:80px}
 <main>
 <header><div><div class="brand">FOCUS<span id="brandMark">●</span></div><div class="muted">Study with intention.</div></div><div class="status" id="status">● READY</div></header>
 <div class="page" id="timerPage">
-<section class="panel">
+<section class="panel" id="timerPanel">
  <div class="modes"><button class="mode active" data-mode="focus">集中</button><button class="mode" data-mode="short">短い休憩</button><button class="mode" data-mode="long">長い休憩</button></div>
  <div class="timer"><svg class="ring" viewBox="0 0 200 200"><circle class="track" cx="100" cy="100" r="88"/><circle class="progress" id="progress" cx="100" cy="100" r="88"/></svg><div style="text-align:center"><div class="clock" id="clock">25:00</div><div class="mode-label" id="modeLabel">集中する時間</div></div></div>
- <div class="controls"><button class="secondary" id="reset">↺ リセット</button><button class="primary" id="start">▶ スタート</button><button class="secondary" id="skip">次へ →</button></div>
+ <div class="controls"><button class="secondary" id="reset">↺ リセット</button><button class="primary" id="start">▶ スタート</button><button class="secondary" id="skip">次へ →</button><button class="secondary" id="largeToggle" aria-pressed="false">⛶ 大画面</button></div>
  <p class="hint" id="hint">25分間、ひとつのことに集中しよう。</p>
 </section>
 
@@ -204,6 +216,9 @@ function notify(title){if('Notification'in window&&Notification.permission==='gr
 function complete(){stop();remaining=0;finished=true;if(mode==='focus'){completed++;minutes+=durations.focus;const key=dateKey(new Date());history[key]=(Number(history[key])||0)+durations.focus;save()}update();updateChart();notify(mode==='focus'?'集中セッション完了！お疲れさま。':'休憩終了！次の集中に備えよう。');try{let C=window.AudioContext||window.webkitAudioContext;if(C){let c=new C(),o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);g.gain.value=.07;o.frequency.value=660;o.start();o.stop(c.currentTime+.3)}}catch(e){}}
 function tick(){remaining=Math.max(0,Math.ceil((deadline-Date.now())/1000));if(!remaining)complete();else update()}
 $('start').onclick=()=>{if(running){stop();update();return}if(finished){$('toast').textContent='次のモードを選んでスタートしよう。';return}if('Notification'in window&&Notification.permission==='default')Notification.requestPermission();running=true;deadline=Date.now()+remaining*1000;interval=setInterval(tick,250);update()};
+function setLargeMode(enabled){document.body.classList.toggle('timer-large-mode',enabled);$('largeToggle').setAttribute('aria-pressed',String(enabled));$('largeToggle').textContent=enabled?'⤢ 通常表示':'⛶ 大画面';}
+$('largeToggle').onclick=()=>setLargeMode(!document.body.classList.contains('timer-large-mode'));
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&document.body.classList.contains('timer-large-mode'))setLargeMode(false)});
 $('reset').onclick=()=>{stop();finished=false;remaining=durations[mode]*60;total=remaining;$('toast').textContent='タイマーをリセットしたよ。';update()};
 $('skip').onclick=()=>{if(mode==='focus')setMode((completed+1)%cycle()===0?'long':'short');else setMode('focus');$('toast').textContent='次の時間に切り替えたよ。'};
 document.querySelectorAll('[data-mode]').forEach(b=>b.onclick=()=>setMode(b.dataset.mode));
