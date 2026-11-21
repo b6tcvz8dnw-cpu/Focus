@@ -18,6 +18,7 @@
 - データ保存: ブラウザの `localStorage`（`src/data/storage.js` の防御的アダプター経由）
 - 外部ライブラリ: なし（Node.js標準テストのみ）
 - モジュール: `src/core/date-time.js`（`formatClock`, `dateKey`, `buildWeekData`, `getStudySkyLevel`）
+- タイマー計算: `src/core/timer.js`（絶対時刻からの残り時間、休憩モードの選択）
 - 保存層: `src/data/storage.js`（文字列・JSONの読み書き、利用不可・不正JSONへの防御処理）
 - アプリ本体の保存API直接呼び出し: 0件
 
@@ -34,7 +35,7 @@
 
 | 領域 | 現在の関数例 |
 |---|---|
-| タイマー | `startTimer`, `stop`, `tick`, `complete`, `restoreTimerRuntime` |
+| タイマー | `startTimer`, `stop`, `tick`, `complete`, `restoreTimerRuntime`。純粋計算は `src/core/timer.js` |
 | 学習統計 | `save`, `recalculateStats`, `getWeekData` |
 | カレンダー・履歴 | `renderCalendar`, `renderHistory`, `renderAllRecords` |
 | 分析 | `renderAnalytics`, `updateChart` |
