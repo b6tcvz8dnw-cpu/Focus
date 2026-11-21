@@ -69,6 +69,18 @@ main{padding-bottom:calc(104px + env(safe-area-inset-bottom))}
 .achievement-progress i{display:block;height:100%;background:var(--accent);border-radius:8px}
 .achievement-next{font-size:12px;color:var(--muted);margin-top:12px}
 
+
+/* Study tracking extensions */
+.field-select{width:100%;padding:12px;border-radius:11px;border:1px solid var(--line);background:var(--surface-deep);color:var(--text);font-size:15px;margin:7px 0 12px}
+.inline-row{display:flex;gap:8px;align-items:center}.inline-row input{min-width:0;flex:1}.inline-row button{white-space:nowrap}
+.goal-line{margin:12px 0}.goal-head{display:flex;justify-content:space-between;gap:8px;font-size:12px;margin-bottom:6px}.goal-track{height:8px;background:var(--line);border-radius:8px;overflow:hidden}.goal-fill{height:100%;background:var(--accent);border-radius:8px}
+.calendar-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}.calendar-head button{border:1px solid var(--line);background:var(--surface-deep);color:var(--text);border-radius:9px;padding:7px 11px}.calendar-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px}.calendar-cell{min-height:42px;border-radius:9px;background:var(--surface-deep);display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:11px;color:var(--muted);gap:3px}.calendar-cell.head{min-height:22px;background:transparent;font-size:10px}.calendar-cell.today{outline:1px solid var(--accent);color:var(--text)}.calendar-cell .heat{width:7px;height:7px;border-radius:50%;background:var(--accent);opacity:var(--heat,0)}
+.history-list{display:flex;flex-direction:column;gap:8px}.history-item{padding:11px;border:1px solid var(--line);border-radius:12px;background:var(--surface-deep)}.history-top{display:flex;justify-content:space-between;gap:8px;font-size:12px}.history-item strong{display:block;font-size:13px;margin:5px 0}.history-item small{color:var(--muted)}.history-actions{display:flex;gap:7px;margin-top:8px}.history-actions button{border:1px solid var(--line);background:transparent;color:var(--muted);border-radius:8px;padding:6px 9px;font-size:11px}
+.sound-controls{display:flex;gap:8px;flex-wrap:wrap}.sound-controls button{flex:1;min-width:85px}.sound-controls button.selected{border-color:var(--accent);background:var(--accent2)}
+textarea.field-select{font-family:inherit;resize:vertical;min-height:80px}
+.analytics-row{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--line);font-size:12px}.analytics-row:last-child{border:0}
+.import-label{display:block;text-align:center;border:1px solid var(--line);border-radius:12px;padding:12px;color:var(--text);font-size:13px;margin-top:9px}
+
 </style>
 </head>
 <body>
@@ -81,7 +93,13 @@ main{padding-bottom:calc(104px + env(safe-area-inset-bottom))}
  <div class="controls"><button class="secondary" id="reset">↺ リセット</button><button class="primary" id="start">▶ スタート</button><button class="secondary" id="skip">次へ →</button></div>
  <p class="hint" id="hint">25分間、ひとつのことに集中しよう。</p>
 </section>
-<section class="panel"><h2>今取り組むこと</h2><label class="muted" for="task">学習内容</label><input id="task" maxlength="80" placeholder="例：数学の問題集を進める"></section>
+<section class="panel"><h2>今取り組むこと</h2>
+<label class="muted" for="subject">教科・分野</label>
+<select class="field-select" id="subject"><option>数学</option><option>英語</option><option>国語</option><option>理科</option><option>社会</option><option>情報</option><option>その他</option></select>
+<div class="inline-row"><input id="newSubject" maxlength="24" placeholder="教科を追加（任意）"><button class="secondary" id="addSubject">追加</button></div>
+<label class="muted" for="task">学習内容</label><input id="task" maxlength="80" placeholder="例：数学の問題集を進める"></section>
+<section class="panel"><h2>環境音</h2><p class="muted" style="margin:-4px 0 10px">集中を助けるシンプルな環境音。端末内で生成するため、音源の通信は不要だよ。</p><div class="sound-controls"><button class="secondary" data-sound="off">オフ</button><button class="secondary" data-sound="rain">雨音</button><button class="secondary" data-sound="noise">静かなノイズ</button></div><label class="muted" for="soundVolume" style="display:block;margin-top:12px">音量</label><input id="soundVolume" type="range" min="0" max="30" value="10" style="margin:6px 0"></section>
+<section class="panel" id="reflectionPanel"><h2>セッションの振り返り</h2><p class="muted" id="reflectionPrompt" style="margin:-4px 0 8px">集中セッションのあと、気づいたことを短く残せるよ。</p><textarea class="field-select" id="reflection" maxlength="500" placeholder="例：思ったより進んだこと、次に取り組むこと…"></textarea><button class="secondary wide" id="saveReflection">振り返りを保存</button></section>
 
 </div>
 <div class="page" id="overviewPage" hidden>
@@ -96,6 +114,10 @@ main{padding-bottom:calc(104px + env(safe-area-inset-bottom))}
  <div class="muted" style="margin-top:10px">集中セッションを完了すると、その日の棒グラフに反映されるよ。</div>
 </section>
 <section class="panel"><h2>アチーブメント</h2><p class="muted" style="margin:-4px 0 12px">累計の集中時間に応じて記録される達成バッジ。</p><div class="achievement-list" id="achievementList"></div><div class="achievement-next" id="achievementNext"></div></section>
+<section class="panel"><h2>目標の進み具合</h2><div id="goalProgress"></div><p class="muted" style="margin:10px 0 0">目標は設定画面から変更できるよ。達成できない日があっても、また次の日から始めれば大丈夫。</p></section>
+<section class="panel"><div class="calendar-head"><button id="monthPrev" aria-label="前の月">‹</button><h2 id="calendarTitle" style="margin:0">月間カレンダー</h2><button id="monthNext" aria-label="次の月">›</button></div><div class="calendar-grid" id="calendarGrid"></div><p class="muted" style="margin:10px 0 0">丸印が大きい日ほど集中時間が長いよ。</p></section>
+<section class="panel"><h2>学習履歴</h2><div class="muted" style="margin:-4px 0 10px">最近の集中セッション。記録の削除や修正もできるよ。</div><div class="history-list" id="historyList"></div></section>
+<section class="panel"><h2>学習分析</h2><div class="muted" style="margin:-4px 0 10px">記録されたセッションから集計。</div><div id="analyticsContent"></div></section>
 </div>
 
 <div class="page" id="settingsPage" hidden>
@@ -125,7 +147,8 @@ main{padding-bottom:calc(104px + env(safe-area-inset-bottom))}
   </div>
   <p class="muted" style="margin:14px 0 0">テーマカラーを変えると、アクセントだけでなく背景・カード・境界線・文字色もまとめて切り替わるよ。<br>マークはアプリ画面内の表示だよ。iPhoneホーム画面のアイコンはPWAの仕様上、この画面からは切り替えられないよ。</p>
  </section>
- <section class="panel"><h2>データ</h2><p class="muted">学習記録はこの端末のブラウザ内に保存されるよ。</p><button class="secondary wide" id="clear">今日の記録をリセット</button></section>
+ <section class="panel"><h2>目標設定</h2><div class="settings"><label>1日の目標（分）<input id="dailyGoal" type="number" min="0" max="1440" value="60"></label><label>1週間の目標（分）<input id="weeklyGoal" type="number" min="0" max="10080" value="300"></label></div><button class="secondary wide" id="saveGoals">目標を保存</button></section>
+<section class="panel"><h2>データ</h2><p class="muted">学習記録はこの端末のブラウザ内に保存されるよ。バックアップを保存しておけば、機種変更時などに手動で引き継げるよ。</p><button class="secondary wide" id="exportData">学習データを書き出す（JSON）</button><label class="import-label">バックアップを読み込む<input id="importData" type="file" accept="application/json,.json" style="display:none"></label><button class="secondary wide" id="clear">今日の記録をリセット</button></section>
 </div>
 <nav class="tabbar" aria-label="ページ切り替え">
  <button class="tab active" data-page="timerPage"><span>◷</span>タイマー</button>
@@ -136,7 +159,7 @@ main{padding-bottom:calc(104px + env(safe-area-inset-bottom))}
 </main>
 <script>
 const $=id=>document.getElementById(id);
-let durations={focus:25,short:5,long:15},mode='focus',remaining=1500,total=1500,running=false,deadline=0,interval=null,completed=0,minutes=0,finished=false,history={};
+let durations={focus:25,short:5,long:15},mode='focus',remaining=1500,total=1500,running=false,deadline=0,interval=null,completed=0,minutes=0,finished=false,history={},records=[],dailyGoal=60,weeklyGoal=300,subjects=['数学','英語','国語','理科','社会','情報','その他'],calendarCursor=new Date(new Date().getFullYear(),new Date().getMonth(),1),audioContext=null,audioSource=null,audioGain=null,currentSound='off';
 const labels={focus:'集中する時間',short:'短い休憩',long:'長い休憩'},hints={focus:'ひとつのことに集中しよう。',short:'少し頭を休めよう。',long:'ゆっくり休んで次のセットに備えよう。'},circ=2*Math.PI*88;
 function cycle(){return Math.max(2,Math.min(8,+$('cycleDuration').value||4))}
 function fmt(s){return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0')}
@@ -144,14 +167,16 @@ function stop(){clearInterval(interval);interval=null;running=false}
 function dateKey(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
 function getWeekData(){const today=new Date(),data=[];for(let i=6;i>=0;i--){const d=new Date(today.getFullYear(),today.getMonth(),today.getDate()-i);data.push({key:dateKey(d),label:['日','月','火','水','木','金','土'][d.getDay()],minutes:Math.max(0,Number(history[dateKey(d)]||0))})}return data}
 function updateChart(){const data=getWeekData(),sum=data.reduce((a,d)=>a+d.minutes,0),max=Math.max(30,...data.map(d=>d.minutes));$('todayMinutes').textContent=Number(history[dateKey(new Date())]||0);$('weekTotal').textContent=sum>=60?Math.floor(sum/60)+'時間'+(sum%60?sum%60+'分':''):sum+'分';$('weekRange').textContent=data[0].key.slice(5).replace('-','/')+' 〜 '+data[6].key.slice(5).replace('-','/');$('weekChart').innerHTML=data.map(d=>{const h=d.minutes?Math.max(5,d.minutes/max*100):0;return '<div class="day-col" aria-label="'+d.key+' '+d.minutes+'分"><div class="day-value">'+(d.minutes?d.minutes+'分':'–')+'</div><div class="bar-track"><div class="day-bar" style="height:'+h+'%"></div></div><div class="day-label">'+d.label+'</div></div>'}).join('')}
-function save(){localStorage.setItem('focus-stats',JSON.stringify({completed,minutes,task:$('task').value,history}))}
+function save(){localStorage.setItem('focus-stats',JSON.stringify({completed,minutes,task:$('task').value,history,records,subjects,subject:$('subject')?.value||'数学',dailyGoal,weeklyGoal}))}
 const achievements=[
  {minutes:30,title:'はじめの一歩',description:'集中時間を合計30分達成',icon:'✦'},
  {minutes:180,title:'積み重ね',description:'集中時間を合計3時間達成',icon:'◆'},
  {minutes:600,title:'習慣の芽',description:'集中時間を合計10時間達成',icon:'❋'},
  {minutes:1500,title:'探究者',description:'集中時間を合計25時間達成',icon:'✧'},
  {minutes:3000,title:'継続の人',description:'集中時間を合計50時間達成',icon:'♜'},
- {minutes:6000,title:'その先へ',description:'集中時間を合計100時間達成',icon:'★'}
+ {minutes:6000,title:'その先へ',description:'集中時間を合計100時間達成',icon:'★'},
+ {minutes:12000,title:'深い探究',description:'集中時間を合計200時間達成',icon:'✺'},
+ {minutes:30000,title:'積み重ねの軌跡',description:'集中時間を合計500時間達成',icon:'♛'}
 ];
 function updateAchievements(){
  $('achievementList').innerHTML=achievements.map(a=>{
@@ -183,7 +208,7 @@ document.querySelectorAll('[data-mode]').forEach(b=>b.onclick=()=>setMode(b.data
 $('apply').onclick=()=>{let vals={focus:+$('focusDuration').value,short:+$('shortDuration').value,long:+$('longDuration').value,cycle:+$('cycleDuration').value};if(vals.focus<1||vals.focus>120||vals.short<1||vals.short>60||vals.long<1||vals.long>90||vals.cycle<2||vals.cycle>8||Object.values(vals).some(v=>!Number.isInteger(v))){$('toast').textContent='設定値を範囲内の整数で入力してね。';return}durations={focus:vals.focus,short:vals.short,long:vals.long};stop();finished=false;remaining=durations[mode]*60;total=remaining;localStorage.setItem('focus-timer-settings',JSON.stringify(vals));$('toast').textContent='タイマー設定を保存したよ。';update()};
 $('task').onchange=save;
 
-document.querySelectorAll('[data-page]').forEach(b=>b.onclick=()=>{document.querySelectorAll('.page').forEach(p=>p.hidden=p.id!==b.dataset.page);document.querySelectorAll('[data-page]').forEach(t=>t.classList.toggle('active',t===b));if(b.dataset.page==='overviewPage')updateChart()});
+document.querySelectorAll('[data-page]').forEach(b=>b.onclick=()=>{document.querySelectorAll('.page').forEach(p=>p.hidden=p.id!==b.dataset.page);document.querySelectorAll('[data-page]').forEach(t=>t.classList.toggle('active',t===b));if(b.dataset.page==='overviewPage')renderAllRecords()});
 const themes={
  green:{bg:'#101915',panel:'#19251f',deep:'#111b16',line:'#304138',text:'#edf4ef',muted:'#9eafa4',accent:'#8ec5a3',accent2:'#294b38',tab:'rgba(16,25,21,.96)'},
  blue:{bg:'#101923',panel:'#192838',deep:'#111d29',line:'#30475a',text:'#edf4fb',muted:'#9eafc1',accent:'#8ab9e8',accent2:'#244765',tab:'rgba(16,25,35,.96)'},
@@ -205,7 +230,35 @@ try{const ts=JSON.parse(localStorage.getItem('focus-timer-settings')||'null');if
 try{const ap=JSON.parse(localStorage.getItem('focus-appearance')||'null');if(ap&&ap.theme)setTheme(ap.theme,false);setMark(localStorage.getItem('focus-mark')||'dot',false)}catch(e){}
 
 $('clear').onclick=()=>{stop();completed=0;minutes=0;history[dateKey(new Date())]=0;finished=false;remaining=durations[mode]*60;total=remaining;save();$('toast').textContent='今日の記録をリセットしたよ。';update();updateChart()};
-try{let s=JSON.parse(localStorage.getItem('focus-stats')||'{}');completed=s.completed||0;minutes=s.minutes||0;history=s.history&&typeof s.history==='object'?s.history:{};$('task').value=s.task||''}catch(e){}
+try{let s=JSON.parse(localStorage.getItem('focus-stats')||'{}');completed=s.completed||0;minutes=s.minutes||0;history=s.history&&typeof s.history==='object'?s.history:{};records=Array.isArray(s.records)?s.records:[];subjects=Array.isArray(s.subjects)&&s.subjects.length?s.subjects:subjects;dailyGoal=Number(s.dailyGoal)||60;weeklyGoal=Number(s.weeklyGoal)||300;$('task').value=s.task||''}catch(e){}
+
+function rebuildSubjectOptions(selected){const el=$('subject');if(!el)return;el.innerHTML='';subjects.forEach(s=>{const o=document.createElement('option');o.textContent=s;o.value=s;el.appendChild(o)});if(selected&&subjects.includes(selected))el.value=selected}
+rebuildSubjectOptions((()=>{try{return JSON.parse(localStorage.getItem('focus-stats')||'{}').subject}catch(e){return '数学'}})());
+$('addSubject').onclick=()=>{const name=$('newSubject').value.trim();if(!name)return;if(!subjects.includes(name))subjects.push(name);rebuildSubjectOptions(name);$('newSubject').value='';save();$('toast').textContent='教科を追加したよ。'};
+$('subject').onchange=save;
+$('dailyGoal').value=dailyGoal;$('weeklyGoal').value=weeklyGoal;
+$('saveGoals').onclick=()=>{const d=Number($('dailyGoal').value),w=Number($('weeklyGoal').value);if(!Number.isInteger(d)||!Number.isInteger(w)||d<0||w<0||d>1440||w>10080){$('toast').textContent='目標は範囲内の整数で入力してね。';return}dailyGoal=d;weeklyGoal=w;save();renderGoals();$('toast').textContent='目標を保存したよ。'};
+function renderGoals(){const today=Number(history[dateKey(new Date())]||0),week=getWeekData().reduce((a,d)=>a+d.minutes,0);const item=(label,value,goal)=>{const p=goal?Math.min(100,value/goal*100):0;return '<div class="goal-line"><div class="goal-head"><span>'+label+'</span><b>'+value+' / '+(goal||'未設定')+'分</b></div><div class="goal-track"><div class="goal-fill" style="width:'+p+'%"></div></div></div>'};$('goalProgress').innerHTML=item('今日',today,dailyGoal)+item('今週',week,weeklyGoal)}
+function renderCalendar(){const y=calendarCursor.getFullYear(),m=calendarCursor.getMonth(),first=new Date(y,m,1).getDay(),days=new Date(y,m+1,0).getDate(),vals=[];for(let i=0;i<7;i++)vals.push('<div class="calendar-cell head">'+['日','月','火','水','木','金','土'][i]+'</div>');const max=Math.max(30,...Array.from({length:days},(_,i)=>Number(history[dateKey(new Date(y,m,i+1))]||0)));for(let i=0;i<first;i++)vals.push('<div class="calendar-cell"></div>');for(let day=1;day<=days;day++){const key=dateKey(new Date(y,m,day)),v=Number(history[key]||0),heat=v?Math.max(.15,v/max):0,isToday=key===dateKey(new Date());vals.push('<div class="calendar-cell '+(isToday?'today':'')+'" title="'+v+'分"><span>'+day+'</span><i class="heat" style="--heat:'+heat+'"></i></div>')}$('calendarTitle').textContent=y+'年 '+(m+1)+'月';$('calendarGrid').innerHTML=vals.join('')}
+$('monthPrev').onclick=()=>{calendarCursor=new Date(calendarCursor.getFullYear(),calendarCursor.getMonth()-1,1);renderCalendar()};
+$('monthNext').onclick=()=>{calendarCursor=new Date(calendarCursor.getFullYear(),calendarCursor.getMonth()+1,1);renderCalendar()};
+function renderHistory(){const list=[...records].sort((a,b)=>b.timestamp-a.timestamp).slice(0,40);$('historyList').innerHTML=list.length?list.map(r=>'<div class="history-item"><div class="history-top"><span>'+new Date(r.timestamp).toLocaleString('ja-JP',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'})+' · '+escapeHTML(r.subject||'その他')+'</span><b>'+r.minutes+'分</b></div><strong>'+escapeHTML(r.task||'学習')+'</strong>'+(r.note?'<small>振り返り：'+escapeHTML(r.note)+'</small>':'')+'<div class="history-actions"><button data-record-edit="'+r.id+'">分数を修正</button><button data-record-delete="'+r.id+'">削除</button></div></div>').join(''):'<p class="muted">まだ履歴がありません。集中セッションを完了すると、ここに記録されるよ。</p>'}
+function escapeHTML(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+$('historyList').onclick=e=>{const del=e.target.closest('[data-record-delete]'),edit=e.target.closest('[data-record-edit]');if(del){const id=del.dataset.recordDelete,r=records.find(x=>x.id===id);if(!r||!confirm('この学習記録を削除する？'))return;records=records.filter(x=>x.id!==id);recalculateStats();save();renderAllRecords()}else if(edit){const r=records.find(x=>x.id===edit.dataset.recordEdit);if(!r)return;const n=Number(prompt('このセッションの集中時間（分）',String(r.minutes)));if(!Number.isInteger(n)||n<1||n>120)return;r.minutes=n;recalculateStats();save();renderAllRecords()}};
+function recalculateStats(){completed=records.length;minutes=records.reduce((a,r)=>a+(Number(r.minutes)||0),0);history={};records.forEach(r=>{const k=r.date||dateKey(new Date(r.timestamp));history[k]=(history[k]||0)+r.minutes})}
+function renderAnalytics(){const bySubject={},byWeekday=Array(7).fill(0);records.forEach(r=>{bySubject[r.subject||'その他']=(bySubject[r.subject||'その他']||0)+r.minutes;byWeekday[new Date(r.timestamp).getDay()]+=r.minutes});const subjectsHTML=Object.entries(bySubject).sort((a,b)=>b[1]-a[1]).map(([s,v])=>'<div class="analytics-row"><span>'+escapeHTML(s)+'</span><b>'+v+'分</b></div>').join('')||'<p class="muted">教科別の記録はまだありません。</p>';const weekdays=byWeekday.map((v,i)=>'<div class="analytics-row"><span>'+['日','月','火','水','木','金','土'][i]+'曜日</span><b>'+v+'分</b></div>').join('');$('analyticsContent').innerHTML='<h3 style="font-size:13px">教科別</h3>'+subjectsHTML+'<h3 style="font-size:13px;margin-top:16px">曜日別</h3>'+weekdays}
+function renderAllRecords(){update();updateChart();renderGoals();renderCalendar();renderHistory();renderAnalytics()}
+function saveReflection(){const r=[...records].sort((a,b)=>b.timestamp-a.timestamp)[0];if(!r){$('toast').textContent='先に集中セッションを完了してね。';return}r.note=$('reflection').value.trim();save();renderHistory();$('toast').textContent='振り返りを保存したよ。'}
+$('saveReflection').onclick=saveReflection;
+const originalComplete=complete;
+complete=function(){const old=completed;originalComplete();if(completed>old){const r={id:String(Date.now())+'-'+Math.random().toString(36).slice(2,7),timestamp:Date.now(),date:dateKey(new Date()),minutes:durations.focus,subject:$('subject').value||'その他',task:$('task').value.trim(),note:''};records.push(r);$('reflection').value='';$('reflectionPrompt').textContent='今のセッションで気づいたことを残してみよう。';save();renderAllRecords();$('reflectionPanel').scrollIntoView({behavior:'smooth',block:'nearest'})}};
+function stopAmbient(){if(audioGain){audioGain.gain.setTargetAtTime(0,audioContext.currentTime,.15);setTimeout(()=>{try{audioSource&&audioSource.stop()}catch(e){}audioSource=null},600)}currentSound='off';document.querySelectorAll('[data-sound]').forEach(b=>b.classList.toggle('selected',b.dataset.sound==='off'))}
+function startAmbient(kind){stopAmbient();if(kind==='off')return;const AC=window.AudioContext||window.webkitAudioContext;if(!AC){$('toast').textContent='このブラウザでは環境音を再生できないようだよ。';return}audioContext=audioContext||new AC();audioContext.resume();const size=audioContext.sampleRate*3,buffer=audioContext.createBuffer(1,size,audioContext.sampleRate),data=buffer.getChannelData(0);for(let i=0;i<size;i++)data[i]=(Math.random()*2-1)*(kind==='rain'?.45:.18);const src=audioContext.createBufferSource();src.buffer=buffer;src.loop=true;const filter=audioContext.createBiquadFilter();filter.type=kind==='rain'?'lowpass':'bandpass';filter.frequency.value=kind==='rain'?850:420;const gain=audioContext.createGain();gain.gain.value=(Number($('soundVolume').value)||10)/100;src.connect(filter);filter.connect(gain);gain.connect(audioContext.destination);src.start();audioSource=src;audioGain=gain;currentSound=kind;document.querySelectorAll('[data-sound]').forEach(b=>b.classList.toggle('selected',b.dataset.sound===kind))}
+document.querySelectorAll('[data-sound]').forEach(b=>b.onclick=()=>startAmbient(b.dataset.sound));
+$('soundVolume').oninput=()=>{if(audioGain&&audioContext)audioGain.gain.setTargetAtTime(Number($('soundVolume').value)/100,audioContext.currentTime,.08)};
+$('exportData').onclick=()=>{const payload={app:'FOCUS',version:2,exportedAt:new Date().toISOString(),stats:{completed,minutes,task:$('task').value,history,records,subjects,dailyGoal,weeklyGoal},timerSettings:JSON.parse(localStorage.getItem('focus-timer-settings')||'null'),appearance:JSON.parse(localStorage.getItem('focus-appearance')||'null'),mark:localStorage.getItem('focus-mark')||'dot'};const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='focus-backup-'+dateKey(new Date())+'.json';a.click();URL.revokeObjectURL(url);$('toast').textContent='バックアップを書き出したよ。'};
+$('importData').onchange=async e=>{const file=e.target.files[0];if(!file)return;try{const obj=JSON.parse(await file.text()),s=obj.stats;if(obj.app!=='FOCUS'||!s||!Array.isArray(s.records)||!confirm('現在の学習記録をバックアップの内容で置き換える？'))return;records=s.records.filter(r=>r&&Number.isFinite(Number(r.timestamp))&&Number.isFinite(Number(r.minutes))&&Number(r.minutes)>0).map(r=>({...r,minutes:Number(r.minutes)}));subjects=Array.isArray(s.subjects)?s.subjects.filter(x=>typeof x==='string').slice(0,50):subjects;dailyGoal=Number(s.dailyGoal)||60;weeklyGoal=Number(s.weeklyGoal)||300;recalculateStats();$('task').value=typeof s.task==='string'?s.task:'';if(obj.timerSettings){localStorage.setItem('focus-timer-settings',JSON.stringify(obj.timerSettings))}save();localStorage.setItem('focus-stats',JSON.stringify({...s,completed,minutes,history,records,subjects,dailyGoal,weeklyGoal}));rebuildSubjectOptions(s.subject);$('dailyGoal').value=dailyGoal;$('weeklyGoal').value=weeklyGoal;renderAllRecords();$('toast').textContent='バックアップを読み込んだよ。ページを再読み込みすると設定も反映されるよ。'}catch(err){$('toast').textContent='ファイルを読み込めなかったよ。FOCUSのJSONバックアップか確認してね。'}finally{e.target.value=''}};
+
 if('serviceWorker'in navigator){let refreshing=false;navigator.serviceWorker.addEventListener('controllerchange',()=>{if(!refreshing){refreshing=true;window.location.reload();}});window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').then(reg=>reg.update()).catch(()=>{}));}
 update();updateChart();
 </script>
