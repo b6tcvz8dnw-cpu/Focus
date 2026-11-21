@@ -100,4 +100,6 @@
 - `scripts/build.mjs` が `dist/assets/` の生成物を列挙し、Service Workerのプリキャッシュ配列へ注入。
 - CIは `npm test` に加えて `npm run build` を実行する。
 - GitHub Actionsのビルド成果物をダウンロードして検査済み。相対URL、マニフェスト、PNG/SVG、ハッシュ付きJS、Service Workerのプリキャッシュを確認。
+- `.github/workflows/deploy-pages.yml` を追加。PRはテストとビルドのみ、`main` へのpushまたは `main` 上での手動実行だけがPagesへデプロイする。
+- GitHub PagesのSource設定は接続ツールから読み取れないため、リポジトリのSettings → Pagesで確認・切替が必要。
 - このブランチはまだGitHub Pagesへデプロイしない。現在の公開元設定とiPhone実機を確認後に切り替える。
