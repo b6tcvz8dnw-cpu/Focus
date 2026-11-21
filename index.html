@@ -439,15 +439,15 @@ function tickHourglass(){
 function resetHourglass(){stopHourglass();hourglassDuration=300;hourglassRemaining=300;hourglassDeadline=0;renderHourglass()}
 $('hourglassStart').addEventListener('click',()=>{if(hourglassRunning){tickHourglass();if(hourglassRemaining>0){stopHourglass();renderHourglass()}}else startHourglass()});
 $('hourglassReset').addEventListener('click',resetHourglass);
-document.addEventListener('visibilitychange',()=>{if(!document.hidden){tickHourglass();updateStudyRoom()}});
+document.addEventListener('visibilitychange',()=>{if(!document.hidden){tickHourglass();updateStudyRoom();if(document.body.classList.contains('study-room-fullscreen'))loadStudyRoomWeather()}});
 renderHourglass();
 function setStudyRoomMode(enabled){document.body.classList.toggle('study-room-fullscreen',enabled);}
 $('roomExit').addEventListener('click',()=>setStudyRoomMode(false));
-let roomWeather=null,roomWeatherLoading=false,roomWeatherAttempted=false;
+let roomWeather=null,roomWeatherLoading=false,roomWeatherAttempted=false,roomWeatherFetchedAt=0;
 const roomWeatherLabels=code=>{if(code===0)return ['晴れ','☀'];if(code===1)return ['おおむね晴れ','🌤'];if(code===2)return ['晴れ時々くもり','⛅'];if(code===3)return ['くもり','☁'];if(code===45||code===48)return ['霧','🌫'];if([51,53,55,56,57].includes(code))return ['霧雨','🌦'];if([61,63,65,66,67,80,81,82].includes(code))return ['雨','🌧'];if([71,73,75,77,85,86].includes(code))return ['雪','❄'];if([95,96,99].includes(code))return ['雷雨','⛈'];return ['天気','☁']};
 function showRoomWeather(textValue){$('studyRoomWeather').textContent=textValue}
 function loadStudyRoomWeather(force=false){
- if(roomWeatherLoading||(!force&&roomWeatherAttempted))return;
+ if(roomWeatherLoading||(!force&&roomWeatherAttempted&&Date.now()-roomWeatherFetchedAt<30*60*1000))return;
  roomWeatherAttempted=true;
  if(!navigator.geolocation){showRoomWeather('天気を取得できません');return}
  roomWeatherLoading=true;showRoomWeather('天気を確認中…');
@@ -457,7 +457,7 @@ function loadStudyRoomWeather(force=false){
    const url='https://api.open-meteo.com/v1/forecast?latitude='+encodeURIComponent(lat)+'&longitude='+encodeURIComponent(lon)+'&current=temperature_2m,weather_code,wind_speed_10m,is_day&daily=weather_code,sunrise,sunset,temperature_2m_max,temperature_2m_min&timezone=auto&forecast_days=1';
    const response=await fetch(url,{cache:'no-store'});if(!response.ok)throw new Error('weather');
    const data=await response.json();if(!data.current)throw new Error('weather');
-   roomWeather={...data.current,sunrise:data.daily?.sunrise?.[0],sunset:data.daily?.sunset?.[0],high:data.daily?.temperature_2m_max?.[0],low:data.daily?.temperature_2m_min?.[0]};
+   roomWeather={...data.current,sunrise:data.daily?.sunrise?.[0],sunset:data.daily?.sunset?.[0],high:data.daily?.temperature_2m_max?.[0],low:data.daily?.temperature_2m_min?.[0]};roomWeatherFetchedAt=Date.now();
    applyRoomWeather();
   }catch(e){showRoomWeather('天気を取得できません · タップで再試行');roomWeatherAttempted=false}
   finally{roomWeatherLoading=false}
