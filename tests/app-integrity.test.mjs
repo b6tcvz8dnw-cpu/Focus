@@ -11,6 +11,7 @@ import {
 import { createStorage } from "../src/data/storage.js";
 import { getRemainingSeconds, getNextBreakMode } from "../src/core/timer.js";
 import { calculateStats } from "../src/data/records.js";
+import { normalizeStatsData, normalizeTimerSettings, validateBackupPayload, CURRENT_DATA_SCHEMA_VERSION, CURRENT_BACKUP_VERSION } from "../src/data/schema.js";
 
 const read = (path) => readFile(new URL(path, import.meta.url), "utf8");
 
@@ -69,7 +70,7 @@ test("existing local storage keys are preserved", async () => {
   for (const key of [
     "focus-stats", "focus-notifications", "focus-timer-runtime",
     "focus-timer-settings", "focus-room-quiet-text",
-    "focus-appearance", "focus-mark"
+    "focus-appearance", "focus-mark", "focus-preimport-backup"
   ]) {
     assert.ok(script.includes(key), "missing storage key: " + key);
   }
@@ -85,10 +86,10 @@ test("PWA manifest remains valid and standalone-capable", async () => {
 test("service worker caches all extracted modules with a new version", async () => {
   const sw = await read("../sw.js");
   const cacheName = sw.match(/const CACHE='([^']+)'/)?.[1];
-  assert.equal(cacheName, "focus-pwa-v35");
+  assert.equal(cacheName, "focus-pwa-v36");
   for (const asset of [
     "./index.html", "./manifest.webmanifest", "./icon.svg", "./src/main.js",
-    "./src/core/date-time.js", "./src/data/storage.js", "./src/core/timer.js", "./src/data/records.js"
+    "./src/core/date-time.js", "./src/data/storage.js", "./src/core/timer.js", "./src/data/records.js", "./src/data/schema.js"
   ]) {
     assert.ok(sw.includes(asset), "service worker should cache " + asset);
   }
@@ -201,4 +202,88 @@ test("calculateStats rebuilds totals and date buckets without mutating inputs", 
   assert.equal(totals.history["2026-11-21"], 30);
   assert.deepEqual(legacyHistory, { "2026-11-20": 12 });
   assert.equal(records[0].minutes, 25);
+});
+
+
+test("legacy unversioned stats migrate without losing aggregate history", () => {
+  const migrated = normalizeStatsData({
+    completed: 5,
+    minutes: 125,
+    history: { "2026-11-20": 100, "2026-11-21": 25, invalid: 900 },
+    records: [
+      { id: "a", timestamp: new Date(2026, 10, 20, 12).getTime(), date: "2026-11-20", minutes: 25, note: "memo" },
+      { id: "b", timestamp: new Date(2026, 10, 21, 12).getTime(), date: "2026-11-21", minutes: 25 }
+    ],
+    dailyGoal: 90,
+    weeklyGoal: 400
+  });
+  assert.equal(migrated.schemaVersion, CURRENT_DATA_SCHEMA_VERSION);
+  assert.equal(migrated.legacyCompleted, 3);
+  assert.equal(migrated.legacyMinutes, 75);
+  assert.deepEqual(migrated.legacyHistory, { "2026-11-20": 75, "2026-11-21": 0 });
+  assert.equal(migrated.records.length, 2);
+  assert.equal(migrated.dailyGoal, 90);
+  assert.equal(migrated.weeklyGoal, 400);
+});
+
+test("schema migration discards malformed records and normalizes invalid goals", () => {
+  const migrated = normalizeStatsData({
+    completed: -4,
+    minutes: "NaN",
+    history: { "2026-11-21": -10, "2026-02-30": 20 },
+    records: [
+      { id: "bad", timestamp: "not-a-date", minutes: 20 },
+      { id: "too-long", timestamp: 1790000000000, minutes: 121 },
+      { id: "good", timestamp: 1790000000000, minutes: 30, note: "x".repeat(2100) }
+    ],
+    dailyGoal: -1,
+    weeklyGoal: 999999
+  });
+  assert.equal(migrated.records.length, 1);
+  assert.equal(migrated.records[0].note.length, 2000);
+  assert.equal(migrated.dailyGoal, 60);
+  assert.equal(migrated.weeklyGoal, 300);
+  assert.deepEqual(migrated.legacyHistory, { "2026-11-21": 0 });
+});
+
+test("existing version-2 JSON backups remain import-compatible", () => {
+  const result = validateBackupPayload({
+    app: "FOCUS",
+    version: 2,
+    stats: {
+      completed: 2,
+      minutes: 50,
+      history: { "2026-11-21": 50 },
+      records: [
+        { id: "old-1", timestamp: 1795262400000, date: "2026-11-21", minutes: 25 },
+        { id: "old-2", timestamp: 1795266000000, date: "2026-11-21", minutes: 25 }
+      ],
+      dailyGoal: 60,
+      weeklyGoal: 300
+    },
+    timerSettings: { focus: 25, short: 5, long: 15, cycle: 4 },
+    appearance: { theme: "green" },
+    mark: "star",
+    notificationsEnabled: true,
+    quietText: false
+  });
+  assert.equal(result.valid, true);
+  assert.equal(result.data.version, CURRENT_BACKUP_VERSION);
+  assert.equal(result.data.stats.records.length, 2);
+  assert.deepEqual(result.data.timerSettings, { focus: 25, short: 5, long: 15, cycle: 4 });
+});
+
+test("backup validation rejects unsupported versions and invalid settings before import", () => {
+  const base = { app: "FOCUS", version: 3, stats: { records: [] } };
+  assert.equal(validateBackupPayload({ ...base, version: 99 }).valid, false);
+  assert.equal(validateBackupPayload({ ...base, timerSettings: { focus: 0, short: 5, long: 15, cycle: 4 } }).valid, false);
+  assert.equal(validateBackupPayload({ ...base, appearance: { theme: "unknown" } }).valid, false);
+  assert.equal(validateBackupPayload({ app: "OTHER", version: 3, stats: { records: [] } }).valid, false);
+});
+
+test("timer settings normalizer accepts only bounded integer settings", () => {
+  assert.deepEqual(normalizeTimerSettings({ focus: 25, short: 5, long: 15, cycle: 4 }), {
+    focus: 25, short: 5, long: 15, cycle: 4
+  });
+  assert.equal(normalizeTimerSettings({ focus: 0, short: 5, long: 15, cycle: 4 }), null);
 });
