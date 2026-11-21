@@ -39,38 +39,37 @@ test("essential pages and controls remain present", async () => {
   }
 });
 
-test("application entrypoint is a module and parses after its imports", async () => {
+test("HTML loads the external application module and its source parses", async () => {
   const html = await read("../index.html");
-  const start = html.indexOf('<script type="module">');
-  const end = html.lastIndexOf("</script>");
-  assert.ok(start >= 0 && end > start, "module entrypoint should exist");
-  const script = html.slice(start + '<script type="module">'.length, end);
+  assert.ok(html.includes('<script type="module" src="./src/main.js"></script>'));
+  const script = await read("../src/main.js");
   const executable = script.replace(/^\s*import\s+[^;]+;\s*/gm, "");
-  assert.doesNotThrow(() => new vm.Script(executable, { filename: "index.html:module-body" }));
-  assert.ok(script.includes("./src/core/date-time.js"), "date-time module should be imported");
-  assert.ok(script.includes("./src/data/storage.js", "./src/core/timer.js"), "storage module should be imported");
+  assert.doesNotThrow(() => new vm.Script(executable, { filename: "src/main.js" }));
+  assert.ok(script.includes("./core/date-time.js"), "date-time module should be imported");
+  assert.ok(script.includes("./data/storage.js"), "storage module should be imported");
+  assert.ok(script.includes("./core/timer.js"), "timer module should be imported");
   assert.ok(!script.includes("localStorage."), "app should use the storage adapter");
 });
 
 test("core timer and Study Room functions remain present", async () => {
-  const html = await read("../index.html");
+  const script = await read("../src/main.js");
   for (const name of [
     "startTimer", "persistTimer", "restoreTimerRuntime", "complete",
     "tick", "startHourglass", "updateStudyRoom", "updateStudySky",
     "loadStudyRoomWeather"
   ]) {
-    assert.ok(html.includes("function " + name + "("), "missing function " + name);
+    assert.ok(script.includes("function " + name + "("), "missing function " + name);
   }
 });
 
 test("existing local storage keys are preserved", async () => {
-  const html = await read("../index.html");
+  const script = await read("../src/main.js");
   for (const key of [
     "focus-stats", "focus-notifications", "focus-timer-runtime",
     "focus-timer-settings", "focus-room-quiet-text",
     "focus-appearance", "focus-mark"
   ]) {
-    assert.ok(html.includes(key), "missing storage key: " + key);
+    assert.ok(script.includes(key), "missing storage key: " + key);
   }
 });
 
@@ -81,13 +80,13 @@ test("PWA manifest remains valid and standalone-capable", async () => {
   assert.ok(Array.isArray(manifest.icons) && manifest.icons.length >= 2);
 });
 
-test("service worker caches the extracted modules with a new version", async () => {
+test("service worker caches all extracted modules with a new version", async () => {
   const sw = await read("../sw.js");
   const cacheName = sw.match(/const CACHE='([^']+)'/)?.[1];
-  assert.equal(cacheName, "focus-pwa-v33");
+  assert.equal(cacheName, "focus-pwa-v34");
   for (const asset of [
-    "./index.html", "./manifest.webmanifest", "./icon.svg",
-    "./src/core/date-time.js", "./src/data/storage.js"
+    "./index.html", "./manifest.webmanifest", "./icon.svg", "./src/main.js",
+    "./src/core/date-time.js", "./src/data/storage.js", "./src/core/timer.js"
   ]) {
     assert.ok(sw.includes(asset), "service worker should cache " + asset);
   }
