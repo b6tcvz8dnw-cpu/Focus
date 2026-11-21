@@ -30,7 +30,7 @@
 - [x] localStorageアクセスを保存層に集約（`src/data/storage.js`）
 - [x] 残り時間計算と休憩モード選択を `src/core/timer.js` に抽出
 - [ ] タイマー状態管理をUIから分離
-- [ ] 記録・集計処理を分離
+- [x] 学習記録の累計・日別集計を `src/data/records.js` に分離
 - [ ] 書斎・砂時計を分離
 - [ ] CSSを責務別に分割
 
