@@ -41,34 +41,53 @@ details summary{cursor:pointer;font-weight:700;font-size:14px} .settings{display
 .day-bar{width:100%;min-height:0;background:var(--accent);border-radius:7px 7px 2px 2px;transition:height .25s}
 .day-label{font-size:11px;color:var(--muted)}
 
+
+[hidden]{display:none!important}
+main{padding-bottom:calc(104px + env(safe-area-inset-bottom))}
+.page{display:flex;flex-direction:column;gap:16px}
+.tabbar{position:fixed;z-index:10;bottom:0;left:50%;transform:translateX(-50%);width:min(100%,520px);padding:9px 18px calc(9px + env(safe-area-inset-bottom));display:grid;grid-template-columns:repeat(3,1fr);gap:8px;background:rgba(16,25,21,.96);border-top:1px solid var(--line);backdrop-filter:blur(14px)}
+.tab{border:0;border-radius:12px;background:transparent;color:var(--muted);padding:8px 4px;font-size:12px;display:flex;flex-direction:column;align-items:center;gap:3px}
+.tab span{font-size:20px;line-height:1.1}
+.tab.active{background:var(--accent2);color:var(--accent);font-weight:700}
+
 </style>
 </head>
 <body>
 <main>
 <header><div><div class="brand">FOCUS<span>.</span></div><div class="muted">Study with intention.</div></div><div class="status" id="status">● READY</div></header>
+<div class="page" id="timerPage">
 <section class="panel">
  <div class="modes"><button class="mode active" data-mode="focus">集中</button><button class="mode" data-mode="short">短い休憩</button><button class="mode" data-mode="long">長い休憩</button></div>
  <div class="timer"><svg class="ring" viewBox="0 0 200 200"><circle class="track" cx="100" cy="100" r="88"/><circle class="progress" id="progress" cx="100" cy="100" r="88"/></svg><div style="text-align:center"><div class="clock" id="clock">25:00</div><div class="mode-label" id="modeLabel">集中する時間</div></div></div>
  <div class="controls"><button class="secondary" id="reset">↺ リセット</button><button class="primary" id="start">▶ スタート</button><button class="secondary" id="skip">次へ →</button></div>
  <p class="hint" id="hint">25分間、ひとつのことに集中しよう。</p>
 </section>
-<section class="panel"><h2>今日の学習</h2><label class="muted" for="task">今取り組むこと</label><input id="task" maxlength="80" placeholder="例：数学の問題集を進める">
- <div class="stats"><div class="stat"><strong id="sessions">0</strong><span>完了セッション</span></div><div class="stat"><strong id="minutes">0</strong><span>集中した分</span></div><div class="stat"><strong id="round">1/4</strong><span>現在のセット</span></div></div>
- <div class="muted" style="display:flex;justify-content:space-between;margin-top:14px"><span>セットの進捗</span><span id="setLabel">0 / 4 セッション</span></div><div class="progressbar" id="dots"><i></i><i></i><i></i><i></i></div>
+</div>
+<div class="page" id="overviewPage" hidden>
+<section class="panel"><h2>学習の全体像</h2>
+ <div class="stats"><div class="stat"><strong id="sessions">0</strong><span>完了セッション</span></div><div class="stat"><strong id="minutes">0</strong><span>累計集中時間（分）</span></div><div class="stat"><strong id="todayMinutes">0</strong><span>今日の集中時間（分）</span></div></div>
+ <div class="muted" style="display:flex;justify-content:space-between;margin-top:14px"><span>現在のセット</span><span><b id="round">1/4</b> · <span id="setLabel">0 / 4 セッション</span></span></div><div class="progressbar" id="dots"><i></i><i></i><i></i><i></i></div>
 </section>
-
 <section class="panel">
  <div class="week-summary"><h2 style="margin:0">週間の学習時間</h2><div class="week-total" id="weekTotal">0分</div></div>
  <div class="muted" id="weekRange">直近7日間</div>
  <div class="week-chart" id="weekChart" role="img" aria-label="直近7日間の日別学習時間"></div>
  <div class="muted" style="margin-top:10px">集中セッションを完了すると、その日の棒グラフに反映されるよ。</div>
 </section>
-<section class="panel"><details><summary>⚙ タイマー設定</summary><div class="settings">
+</div>
+<div class="page" id="settingsPage" hidden>
+<section class="panel"><details open><summary>⚙ タイマー設定</summary><div class="settings">
 <label>集中時間（分）<input id="focusDuration" type="number" min="1" max="120" value="25"></label>
 <label>短い休憩（分）<input id="shortDuration" type="number" min="1" max="60" value="5"></label>
 <label>長い休憩（分）<input id="longDuration" type="number" min="1" max="90" value="15"></label>
 <label>長い休憩まで<input id="cycleDuration" type="number" min="2" max="8" value="4"></label>
 </div><button class="secondary wide" id="apply">設定を適用</button></details></section>
+</div>
+<nav class="tabbar" aria-label="ページ切り替え">
+ <button class="tab active" data-page="timerPage"><span>◷</span>タイマー</button>
+ <button class="tab" data-page="overviewPage"><span>▥</span>学習記録</button>
+ <button class="tab" data-page="settingsPage"><span>⚙</span>設定</button>
+</nav>
 <div class="foot"><span>FOCUS · STUDY TIMER</span><button class="linkbtn" id="clear">今日の記録をリセット</button></div><div id="toast" role="status" aria-live="polite">自分のペースで、一歩ずつ。</div>
 </main>
 <script>
@@ -80,7 +99,7 @@ function fmt(s){return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60)
 function stop(){clearInterval(interval);interval=null;running=false}
 function dateKey(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
 function getWeekData(){const today=new Date(),data=[];for(let i=6;i>=0;i--){const d=new Date(today.getFullYear(),today.getMonth(),today.getDate()-i);data.push({key:dateKey(d),label:['日','月','火','水','木','金','土'][d.getDay()],minutes:Math.max(0,Number(history[dateKey(d)]||0))})}return data}
-function updateChart(){const data=getWeekData(),sum=data.reduce((a,d)=>a+d.minutes,0),max=Math.max(30,...data.map(d=>d.minutes));$('weekTotal').textContent=sum>=60?Math.floor(sum/60)+'時間'+(sum%60?sum%60+'分':''):sum+'分';$('weekRange').textContent=data[0].key.slice(5).replace('-','/')+' 〜 '+data[6].key.slice(5).replace('-','/');$('weekChart').innerHTML=data.map(d=>{const h=d.minutes?Math.max(5,d.minutes/max*100):0;return '<div class="day-col" aria-label="'+d.key+' '+d.minutes+'分"><div class="day-value">'+(d.minutes?d.minutes+'分':'–')+'</div><div class="bar-track"><div class="day-bar" style="height:'+h+'%"></div></div><div class="day-label">'+d.label+'</div></div>'}).join('')}
+function updateChart(){const data=getWeekData(),sum=data.reduce((a,d)=>a+d.minutes,0),max=Math.max(30,...data.map(d=>d.minutes));$('todayMinutes').textContent=Number(history[dateKey(new Date())]||0);$('weekTotal').textContent=sum>=60?Math.floor(sum/60)+'時間'+(sum%60?sum%60+'分':''):sum+'分';$('weekRange').textContent=data[0].key.slice(5).replace('-','/')+' 〜 '+data[6].key.slice(5).replace('-','/');$('weekChart').innerHTML=data.map(d=>{const h=d.minutes?Math.max(5,d.minutes/max*100):0;return '<div class="day-col" aria-label="'+d.key+' '+d.minutes+'分"><div class="day-value">'+(d.minutes?d.minutes+'分':'–')+'</div><div class="bar-track"><div class="day-bar" style="height:'+h+'%"></div></div><div class="day-label">'+d.label+'</div></div>'}).join('')}
 function save(){localStorage.setItem('focus-stats',JSON.stringify({completed,minutes,task:$('task').value,history}))}
 function update(){
  $('clock').textContent=fmt(remaining);$('modeLabel').textContent=labels[mode];$('hint').textContent=hints[mode];
@@ -103,6 +122,9 @@ $('skip').onclick=()=>{if(mode==='focus')setMode((completed+1)%cycle()===0?'long
 document.querySelectorAll('[data-mode]').forEach(b=>b.onclick=()=>setMode(b.dataset.mode));
 $('apply').onclick=()=>{let vals={focus:+$('focusDuration').value,short:+$('shortDuration').value,long:+$('longDuration').value,cycle:+$('cycleDuration').value};if(vals.focus<1||vals.focus>120||vals.short<1||vals.short>60||vals.long<1||vals.long>90||vals.cycle<2||vals.cycle>8||Object.values(vals).some(v=>!Number.isInteger(v))){$('toast').textContent='設定値を範囲内の整数で入力してね。';return}durations={focus:vals.focus,short:vals.short,long:vals.long};stop();finished=false;remaining=durations[mode]*60;total=remaining;$('toast').textContent='設定を適用したよ。';update()};
 $('task').onchange=save;
+
+document.querySelectorAll('[data-page]').forEach(b=>b.onclick=()=>{document.querySelectorAll('.page').forEach(p=>p.hidden=p.id!==b.dataset.page);document.querySelectorAll('[data-page]').forEach(t=>t.classList.toggle('active',t===b));if(b.dataset.page==='overviewPage')updateChart();});
+
 $('clear').onclick=()=>{stop();completed=0;minutes=0;history[dateKey(new Date())]=0;finished=false;remaining=durations[mode]*60;total=remaining;save();$('toast').textContent='今日の記録をリセットしたよ。';update();updateChart()};
 try{let s=JSON.parse(localStorage.getItem('focus-stats')||'{}');completed=s.completed||0;minutes=s.minutes||0;history=s.history&&typeof s.history==='object'?s.history:{};$('task').value=s.task||''}catch(e){}
 if('serviceWorker'in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
