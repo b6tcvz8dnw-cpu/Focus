@@ -86,7 +86,7 @@ test("PWA manifest remains valid and standalone-capable", async () => {
 test("service worker caches all extracted modules with a new version", async () => {
   const sw = await read("../public/sw.js");
   const cacheName = sw.match(/const CACHE='([^']+)'/)?.[1];
-  assert.equal(cacheName, "focus-pwa-v40");
+  assert.equal(cacheName, "focus-pwa-v41");
   for (const asset of [
     "./index.html", "./manifest.webmanifest", "./icon.svg", "./icon-192.png", "./icon-512.png"
   ]) {
@@ -449,5 +449,5 @@ test("package scripts expose development, build, and preview commands", async ()
   assert.equal(pkg.scripts.dev, "vite --host 0.0.0.0");
   assert.equal(pkg.scripts.build, "node scripts/build.mjs");
   assert.equal(pkg.scripts.preview, "vite preview --host 0.0.0.0");
-  assert.ok(pkg.devDependencies.vite);
+  assert.equal(pkg.devDependencies.vite, "6.4.6");
 });
