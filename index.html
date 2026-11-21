@@ -1283,6 +1283,17 @@ $('clear').onclick=()=>{stop();completed=0;minutes=0;history[dateKey(new Date())
 try{let s=JSON.parse(localStorage.getItem('focus-stats')||'{}');completed=s.completed||0;minutes=s.minutes||0;history=s.history&&typeof s.history==='object'?s.history:{};records=Array.isArray(s.records)?s.records:[];const recordTotals={};records.forEach(r=>{const k=r.date||dateKey(new Date(r.timestamp));recordTotals[k]=(recordTotals[k]||0)+(Number(r.minutes)||0)});legacyCompleted=Number.isFinite(s.legacyCompleted)?s.legacyCompleted:Math.max(0,(s.completed||0)-records.length);legacyMinutes=Number.isFinite(s.legacyMinutes)?s.legacyMinutes:Math.max(0,(s.minutes||0)-records.reduce((a,r)=>a+(Number(r.minutes)||0),0));legacyHistory=s.legacyHistory&&typeof s.legacyHistory==='object'?s.legacyHistory:Object.fromEntries(Object.entries(s.history||{}).map(([k,v])=>[k,Math.max(0,Number(v||0)-(recordTotals[k]||0))]));dailyGoal=Number(s.dailyGoal)||60;weeklyGoal=Number(s.weeklyGoal)||300}catch(e){}
 restoreTimerRuntime();
 
+function restoreTimerRuntime(){
+ try{
+  const saved=JSON.parse(localStorage.getItem('focus-timer-runtime')||'null');
+  if(!saved||!['focus','short','long'].includes(saved.mode))return;
+  mode=saved.mode;finished=!!saved.finished;total=durations[mode]*60;
+  if(saved.running&&Number(saved.deadline)>0){
+   running=true;deadline=Number(saved.deadline);remaining=Math.max(0,Math.ceil((deadline-Date.now())/1000));
+   if(remaining>0)interval=setInterval(tick,250);else{running=false;complete()}
+  }else{running=false;remaining=Math.max(0,Math.min(total,Number(saved.remaining)||total))}
+ }catch(e){}
+}
 $('dailyGoal').value=dailyGoal;$('weeklyGoal').value=weeklyGoal;
 $('saveGoals').onclick=()=>{const d=Number($('dailyGoal').value),w=Number($('weeklyGoal').value);if(!Number.isInteger(d)||!Number.isInteger(w)||d<0||w<0||d>1440||w>10080){$('toast').textContent='目標は範囲内の整数で入力してね。';return}dailyGoal=d;weeklyGoal=w;save();renderGoals();$('toast').textContent='目標を保存したよ。'};
 function renderGoals(){const today=Number(history[dateKey(new Date())]||0),week=getWeekData().reduce((a,d)=>a+d.minutes,0);const item=(label,value,goal)=>{const p=goal?Math.min(100,value/goal*100):0;return '<div class="goal-line"><div class="goal-head"><span>'+label+'</span><b>'+value+' / '+(goal||'未設定')+'分</b></div><div class="goal-track"><div class="goal-fill" style="width:'+p+'%"></div></div></div>'};$('goalProgress').innerHTML=item('今日',today,dailyGoal)+item('今週',week,weeklyGoal)}
