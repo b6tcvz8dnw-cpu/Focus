@@ -13,11 +13,13 @@
 - `index.html`: 約91 KB / 約1,330行（JavaScript本体を外部化）
 - インラインJavaScript: 約254行、約40個の関数
 - CSS: 1つのインライン `<style>`
-- PWAマニフェスト: `manifest.webmanifest`
-- Service Worker: `sw.js`
-- アイコン: `icon.svg`、PNGアイコン
+- Vite設定: `vite.config.js`（`base: './'`、`dist/`出力）
+- ビルドスクリプト: `scripts/build.mjs`（ハッシュ付きバンドルをService Workerへ注入）
+- PWAマニフェスト / Service Worker / SVGアイコン: `public/`
+- PNGアイコン: ルートの元ファイルをViteプラグインで `dist/` へコピー
 - データ保存: ブラウザの `localStorage`（`src/data/storage.js` の防御的アダプター経由）
-- 外部ライブラリ: なし（Node.js標準テストのみ）
+- ビルド依存: Vite 6（開発時・ビルド時のみ）
+- テスト: Node.js標準テストランナー
 - モジュール: `src/core/date-time.js`（`formatClock`, `dateKey`, `buildWeekData`, `getStudySkyLevel`）
 - タイマー計算: `src/core/timer.js`（絶対時刻からの残り時間、不正値の防御、休憩モードの選択）
 - 保存層: `src/data/storage.js`（文字列・JSONの読み書き、利用不可・不正JSONへの防御処理）
@@ -90,3 +92,11 @@
 - 不正な期限・現在時刻から `NaN` / `Infinity` が残り時間へ伝播しないよう防御。
 - 同じセッションIDが複数存在する場合、移行・集計で重複加算しない。
 - 自動テスト32項目がGitHub Actionsで成功。実機iPhoneの操作確認は未実施。
+
+## Phase 4 — ビルド基盤
+
+- Viteのbaseを相対パス `./` に固定し、GitHub Pagesの `/Focus/` 配下でもアセットURLが成立するようにする。
+- `public/` のマニフェスト・Service Worker・SVGアイコンをそのまま配信し、PNGアイコンはビルド時に元ファイルからコピー。
+- `scripts/build.mjs` が `dist/assets/` の生成物を列挙し、Service Workerのプリキャッシュ配列へ注入。
+- CIは `npm test` に加えて `npm run build` を実行する。
+- このブランチはまだGitHub Pagesへデプロイしない。公開元の設定と成果物を確認後に切り替える。
