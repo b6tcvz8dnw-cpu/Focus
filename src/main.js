@@ -204,7 +204,7 @@ try{const ts=normalizeTimerSettings(storage.getJSON('focus-timer-settings',null)
 try{const ap=storage.getJSON('focus-appearance',null);if(ap&&ap.theme)setTheme(ap.theme,false);setMark(storage.getText('focus-mark')||'dot',false)}catch(e){}
 
 $('clear').onclick=()=>{stop();completed=0;minutes=0;history[dateKey(new Date())]=0;finished=false;remaining=durations[mode]*60;total=remaining;save();$('toast').textContent='今日の記録をリセットしたよ。';update();updateChart()};
-try{const rawStats=storage.getJSON('focus-stats',{}),s=normalizeStatsData(rawStats);records=s.records;legacyCompleted=s.legacyCompleted;legacyMinutes=s.legacyMinutes;legacyHistory=s.legacyHistory;dailyGoal=s.dailyGoal;weeklyGoal=s.weeklyGoal;recalculateStats();if(!rawStats||rawStats.schemaVersion!==CURRENT_DATA_SCHEMA_VERSION)save()}catch(e){}
+try{const rawStats=storage.getJSON('focus-stats',{}),s=normalizeStatsData(rawStats);records=s.records;legacyCompleted=s.legacyCompleted;legacyMinutes=s.legacyMinutes;legacyHistory=s.legacyHistory;dailyGoal=s.dailyGoal;weeklyGoal=s.weeklyGoal;recalculateStats();save()}catch(e){}
 restoreTimerRuntime();
 
 function restoreTimerRuntime(){
