@@ -444,7 +444,7 @@ function renderHourglass(){
  $('hourglassTime').textContent=String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');
  $('hourglassArt').classList.toggle('is-running',hourglassRunning);
  $('hourglassStart').setAttribute('aria-label',hourglassRunning?'5分休憩を一時停止する':s===0?'もう一度5分休憩する':'5分間の休憩を始める');
- $('hourglassState').textContent=s===0?'休憩が終わりました':hourglassRunning?'休憩中 · タップで一時停止':'砂時計をひっくり返す';
+ $('hourglassState').textContent=s===0?'終了 · 長押しで戻す':hourglassRunning?'休憩中 · タップで停止':'タップで休憩 · 長押しで戻す';
  const fraction=hourglassDuration?hourglassRemaining/hourglassDuration:0;
  $('hourglassSandTop').style.transform='scaleY('+Math.max(0,fraction)+')';
  $('hourglassSandBottom').style.transform='scaleY('+Math.max(0,1-fraction)+')';
