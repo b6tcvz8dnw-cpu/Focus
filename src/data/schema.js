@@ -40,8 +40,8 @@ function normalizeRecords(value) {
     const minutes = Number(raw.minutes);
     if (!Number.isFinite(timestamp) || timestamp <= 0 || !Number.isFinite(new Date(timestamp).getTime()) || !Number.isInteger(minutes) || minutes < 1 || minutes > 120) return;
     const date = validDateKey(raw.date) ? raw.date : dateKey(new Date(timestamp));
-    let id = typeof raw.id === "string" && raw.id.trim() ? raw.id.trim().slice(0, 100) : `legacy-${timestamp}-${index}`;
-    if (seen.has(id)) id = `${id}-${index}`;
+    const id = typeof raw.id === "string" && raw.id.trim() ? raw.id.trim().slice(0, 100) : `legacy-${timestamp}-${index}`;
+    if (seen.has(id)) return;
     seen.add(id);
     result.push({
       id,
