@@ -45,9 +45,9 @@ details summary{cursor:pointer;font-weight:700;font-size:14px} .settings{display
 [hidden]{display:none!important}
 main{padding-bottom:calc(104px + env(safe-area-inset-bottom))}
 .page{display:flex;flex-direction:column;gap:16px}
-.tabbar{position:fixed;z-index:10;bottom:0;left:50%;transform:translateX(-50%);width:min(100%,520px);padding:9px 18px calc(9px + env(safe-area-inset-bottom));display:grid;grid-template-columns:repeat(3,1fr);gap:8px;background:var(--tab-bg);border-top:1px solid var(--line);backdrop-filter:blur(14px)}
-.tab{border:0;border-radius:12px;background:transparent;color:var(--muted);padding:8px 4px;font-size:12px;display:flex;flex-direction:column;align-items:center;gap:3px}
-.tab span{font-size:20px;line-height:1.1}
+.tabbar{position:fixed;z-index:10;bottom:0;left:50%;transform:translateX(-50%);width:min(100%,520px);padding:7px 8px calc(7px + env(safe-area-inset-bottom));display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px;background:var(--tab-bg);border-top:1px solid var(--line);backdrop-filter:blur(14px)}
+.tab{border:0;border-radius:10px;background:transparent;color:var(--muted);padding:7px 2px;font-size:10px;display:flex;flex-direction:column;align-items:center;gap:3px;min-width:0}
+.tab span{font-size:18px;line-height:1.1}
 .tab.active{background:var(--accent2);color:var(--accent);font-weight:700}
 
 
@@ -98,8 +98,8 @@ textarea.field-select{font-family:inherit;resize:vertical;min-height:80px}
 <select class="field-select" id="subject"><option>数学</option><option>英語</option><option>国語</option><option>理科</option><option>社会</option><option>情報</option><option>その他</option></select>
 <div class="inline-row"><input id="newSubject" maxlength="24" placeholder="教科を追加（任意）"><button class="secondary" id="addSubject">追加</button></div>
 <label class="muted" for="task">学習内容</label><input id="task" maxlength="80" placeholder="例：数学の問題集を進める"></section>
-<section class="panel"><h2>環境音</h2><p class="muted" style="margin:-4px 0 10px">集中を助けるシンプルな環境音。端末内で生成するため、音源の通信は不要だよ。</p><div class="sound-controls"><button class="secondary" data-sound="off">オフ</button><button class="secondary" data-sound="rain">雨音</button><button class="secondary" data-sound="noise">静かなノイズ</button></div><label class="muted" for="soundVolume" style="display:block;margin-top:12px">音量</label><input id="soundVolume" type="range" min="0" max="30" value="10" style="margin:6px 0"></section>
-<section class="panel" id="reflectionPanel"><h2>セッションの振り返り</h2><p class="muted" id="reflectionPrompt" style="margin:-4px 0 8px">集中セッションのあと、気づいたことを短く残せるよ。</p><textarea class="field-select" id="reflection" maxlength="500" placeholder="例：思ったより進んだこと、次に取り組むこと…"></textarea><button class="secondary wide" id="saveReflection">振り返りを保存</button></section>
+<details class="panel"><summary>環境音を設定</summary><p class="muted" style="margin:12px 0 10px">集中を助けるシンプルな環境音。端末内で生成するため、音源の通信は不要だよ。</p><div class="sound-controls"><button class="secondary" data-sound="off">オフ</button><button class="secondary" data-sound="rain">雨音</button><button class="secondary" data-sound="noise">静かなノイズ</button></div><label class="muted" for="soundVolume" style="display:block;margin-top:12px">音量</label><input id="soundVolume" type="range" min="0" max="30" value="10" style="margin:6px 0"></details>
+<details class="panel" id="reflectionPanel"><summary>セッションの振り返り</summary><p class="muted" id="reflectionPrompt" style="margin:12px 0 8px">集中セッションのあと、気づいたことを短く残せるよ。</p><textarea class="field-select" id="reflection" maxlength="500" placeholder="例：思ったより進んだこと、次に取り組むこと…"></textarea><button class="secondary wide" id="saveReflection">振り返りを保存</button></details>
 
 </div>
 <div class="page" id="overviewPage" hidden>
@@ -115,10 +115,13 @@ textarea.field-select{font-family:inherit;resize:vertical;min-height:80px}
 </section>
 <section class="panel"><h2>アチーブメント</h2><p class="muted" style="margin:-4px 0 12px">累計の集中時間に応じて記録される達成バッジ。</p><div class="achievement-list" id="achievementList"></div><div class="achievement-next" id="achievementNext"></div></section>
 <section class="panel"><h2>目標の進み具合</h2><div id="goalProgress"></div><p class="muted" style="margin:10px 0 0">目標は設定画面から変更できるよ。達成できない日があっても、また次の日から始めれば大丈夫。</p></section>
-<section class="panel"><div class="calendar-head"><button id="monthPrev" aria-label="前の月">‹</button><h2 id="calendarTitle" style="margin:0">月間カレンダー</h2><button id="monthNext" aria-label="次の月">›</button></div><div class="calendar-grid" id="calendarGrid"></div><p class="muted" style="margin:10px 0 0">丸印が大きい日ほど集中時間が長いよ。</p></section>
-<section class="panel"><h2>学習履歴</h2><div class="muted" style="margin:-4px 0 10px">最近の集中セッション。記録の削除や修正もできるよ。</div><div class="history-list" id="historyList"></div></section>
-<section class="panel"><h2>学習分析</h2><div class="muted" style="margin:-4px 0 10px">記録されたセッションから集計。</div><div id="analyticsContent"></div></section>
+<section class="panel" id="calendarPanel"><div class="calendar-head"><button id="monthPrev" aria-label="前の月">‹</button><h2 id="calendarTitle" style="margin:0">月間カレンダー</h2><button id="monthNext" aria-label="次の月">›</button></div><div class="calendar-grid" id="calendarGrid"></div><p class="muted" style="margin:10px 0 0">丸印が大きい日ほど集中時間が長いよ。</p></section>
+<section class="panel" id="historyPanel"><h2>学習履歴</h2><div class="muted" style="margin:-4px 0 10px">最近の集中セッション。記録の削除や修正もできるよ。</div><div class="history-list" id="historyList"></div></section>
+<section class="panel" id="analyticsPanel"><h2>学習分析</h2><div class="muted" style="margin:-4px 0 10px">記録されたセッションから集計。</div><div id="analyticsContent"></div></section>
 </div>
+<div class="page" id="calendarPage" hidden><section class="panel"><h2>月間カレンダー</h2><p class="muted" style="margin:-4px 0 12px">日ごとの学習時間を確認できるよ。</p></section></div>
+<div class="page" id="historyPage" hidden><section class="panel"><h2>学習履歴</h2><p class="muted" style="margin:-4px 0 12px">完了したセッションの記録を確認・編集できるよ。</p></section></div>
+<div class="page" id="analyticsPage" hidden><section class="panel"><h2>学習分析</h2><p class="muted" style="margin:-4px 0 12px">教科別・曜日別の傾向を確認できるよ。</p></section></div>
 
 <div class="page" id="settingsPage" hidden>
  <section class="panel"><h2>タイマー</h2>
@@ -152,7 +155,10 @@ textarea.field-select{font-family:inherit;resize:vertical;min-height:80px}
 </div>
 <nav class="tabbar" aria-label="ページ切り替え">
  <button class="tab active" data-page="timerPage"><span>◷</span>タイマー</button>
- <button class="tab" data-page="overviewPage"><span>▥</span>学習記録</button>
+ <button class="tab" data-page="overviewPage"><span>▥</span>概要</button>
+ <button class="tab" data-page="calendarPage"><span>▦</span>カレンダー</button>
+ <button class="tab" data-page="historyPage"><span>≡</span>履歴</button>
+ <button class="tab" data-page="analyticsPage"><span>⌁</span>分析</button>
  <button class="tab" data-page="settingsPage"><span>⚙</span>設定</button>
 </nav>
 <div class="foot"><span>FOCUS · STUDY TIMER</span></div><div id="toast" role="status" aria-live="polite">自分のペースで、一歩ずつ。</div>
@@ -263,6 +269,7 @@ $('exportData').onclick=()=>{const payload={app:'FOCUS',version:2,exportedAt:new
 $('importData').onchange=async e=>{const file=e.target.files[0];if(!file)return;try{const obj=JSON.parse(await file.text()),s=obj.stats;if(obj.app!=='FOCUS'||!s||!Array.isArray(s.records)||!confirm('現在の学習記録をバックアップの内容で置き換える？'))return;records=s.records.filter(r=>r&&Number.isFinite(Number(r.timestamp))&&Number.isFinite(Number(r.minutes))&&Number(r.minutes)>0).map(r=>({...r,minutes:Number(r.minutes)}));subjects=Array.isArray(s.subjects)?s.subjects.filter(x=>typeof x==='string').slice(0,50):subjects;dailyGoal=Number(s.dailyGoal)||60;weeklyGoal=Number(s.weeklyGoal)||300;const importedTotals={};records.forEach(r=>{const k=r.date||dateKey(new Date(r.timestamp));importedTotals[k]=(importedTotals[k]||0)+r.minutes});legacyCompleted=Math.max(0,(Number(s.completed)||0)-records.length);legacyMinutes=Math.max(0,(Number(s.minutes)||0)-records.reduce((a,r)=>a+r.minutes,0));legacyHistory=Object.fromEntries(Object.entries(s.history||{}).map(([k,v])=>[k,Math.max(0,Number(v||0)-(importedTotals[k]||0))]));recalculateStats();$('task').value=typeof s.task==='string'?s.task:'';if(obj.timerSettings){localStorage.setItem('focus-timer-settings',JSON.stringify(obj.timerSettings))}save();localStorage.setItem('focus-stats',JSON.stringify({...s,completed,minutes,history,records,subjects,dailyGoal,weeklyGoal}));rebuildSubjectOptions(s.subject);$('dailyGoal').value=dailyGoal;$('weeklyGoal').value=weeklyGoal;renderAllRecords();$('toast').textContent='バックアップを読み込んだよ。ページを再読み込みすると設定も反映されるよ。'}catch(err){$('toast').textContent='ファイルを読み込めなかったよ。FOCUSのJSONバックアップか確認してね。'}finally{e.target.value=''}};
 
 if('serviceWorker'in navigator){let refreshing=false;navigator.serviceWorker.addEventListener('controllerchange',()=>{if(!refreshing){refreshing=true;window.location.reload();}});window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').then(reg=>reg.update()).catch(()=>{}));}
+$('calendarPage').appendChild($('calendarPanel'));$('historyPage').appendChild($('historyPanel'));$('analyticsPage').appendChild($('analyticsPanel'));
 update();updateChart();
 </script>
 </body></html>
