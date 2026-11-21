@@ -9,6 +9,7 @@ import {
   getStudySkyLevel
 } from "../src/core/date-time.js";
 import { createStorage } from "../src/data/storage.js";
+import { getRemainingSeconds, getNextBreakMode } from "../src/core/timer.js";
 
 const read = (path) => readFile(new URL(path, import.meta.url), "utf8");
 
@@ -47,7 +48,7 @@ test("application entrypoint is a module and parses after its imports", async ()
   const executable = script.replace(/^\s*import\s+[^;]+;\s*/gm, "");
   assert.doesNotThrow(() => new vm.Script(executable, { filename: "index.html:module-body" }));
   assert.ok(script.includes("./src/core/date-time.js"), "date-time module should be imported");
-  assert.ok(script.includes("./src/data/storage.js"), "storage module should be imported");
+  assert.ok(script.includes("./src/data/storage.js", "./src/core/timer.js"), "storage module should be imported");
   assert.ok(!script.includes("localStorage."), "app should use the storage adapter");
 });
 
@@ -83,7 +84,7 @@ test("PWA manifest remains valid and standalone-capable", async () => {
 test("service worker caches the extracted modules with a new version", async () => {
   const sw = await read("../sw.js");
   const cacheName = sw.match(/const CACHE='([^']+)'/)?.[1];
-  assert.equal(cacheName, "focus-pwa-v32");
+  assert.equal(cacheName, "focus-pwa-v33");
   for (const asset of [
     "./index.html", "./manifest.webmanifest", "./icon.svg",
     "./src/core/date-time.js", "./src/data/storage.js"
@@ -165,4 +166,18 @@ test("storage adapter safely handles malformed JSON and unavailable storage", ()
   const unavailable = createStorage(() => { throw new Error("storage blocked"); });
   assert.equal(unavailable.getText("key", "fallback"), "fallback");
   assert.equal(unavailable.setText("key", "value"), false);
+});
+
+test("getRemainingSeconds uses an absolute deadline and never goes below zero", () => {
+  assert.equal(getRemainingSeconds(11000, 1000), 10);
+  assert.equal(getRemainingSeconds(1000, 1000), 0);
+  assert.equal(getRemainingSeconds(0, 1000), 0);
+});
+
+test("getNextBreakMode preserves short and long break cycle behavior", () => {
+  assert.equal(getNextBreakMode(1, 4), "short");
+  assert.equal(getNextBreakMode(3, 4), "short");
+  assert.equal(getNextBreakMode(4, 4), "long");
+  assert.equal(getNextBreakMode(8, 4), "long");
+  assert.equal(getNextBreakMode(6, 3), "long");
 });
