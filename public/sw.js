@@ -1,5 +1,6 @@
-const CACHE='focus-pwa-v30';
-const FILES=['./','./index.html','./manifest.webmanifest','./icon.svg','./icon-192.png','./icon-512.png'];
+const CACHE='focus-pwa-v41';
+const BUILD_ASSETS = [];
+const FILES=['./','./index.html','./manifest.webmanifest','./icon.svg','./icon-192.png','./icon-512.png',...BUILD_ASSETS];
 
 self.addEventListener('install',event=>{
   event.waitUntil(
@@ -19,8 +20,6 @@ self.addEventListener('activate',event=>{
 
 self.addEventListener('fetch',event=>{
   if(event.request.method!=='GET') return;
-
-  // Always check the network for page navigations so installed apps can receive updates.
   if(event.request.mode==='navigate' || event.request.url.endsWith('/index.html')){
     event.respondWith(
       fetch(event.request)
@@ -33,7 +32,6 @@ self.addEventListener('fetch',event=>{
     );
     return;
   }
-
   event.respondWith(
     caches.match(event.request)
       .then(hit=>hit||fetch(event.request).then(response=>{
