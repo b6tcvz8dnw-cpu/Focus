@@ -54,6 +54,47 @@ body.timer-large-mode #timerPanel .hint{margin:0}
 body.timer-large-mode #timerPage>details,body.timer-large-mode .tabbar,body.timer-large-mode header,body.timer-large-mode .foot,body.timer-large-mode #toast{visibility:hidden}
 body.timer-large-mode #timerPanel #largeToggle{border-color:var(--accent);background:var(--accent2);color:var(--text)}
 @media (orientation:landscape){body.timer-large-mode #timerPanel{gap:8px}body.timer-large-mode #timerPanel .timer{width:min(48vh,360px);margin:4px auto}body.timer-large-mode #timerPanel .clock{font-size:clamp(58px,12vw,100px)}}
+/* Quiet ambient room */
+.chill-overlay{position:fixed;inset:0;z-index:300;display:none;overflow:hidden;color:#f4f1e9;background:#10151a}
+.chill-overlay.open{display:flex;flex-direction:column}
+.chill-scene{position:absolute;inset:0;overflow:hidden;transition:background 1s ease}
+.chill-scene:before,.chill-scene:after{content:"";position:absolute;inset:-15%;pointer-events:none}
+.scene-rain{background:radial-gradient(ellipse at 50% 20%,#45586a 0,#202d3a 42%,#111923 100%)}
+.scene-rain:before{inset:0;background:repeating-linear-gradient(105deg,transparent 0 17px,rgba(190,215,231,.12) 18px,transparent 19px 31px);animation:rainDrift 1.8s linear infinite;mask-image:linear-gradient(transparent,#000 15%,#000 90%,transparent)}
+.scene-rain:after{inset:12% 8% 10%;border:10px solid rgba(15,23,30,.8);box-shadow:inset 0 0 35px #101923,0 0 0 2px rgba(205,220,226,.16);background:linear-gradient(90deg,transparent 49.5%,rgba(20,29,37,.72) 50%,transparent 50.8%),linear-gradient(0deg,transparent 49.5%,rgba(20,29,37,.72) 50%,transparent 50.8%);opacity:.65}
+.scene-window{position:absolute;inset:12% 8% 10%;background:radial-gradient(ellipse at 70% 25%,rgba(190,204,220,.2),transparent 35%),linear-gradient(155deg,rgba(109,140,163,.2),transparent 50%);filter:blur(1px)}
+.scene-moon{position:absolute;width:90px;height:90px;border-radius:50%;top:18%;right:20%;background:#e6e0c8;box-shadow:0 0 55px 18px rgba(222,215,185,.16);opacity:.65}
+.scene-horizon{position:absolute;left:0;right:0;bottom:0;height:28%;background:linear-gradient(0deg,#0b1118,rgba(14,24,33,.1));}
+.scene-ambient{position:absolute;inset:0;background:linear-gradient(180deg,rgba(7,12,18,.15),rgba(7,12,18,.5))}
+.scene-night{background:radial-gradient(ellipse at 50% 85%,#38476a 0,#1b2440 38%,#090f20 100%)}
+.scene-night:before{inset:0;background-image:radial-gradient(2px 2px at 12% 20%,#fff,transparent 80%),radial-gradient(1px 1px at 28% 35%,#fff,transparent 80%),radial-gradient(2px 2px at 72% 16%,#fff,transparent 80%),radial-gradient(1px 1px at 84% 42%,#fff,transparent 80%),radial-gradient(1px 1px at 55% 28%,#fff,transparent 80%),radial-gradient(2px 2px at 42% 12%,#fff,transparent 80%),radial-gradient(1px 1px at 92% 12%,#fff,transparent 80%);background-size:100% 100%;animation:starGlow 5s ease-in-out infinite alternate}
+.scene-night:after{inset:auto -10% -28%;height:55%;border-radius:50% 50% 0 0;background:linear-gradient(145deg,#18223b,#0b1225 70%);box-shadow:0 -20px 70px rgba(120,146,194,.12)}
+.scene-forest{background:radial-gradient(ellipse at 50% 35%,#647b67 0,#263d37 44%,#101d1b 100%)}
+.scene-forest:before{inset:auto -5% -3%;height:58%;background:linear-gradient(135deg,transparent 10%,rgba(6,22,19,.75) 10.5% 15%,transparent 15.5%),linear-gradient(45deg,transparent 20%,rgba(9,29,24,.8) 20.5% 27%,transparent 27.5%),linear-gradient(160deg,transparent 30%,rgba(8,24,22,.7) 30.5% 37%,transparent 37.5%),linear-gradient(0deg,#0b1916,transparent);filter:blur(2px)}
+.scene-forest:after{background:radial-gradient(ellipse at 50% 45%,rgba(223,222,174,.18),transparent 45%);animation:mist 9s ease-in-out infinite alternate}
+.scene-ocean{background:linear-gradient(180deg,#1c3b55 0,#47778a 48%,#d0a987 100%)}
+.scene-ocean:before{inset:auto -15% 12%;height:38%;border-radius:48% 52% 0 0;background:repeating-linear-gradient(175deg,rgba(220,232,221,.18) 0 2px,transparent 3px 22px),linear-gradient(180deg,#527d87,#203f50);animation:wave 8s ease-in-out infinite alternate}
+.scene-ocean:after{inset:auto -10% -18%;height:34%;border-radius:50% 50% 0 0;background:linear-gradient(180deg,#172e3a,#101b24)}
+.chill-top{position:relative;z-index:2;display:flex;justify-content:space-between;align-items:center;padding:calc(18px + env(safe-area-inset-top)) 22px 0}
+.chill-brand{font-size:11px;letter-spacing:2px;font-weight:800}.chill-brand span{opacity:.6;font-weight:500}
+.chill-close{width:42px;height:42px;border:1px solid rgba(255,255,255,.24);border-radius:50%;background:rgba(0,0,0,.18);color:white;font-size:26px;line-height:1}
+.chill-content{position:relative;z-index:2;margin:auto;width:min(100% - 36px,620px);text-align:center;padding:24px 0 calc(26px + env(safe-area-inset-bottom));text-shadow:0 2px 18px rgba(0,0,0,.35)}
+.chill-eyebrow{font-size:10px;letter-spacing:4px;opacity:.7}
+.chill-content h2{font-size:clamp(26px,7vw,42px);font-weight:500;letter-spacing:3px;margin:15px 0 10px}
+.chill-content p{font-size:13px;letter-spacing:1px;opacity:.82;margin:0 auto;max-width:330px;line-height:1.9}
+.chill-clock{font-size:clamp(35px,10vw,58px);font-weight:300;letter-spacing:3px;font-variant-numeric:tabular-nums;margin-top:32px}
+.chill-timer-label{font-size:10px;letter-spacing:2px;opacity:.65;margin-top:1px}
+.chill-scenes{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin:30px auto 17px}
+.chill-scene-choice{border:1px solid rgba(255,255,255,.25);border-radius:30px;padding:9px 14px;background:rgba(7,14,20,.22);color:#fff;font-size:12px;backdrop-filter:blur(8px)}
+.chill-scene-choice.active{background:rgba(255,255,255,.2);border-color:rgba(255,255,255,.75)}
+.chill-auto{display:inline-flex;align-items:center;gap:8px;font-size:11px;opacity:.8}
+.chill-auto input{width:16px;height:16px;margin:0;accent-color:#d8e6df}
+.chill-footer{font-size:10px;letter-spacing:2px;opacity:.55;margin-top:26px}
+@keyframes rainDrift{from{transform:translateY(-20px)}to{transform:translateY(30px)}}
+@keyframes starGlow{from{opacity:.65}to{opacity:1}}
+@keyframes mist{from{transform:translateX(-4%);opacity:.4}to{transform:translateX(4%);opacity:.8}}
+@keyframes wave{from{transform:translateX(-2%) translateY(2%)}to{transform:translateX(2%) translateY(-2%)}}
+@media(prefers-reduced-motion:reduce){.chill-scene:before,.chill-scene:after{animation:none!important}}
 [hidden]{display:none!important}
 main{padding-bottom:calc(104px + env(safe-area-inset-bottom))}
 .page{display:flex;flex-direction:column;gap:16px}
@@ -102,7 +143,8 @@ textarea.field-select{font-family:inherit;resize:vertical;min-height:80px}
 <section class="panel" id="timerPanel">
  <div class="modes"><button class="mode active" data-mode="focus">集中</button><button class="mode" data-mode="short">短い休憩</button><button class="mode" data-mode="long">長い休憩</button></div>
  <div class="timer"><svg class="ring" viewBox="0 0 200 200"><circle class="track" cx="100" cy="100" r="88"/><circle class="progress" id="progress" cx="100" cy="100" r="88"/></svg><div style="text-align:center"><div class="clock" id="clock">25:00</div><div class="mode-label" id="modeLabel">集中する時間</div></div></div>
- <div class="controls"><button class="secondary" id="reset">↺ リセット</button><button class="primary" id="start">▶ スタート</button><button class="secondary" id="skip">次へ →</button><button class="secondary" id="largeToggle" aria-pressed="false">⛶ 大画面</button></div>
+ <div class="controls"><button class="secondary" id="openChill">✧ チル空間</button></div>
+<div class="controls"><button class="secondary" id="reset">↺ リセット</button><button class="primary" id="start">▶ スタート</button><button class="secondary" id="skip">次へ →</button><button class="secondary" id="largeToggle" aria-pressed="false">⛶ 大画面</button></div>
  <p class="hint" id="hint">25分間、ひとつのことに集中しよう。</p>
 </section>
 
@@ -161,6 +203,14 @@ textarea.field-select{font-family:inherit;resize:vertical;min-height:80px}
  <details class="panel"><summary>目標設定</summary><div class="settings"><label>1日の目標（分）<input id="dailyGoal" type="number" min="0" max="1440" value="60"></label><label>1週間の目標（分）<input id="weeklyGoal" type="number" min="0" max="10080" value="300"></label></div><button class="secondary wide" id="saveGoals">目標を保存</button></details>
 <details class="panel"><summary>データ管理</summary><p class="muted">学習記録はこの端末のブラウザ内に保存されるよ。バックアップを保存しておけば、機種変更時などに手動で引き継げるよ。</p><button class="secondary wide" id="exportData">学習データを書き出す（JSON）</button><label class="import-label">バックアップを読み込む<input id="importData" type="file" accept="application/json,.json" style="display:none"></label><button class="secondary wide" id="clear">今日の記録をリセット</button></details>
 </div>
+<section id="chillOverlay" class="chill-overlay" aria-label="チル空間" aria-hidden="true">
+ <div class="chill-scene scene-rain" id="chillScene" aria-hidden="true"><div class="scene-window"></div><div class="scene-moon"></div><div class="scene-horizon"></div><div class="scene-ambient"></div></div>
+ <div class="chill-top"><div class="chill-brand">FOCUS <span>· SLOW DOWN</span></div><button class="chill-close" id="closeChill" aria-label="チル空間を閉じる">×</button></div>
+ <div class="chill-content"><div class="chill-eyebrow" id="chillEyebrow">A QUIET MOMENT</div><h2 id="chillTitle">雨の降る窓辺</h2><p id="chillCaption">急がなくていい。今は、ここにいるだけでいい。</p><div class="chill-clock" id="chillClock">--:--</div><div class="chill-timer-label" id="chillTimerLabel">休憩の残り時間</div>
+ <div class="chill-scenes" role="group" aria-label="空間を選ぶ"><button class="chill-scene-choice active" data-scene="rain">雨の窓辺</button><button class="chill-scene-choice" data-scene="night">星空</button><button class="chill-scene-choice" data-scene="forest">森</button><button class="chill-scene-choice" data-scene="ocean">海辺</button></div>
+ <label class="chill-auto"><input type="checkbox" id="autoChill"> 休憩を始めたら自動で開く</label>
+ <div class="chill-footer">何もしない時間にも、ちゃんと意味がある。</div></div>
+</section>
 <nav class="tabbar" aria-label="ページ切り替え">
  <button class="tab active" data-page="timerPage"><span>◷</span>タイマー</button>
  <button class="tab" data-page="overviewPage"><span>▥</span>概要</button>
@@ -201,7 +251,7 @@ function updateAchievements(){
  $('achievementNext').textContent=next?'次の達成まで：あと'+(next.minutes-minutes)+'分':'すべてのアチーブメントを達成！';
 }
 function update(){
- $('clock').textContent=fmt(remaining);$('modeLabel').textContent=labels[mode];$('hint').textContent=hints[mode];
+ $('clock').textContent=fmt(remaining);if($('chillOverlay')&&$('chillOverlay').classList.contains('open'))updateChillClock();$('modeLabel').textContent=labels[mode];$('hint').textContent=hints[mode];
  $('status').textContent=running?'● FOCUSING':finished?'● COMPLETED':'● READY';
  $('start').textContent=running?'Ⅱ 一時停止':'▶ スタート';
  $('progress').style.strokeDasharray=circ;$('progress').style.strokeDashoffset=circ*(1-remaining/total);
@@ -211,7 +261,21 @@ function update(){
  document.title=fmt(remaining)+' | FOCUS';
  document.querySelectorAll('[data-mode]').forEach(b=>b.classList.toggle('active',b.dataset.mode===mode));
 }
-function setMode(m){stop();mode=m;finished=false;remaining=durations[m]*60;total=remaining;update()}
+const chillScenes={
+ rain:{title:'雨の降る窓辺',caption:'急がなくていい。今は、ここにいるだけでいい。',eyebrow:'A QUIET MOMENT'},
+ night:{title:'星の降る夜',caption:'遠くの光を眺めながら、少しだけ肩の力を抜こう。',eyebrow:'UNDER THE STARS'},
+ forest:{title:'木漏れ日の森',caption:'風が通り過ぎるように、考えごとも流していこう。',eyebrow:'INTO THE WOODS'},
+ ocean:{title:'静かな海辺',caption:'波が寄せては返す。そのくらいの速さでいい。',eyebrow:'BY THE OCEAN'}
+};
+function setChillScene(name){const s=chillScenes[name]||chillScenes.rain;$('chillScene').className='chill-scene scene-'+name;$('chillTitle').textContent=s.title;$('chillCaption').textContent=s.caption;$('chillEyebrow').textContent=s.eyebrow;document.querySelectorAll('[data-scene]').forEach(b=>b.classList.toggle('active',b.dataset.scene===name));localStorage.setItem('focus-chill-scene',name)}
+function openChill(){if(document.body.classList.contains('timer-large-mode'))setLargeMode(false);$('chillOverlay').classList.add('open');$('chillOverlay').setAttribute('aria-hidden','false');setChillScene(localStorage.getItem('focus-chill-scene')||'rain');$('autoChill').checked=localStorage.getItem('focus-auto-chill')==='true';updateChillClock()}
+function closeChill(){$('chillOverlay').classList.remove('open');$('chillOverlay').setAttribute('aria-hidden','true')}
+function updateChillClock(){$('chillClock').textContent=fmt(remaining);$('chillTimerLabel').textContent=(mode==='focus'?'集中時間の残り':'休憩の残り時間')+' · '+(running?'進行中':'一時停止中')}
+$('openChill').onclick=openChill;$('closeChill').onclick=closeChill;
+document.querySelectorAll('[data-scene]').forEach(b=>b.onclick=()=>setChillScene(b.dataset.scene));
+$('autoChill').onchange=()=>localStorage.setItem('focus-auto-chill',String($('autoChill').checked));
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&$('chillOverlay').classList.contains('open'))closeChill()});
+function setMode(m){stop();mode=m;finished=false;remaining=durations[m]*60;total=remaining;update();if((m==="short"||m==="long")&&localStorage.getItem("focus-auto-chill")==="true")openChill()}
 function notify(title){if('Notification'in window&&Notification.permission==='granted')new Notification(title,{body:'FOCUS — 学習タイマー'});$('toast').textContent=title}
 function complete(){stop();remaining=0;finished=true;if(mode==='focus'){completed++;minutes+=durations.focus;const key=dateKey(new Date());history[key]=(Number(history[key])||0)+durations.focus;save()}update();updateChart();notify(mode==='focus'?'集中セッション完了！お疲れさま。':'休憩終了！次の集中に備えよう。');try{let C=window.AudioContext||window.webkitAudioContext;if(C){let c=new C(),o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);g.gain.value=.07;o.frequency.value=660;o.start();o.stop(c.currentTime+.3)}}catch(e){}}
 function tick(){remaining=Math.max(0,Math.ceil((deadline-Date.now())/1000));if(!remaining)complete();else update()}
