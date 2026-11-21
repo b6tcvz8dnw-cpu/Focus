@@ -4,9 +4,8 @@
 
 The current Pages configuration was confirmed by the project owner:
 
-- Source: Deploy from a branch
-- Branch: `main`
-- Folder: `/ (root)`
+- Source: GitHub Actions (the project owner confirmed the setting was changed on 2026-11-21)
+- Previous source: Deploy from a branch / `main` / `/ (root)`
 - Public URL: https://b6tcvz8dnw-cpu.github.io/Focus/
 
 The current production site must remain unchanged while the Vite migration is reviewed.
@@ -19,12 +18,11 @@ The Pages deployment workflow builds `dist/` and publishes it using the official
 
 ## Safe cutover sequence
 
-1. Keep the current production site on `main / (root)` while the pull request is a draft and device checks are pending.
-2. Before merging the migration, open **Repository Settings → Pages → Build and deployment** and change **Source** from **Deploy from a branch** to **GitHub Actions**. Do not select a branch or folder after choosing Actions.
-3. Confirm the setting is saved. Do not merge until the Pages source shows GitHub Actions.
-4. Merge the reviewed pull request. The push to `main` starts the Pages workflow, which runs tests, builds `dist/`, and deploys that artifact.
-5. In **Actions**, confirm the `FOCUS Pages deployment` run succeeds and its deploy job publishes the expected `https://b6tcvz8dnw-cpu.github.io/Focus/` URL.
-6. Verify the live URL on iPhone Safari and from the Home Screen: launch, timer, break transition, Study Room, manifest/install behavior, offline launch, and preservation of existing local records.
+1. The project owner has changed **Repository Settings → Pages → Build and deployment → Source** to **GitHub Actions**.
+2. Keep the pull request in draft until the recovery changes, tests, and iPhone smoke tests are reviewed.
+3. After explicit approval, merge the reviewed pull request. The push to `main` starts the Pages workflow, which runs tests, builds `dist/`, and deploys that artifact.
+4. In **Actions**, confirm the `FOCUS Pages deployment` run succeeds and its deploy job publishes the expected `https://b6tcvz8dnw-cpu.github.io/Focus/` URL.
+5. Verify the live URL on iPhone Safari and from the Home Screen: launch, timer, break transition, Study Room, manifest/install behavior, offline launch, and preservation of existing local records.
 
 ## Rollback caution
 
@@ -34,5 +32,5 @@ Do not switch Pages back to `main / (root)` after the migration is merged. The r
 
 - The Vite build and CI workflow are prepared on `refactor/foundation`.
 - The Pages deployment workflow is configured to build on pull requests without deploying, and to deploy only from `main` or manual dispatch.
-- The repository Pages setting itself is managed in GitHub Settings and has not been changed by this project work.
+- The project owner confirmed that the Pages source is now GitHub Actions; the first deployment still waits for merging the reviewed PR.
 - No production deployment has been triggered by this migration work.
