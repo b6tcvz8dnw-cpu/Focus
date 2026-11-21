@@ -15,9 +15,11 @@
 - PWAマニフェスト: `manifest.webmanifest`
 - Service Worker: `sw.js`
 - アイコン: `icon.svg`、PNGアイコン
-- データ保存: ブラウザの `localStorage`
+- データ保存: ブラウザの `localStorage`（`src/data/storage.js` の防御的アダプター経由）
 - 外部ライブラリ: なし（Node.js標準テストのみ）
-- モジュール: `formatClock`, `dateKey`, `buildWeekData`, `getStudySkyLevel` を独立モジュールへ抽出済み
+- モジュール: `src/core/date-time.js`（`formatClock`, `dateKey`, `buildWeekData`, `getStudySkyLevel`）
+- 保存層: `src/data/storage.js`（文字列・JSONの読み書き、利用不可・不正JSONへの防御処理）
+- アプリ本体の保存API直接呼び出し: 0件
 
 ## 画面
 
@@ -57,7 +59,7 @@
 ## 主なリスク
 
 1. タイマー、統計、履歴、表示が同じスクリプト内で相互参照している。
-2. `localStorage` の直接操作が複数箇所にある。
+2. 保存層はアダプターへ集約済み。今後の保存処理もアダプターを経由する。
 3. 画面要素IDを使ったDOM操作が広範囲にある。
 4. Service Workerのキャッシュ更新とGitHub Pagesの公開を同時に変更すると、古い資産が残る可能性がある。
 5. 書斎の描画・天候取得・砂時計は既存挙動を保ったまま切り離す必要がある。
