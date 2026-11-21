@@ -7,7 +7,8 @@
 ## 現状
 
 - エントリーポイント: `index.html`
-- HTML/CSS/JavaScript: 現在は単一HTMLに集約
+- HTML/CSS: 現在は単一HTMLに集約
+- JavaScript: エントリー処理はHTML内のmodule script、純粋な日付・時刻処理は `src/core/date-time.js`
 - `index.html`: 約128 KB / 約1,336行
 - インラインJavaScript: 約254行、約40個の関数
 - CSS: 1つのインライン `<style>`
@@ -15,7 +16,8 @@
 - Service Worker: `sw.js`
 - アイコン: `icon.svg`、PNGアイコン
 - データ保存: ブラウザの `localStorage`
-- 外部ライブラリ: 現行エントリーポイントに外部script参照なし
+- 外部ライブラリ: なし（Node.js標準テストのみ）
+- モジュール: `formatClock`, `dateKey`, `buildWeekData`, `getStudySkyLevel` を独立モジュールへ抽出済み
 
 ## 画面
 
@@ -62,7 +64,8 @@
 
 ## 推奨分割順
 
-1. 純粋関数（日付・時間フォーマットなど）
+1. ~~純粋関数（日付・時間フォーマットなど）~~ 完了
+   - `src/core/date-time.js` に抽出し、境界値テストを追加
 2. 保存層とデータ形式
 3. タイマー状態管理
 4. 学習記録・統計
