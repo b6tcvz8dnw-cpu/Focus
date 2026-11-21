@@ -32,7 +32,7 @@ export function buildWeekData(history, now = new Date()) {
     data.push({
       key,
       label: ["日", "月", "火", "水", "木", "金", "土"][date.getDay()],
-      minutes: Math.max(0, Number(history[key] || 0))
+      minutes: Number.isFinite(Number(history?.[key])) ? Math.max(0, Number(history[key])) : 0
     });
   }
   return data;
