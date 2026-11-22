@@ -242,8 +242,8 @@ test("PWA manifest remains valid and standalone-capable", async () => {
   assert.equal(manifest.short_name, "FOCUS");
   assert.equal(manifest.display, "standalone");
   assert.ok(Array.isArray(manifest.icons) && manifest.icons.length >= 1);
-  assert.equal(manifest.icons[0].src, "icon.svg");
-  assert.equal(manifest.icons[0].type, "image/svg+xml");
+  assert.equal(manifest.icons[0].src, "icons/icon-planet.png");
+  assert.equal(manifest.icons[0].type, "image/png");
 });
 
 test("app refreshes deadline-based timers after a back-forward cache restore", async () => {
