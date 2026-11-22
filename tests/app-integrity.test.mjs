@@ -155,7 +155,7 @@ test("hourglass CSS uses real rule separators and production cache is versioned"
   assert.ok(css.includes(".hourglass-grain{fill:var(--accent)"));
   assert.ok(css.includes(".hourglass-art.is-running .hourglass-grain{animation:sand-grain-fall"));
   const sw = await read("../public/sw.js");
-  assert.ok(sw.includes("focus-pwa-v31"));
+  assert.ok(sw.includes("focus-pwa-v32"));
 });
 
 test("calendar and analytics panels are mounted in their matching tabs", async () => {
@@ -258,7 +258,7 @@ test("Study Room animations pause while another page is selected", async () => {
 test("production service worker caches only successful responses and waits for cache writes", async () => {
   const sw = await read("../public/sw.js");
   const cacheName = sw.match(/const CACHE='([^']+)'/)?.[1];
-  assert.equal(cacheName, "focus-pwa-v31");
+  assert.equal(cacheName, "focus-pwa-v32");
   for (const asset of [
     "./index.html", "./manifest.webmanifest", "./icon.svg", "./icon-192.png", "./icon-512.png"
   ]) {
@@ -322,7 +322,7 @@ test("Study Room sky progression preserves all existing thresholds", () => {
 
 test("production Service Worker only manages production-owned caches", async () => {
   const sw = await read("../public/sw.js");
-  assert.ok(sw.includes("const CACHE='focus-pwa-v31';"));
+  assert.ok(sw.includes("const CACHE='focus-pwa-v32';"));
   assert.ok(sw.includes("const CACHE_PREFIX='focus-pwa-';"));
   assert.ok(sw.includes("key.startsWith(CACHE_PREFIX) && key!==CACHE"));
 });
@@ -576,7 +576,7 @@ test("startup restores timer only after statistics and completion callbacks are 
   const restore = script.indexOf("timerController.restore()");
   const controller = script.indexOf("timerController=createTimerController(");
   assert.ok(controller >= 0 && statsLoad > controller && restore > statsLoad);
-  assert.ok(script.includes("onFocusComplete(){"), "focus completion callback must be registered before restore");
+  assert.ok(script.includes("onFocusComplete({actualSeconds="), "focus completion callback must be registered before restore");
   assert.ok(script.includes("if(appReady){"), "startup completion must defer UI-only effects");
   assert.ok(script.includes("appReady=true;"), "UI becomes ready after initial rendering");
   const timer = await read("../src/features/timer-controller.js");
@@ -615,8 +615,8 @@ test("focus completion callback is the only session-record creation path", async
   const script = await read("../src/main.js");
   const created = [...script.matchAll(/statsStore\.addSession\(record\)/g)];
   assert.equal(created.length, 1);
-  assert.ok(script.includes("onFocusComplete(){"));
-  assert.ok(script.includes("minutes:durations.focus"));
+  assert.ok(script.includes("onFocusComplete({actualSeconds="));
+  assert.ok(script.includes("minutes:Math.min(120,actualMinutes)"));
   assert.ok(script.includes("if(appReady){"));
 });
 
@@ -1232,7 +1232,7 @@ test("Study Room scene and weather logic are isolated in a feature module", asyn
   const main = await read("../src/main.js");
   const room = await read("../src/features/study-room.js");
   assert.ok(main.includes("import { mountStudyRoom } from './features/study-room.js'"));
-  assert.ok(main.includes("const studyRoom = mountStudyRoom({ updateSky: updateStudySky })"));
+  assert.ok(main.includes("const studyRoom = mountStudyRoom({ updateSky: updateStudySky, storage })"));
   assert.ok(main.includes("studyRoom.onVisible()"));
   assert.doesNotMatch(main, /function updateStudyRoom|function loadStudyRoomWeather|const studyRoomSeasons/);
   assert.ok(room.includes("export function mountStudyRoom"));
@@ -1249,7 +1249,7 @@ test("Study Room scene and weather logic are isolated in a feature module", asyn
 test("Study Room keeps weather refresh, date updates, and sky progress connected", async () => {
   const main = await read("../src/main.js");
   const room = await read("../src/features/study-room.js");
-  assert.ok(main.includes("studyRoom.update();studyRoom.loadWeather()"));
+  assert.ok(main.includes("studyRoom.onEnter();studyRoom.loadWeather()"));
   assert.ok(main.includes("hourglass.tick();timerController.setVisible(true);hourglass.setVisible(true);studyRoom.onVisible()"));
   assert.ok(room.includes("window.setInterval(()=>{if(!root.hidden&&!$('studyRoomPage')?.hidden)update()},60000)"));
   assert.ok(room.includes("updateSky();"));
@@ -1313,7 +1313,7 @@ test("timer controller starts, pauses, and persists a deadline-based runtime", (
   h.controller.start();
   assert.deepEqual(h.controller.getState(), {
     durations: { focus: 1, short: 1, long: 2 }, mode: "focus",
-    remaining: 60, total: 60, running: true, deadline: 61000, finished: false
+    remaining: 60, total: 60, running: true, deadline: 61000, finished: false, focusElapsedSeconds: 0
   });
   h.advance(12500);
   h.controller.pause();
@@ -2090,4 +2090,187 @@ test("build verifies static PWA shell assets are included in the Service Worker 
   assert.match(buildScript, /const staticPwaAssets = \[/);
   assert.match(buildScript, /Built Service Worker is missing static PWA asset/);
   assert.match(buildScript, /Generated PWA asset list contains duplicate paths/);
+});
+
+
+test("timer controller tracks actual focus time across pause and resume", () => {
+  let clock = 100000;
+  const values = new Map();
+  const store = {
+    setJSON: (key, value) => { values.set(key, structuredClone(value)); return true; },
+    getJSON: (key, fallback) => values.has(key) ? structuredClone(values.get(key)) : fallback
+  };
+  let completed = null;
+  const controller = createTimerController({
+    durations: { focus: 2, short: 1, long: 2 },
+    store,
+    now: () => clock,
+    schedule: () => 1,
+    cancel: () => {},
+    onFocusComplete: (result) => { completed = result; }
+  });
+  controller.start();
+  clock += 30000;
+  controller.pause();
+  assert.equal(controller.getState().focusElapsedSeconds, 30);
+  clock += 15000;
+  controller.start();
+  clock += 90000;
+  controller.tick();
+  assert.equal(completed.actualSeconds, 120);
+  assert.equal(completed.plannedSeconds, 120);
+  assert.equal(controller.getState().mode, "short");
+});
+
+test("large timer mode has a landscape layout and requests orientation lock when supported", async () => {
+  const script = await read("../src/main.js");
+  const styles = await read("../src/styles/foundation.css");
+  assert.match(script, /orientation\.lock\('landscape'\)/);
+  assert.match(script, /orientation\.unlock\(\)/);
+  assert.match(styles, /@media \(orientation:landscape\) and \(max-height:600px\)/);
+  assert.match(styles, /grid-template-areas:"modes modes" "timer controls" "hint hint"/);
+  assert.match(styles, /env\(safe-area-inset-left\)/);
+  assert.match(styles, /env\(safe-area-inset-right\)/);
+});
+
+test("landscape large timer scales clock text to the circular timer container", async () => {
+  const styles = await read("../src/styles/foundation.css");
+  assert.match(styles, /container-type:inline-size/);
+  assert.match(styles, /font-size:clamp\(34px,27cqw,86px\)/);
+  assert.match(styles, /width:min\(44vh,36vw,280px\)/);
+  assert.match(styles, /white-space:nowrap/);
+  assert.match(styles, /max-width:100%/);
+  assert.match(styles, /line-height:1/);
+});
+
+test("Study Room remembers a gentle local-only return message without affecting timer state", async () => {
+  const room = await read("../src/features/study-room.js");
+  const script = await read("../src/main.js");
+  const html = await read("../index.html");
+  assert.ok(room.includes('storage?.getJSON("focus-room-last-visit", null)'));
+  assert.ok(room.includes('storage?.setJSON("focus-room-last-visit"'));
+  assert.ok(room.includes("function onEnter()"));
+  assert.ok(script.includes("studyRoom.onEnter()"));
+  assert.ok(html.includes('id="studyRoomReturn"'));
+  assert.ok(!room.includes("focus-timer-runtime"));
+});
+
+test("ambient sound mixer exposes independent persistent controls for every layer", async () => {
+  const html = await read("../index.html");
+  const script = await read("../src/main.js");
+  const controller = await read("../src/features/ambient-sound.js");
+  for (const kind of ["rain", "wind", "noise"]) {
+    assert.ok(html.includes('id="soundVolume-' + kind + '"'));
+    assert.ok(script.includes("$('soundVolume-'+kind)"));
+  }
+  assert.ok(controller.includes("function setLayerVolume(kind, volume)"));
+  assert.ok(controller.includes("getLayerVolume"));
+});
+
+test("session records preserve optional subject and intention metadata", () => {
+  const normalized = normalizeStatsData({
+    records: [{ id: "s1", timestamp: 1795219200000, minutes: 25, subject: "数学", intention: "問題集を一問解く" }]
+  });
+  assert.equal(normalized.records[0].subject, "数学");
+  assert.equal(normalized.records[0].intention, "問題集を一問解く");
+  const legacy = normalizeStatsData({
+    records: [{ id: "s2", timestamp: 1795219200000, minutes: 25 }]
+  });
+  assert.equal("subject" in legacy.records[0], false);
+  assert.equal("intention" in legacy.records[0], false);
+});
+
+test("history filters search notes, intentions, and subjects with date and subject constraints", () => {
+  const h = createViewHarness();
+  const now = new Date(2026, 10, 21, 12);
+  h.views.renderHistory({
+    now, subject: "数学", period: "7",
+    records: [
+      { id: "new-math", timestamp: new Date(2026, 10, 20).getTime(), minutes: 25, subject: "数学", intention: "関数を復習" },
+      { id: "old-math", timestamp: new Date(2026, 10, 1).getTime(), minutes: 20, subject: "数学" },
+      { id: "new-english", timestamp: new Date(2026, 10, 20).getTime(), minutes: 30, subject: "英語", note: "長文" }
+    ]
+  });
+  const html = h.elements.get("historyList").innerHTML;
+  assert.match(html, /new-math/);
+  assert.match(html, /関数を復習/);
+  assert.doesNotMatch(html, /old-math|new-english/);
+});
+
+test("compact timer remains available on other pages while a session is running or paused", async () => {
+  const html = await read("../index.html");
+  const script = await read("../src/main.js");
+  assert.ok(html.includes('id="miniTimer"'));
+  assert.ok(html.includes('id="miniTimerClock"'));
+  assert.ok(html.includes('id="miniTimerToggle"'));
+  assert.ok(script.includes("function updateMiniTimer()"));
+  assert.ok(script.includes("currentPage!=='timerPage'&&(running||remaining!==total)"));
+  assert.ok(script.includes("updateMiniTimer()"));
+  assert.ok(script.includes("timerController.pause()"));
+});
+
+test("stats store rotates two local automatic backup generations after successful commits", () => {
+  const h = createStatsHarness();
+  h.store.load();
+  h.store.createAutoBackup({ onlyIfMissing: true });
+  const initial = h.storage.getJSON("focus-auto-backup");
+  assert.ok(initial && initial.stats);
+  h.store.addSession({ id: "auto-1", timestamp: 1795219200000, date: "2026-11-21", minutes: 25, note: "" });
+  const latest = h.storage.getJSON("focus-auto-backup");
+  const previous = h.storage.getJSON("focus-auto-backup-previous");
+  assert.equal(latest.stats.records.length, 1);
+  assert.equal(previous.stats.records.length, 0);
+  assert.ok(latest.savedAt >= initial.savedAt);
+});
+
+test("Study Room clock format and date visibility are stored as local preferences", async () => {
+  const room = await read("../src/features/study-room.js");
+  const main = await read("../src/main.js");
+  const html = await read("../index.html");
+  assert.ok(room.includes("setClockFormat(value)"));
+  assert.ok(room.includes("setShowDate(value)"));
+  assert.ok(room.includes("hour12:clockFormat==='12'"));
+  assert.ok(main.includes("studyRoom.setClockFormat"));
+  assert.ok(main.includes("studyRoom.setShowDate"));
+  assert.ok(html.includes('id="roomClockFormat"'));
+  assert.ok(html.includes('id="roomShowDate"'));
+});
+
+test("automatic backup recovery controls are present and protect current data before restore", async () => {
+  const html = await read("../index.html");
+  const main = await read("../src/main.js");
+  const store = await read("../src/data/stats-store.js");
+  assert.ok(html.includes('id="autoBackupStatus"'));
+  assert.ok(html.includes('id="restoreLatestAutoBackup"'));
+  assert.ok(html.includes('id="restorePreviousAutoBackup"'));
+  assert.ok(main.includes("focus-pre-auto-restore"));
+  assert.ok(store.includes("focus-auto-backup-previous"));
+});
+
+test("recovery inspection exposes the snapshot protected before automatic-backup restore", () => {
+  const payload = JSON.stringify({
+    schemaVersion: CURRENT_DATA_SCHEMA_VERSION,
+    records: [{ id: "before-auto-restore", timestamp: 1795219200000, date: "2026-11-21", minutes: 25, note: "" }]
+  });
+  const store = {
+    getText: (key, fallback = null) => key === "focus-pre-auto-restore" ? payload : fallback
+  };
+  const item = inspectRecoverySnapshots(store).find(entry => entry.key === "focus-pre-auto-restore");
+  assert.equal(item.available, true);
+  assert.equal(item.restorable, true);
+  assert.equal(item.stats.records[0].id, "before-auto-restore");
+});
+
+test("compact timer is outside page containers and updates on Settings navigation", async () => {
+  const html = await read("../index.html");
+  const script = await read("../src/main.js");
+  assert.match(html, /<\/div>\s*<div class="mini-timer" id="miniTimer"/);
+  assert.ok(html.indexOf('id="miniTimer"') < html.indexOf('id="overviewPage"'));
+  assert.ok(script.includes("updateMiniTimer();return}setStudyRoomMode"));
+});
+
+test("landscape immersive timer hides optional session metadata fields to protect the grid layout", async () => {
+  const styles = await read("../src/styles/foundation.css");
+  assert.match(styles, /body\.timer-large-mode #timerPanel \.session-subject-control/);
+  assert.match(styles, /body\.timer-large-mode #timerPanel \.session-intention-control/);
 });
