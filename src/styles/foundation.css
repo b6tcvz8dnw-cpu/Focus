@@ -159,3 +159,29 @@ textarea.field-select{font-family:inherit;resize:vertical;min-height:80px}
  }
 }
 
+
+/* Interactive monthly calendar and daily record editor */
+.calendar-jump{display:flex;align-items:flex-end;gap:8px;flex-wrap:wrap;margin:0 0 14px}
+.calendar-jump label,.day-record-fields label,.legacy-day-editor label{display:flex;flex-direction:column;gap:5px;min-width:0;font-size:11px;color:var(--muted)}
+.calendar-jump input,.calendar-jump select,.day-record-fields input,.day-record-note textarea,.legacy-day-editor input{width:100%;min-width:0;min-height:42px;padding:9px 10px;border:1px solid var(--line);border-radius:10px;background:var(--surface-deep);color:var(--text);font:inherit;font-size:14px}
+.calendar-jump input{width:100px}.calendar-jump select{width:92px}.calendar-jump button{min-height:42px}
+.calendar-cell.calendar-day{appearance:none;-webkit-appearance:none;width:100%;min-width:0;min-height:62px;padding:5px 2px;border:1px solid transparent;cursor:pointer;gap:2px;font:inherit;color:var(--text);background:var(--surface-deep)}
+.calendar-cell.calendar-day span{font-size:12px;font-weight:600}.calendar-cell.calendar-day small{font-size:8px;line-height:1.2;color:var(--muted);font-variant-numeric:tabular-nums}
+.calendar-cell.calendar-day.selected{border-color:var(--accent);background:var(--accent2);box-shadow:inset 0 0 0 1px var(--accent)}
+.calendar-cell.calendar-day:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.calendar-day-panel h2{margin:0 0 14px}
+.day-details-summary{display:flex;align-items:flex-end;justify-content:space-between;gap:10px;padding:12px 0 15px;border-bottom:1px solid var(--line)}
+.day-details-summary>div{display:flex;flex-direction:column;gap:4px}.day-details-summary strong{font-size:25px;color:var(--accent);font-variant-numeric:tabular-nums}
+.day-record-list{display:flex;flex-direction:column;gap:9px;margin:12px 0}
+.day-record,.day-add-record{padding:12px;border:1px solid var(--line);border-radius:13px;background:var(--surface-deep)}
+.day-record-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px;font-size:13px}
+.day-record-head span{color:var(--accent);font-weight:650}
+.day-record-fields{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:9px 0}
+.day-record-note{display:flex;flex-direction:column;gap:5px;margin:9px 0;font-size:11px;color:var(--muted)}
+.day-record-note textarea{resize:vertical;min-height:58px;line-height:1.5}
+.day-record .history-actions button,.day-add-record button,.legacy-day-editor button{min-height:40px;padding:8px 12px;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--text);font-size:11px}
+.day-add-record h3{margin:0 0 8px;font-size:13px}
+.day-add-record>button{width:100%;margin-top:6px;border-color:var(--accent);background:var(--accent2)}
+.legacy-day-editor{display:flex;align-items:flex-end;gap:8px;padding:10px 0;border-bottom:1px solid var(--line)}
+.legacy-day-editor label{flex:1}.legacy-day-editor button{white-space:nowrap}
+@media(max-width:380px){.calendar-grid{gap:3px}.calendar-cell.calendar-day{min-height:56px}.calendar-cell.calendar-day small{font-size:7px}.calendar-jump{gap:6px}.calendar-jump input{width:86px}}
