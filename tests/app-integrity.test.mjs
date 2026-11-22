@@ -2035,7 +2035,7 @@ test("appearance controller normalizes invalid runtime choices before saving", (
   controller.initialize();
   controller.setTheme("not-a-theme");
   controller.setMark("not-a-mark");
-  assert.deepEqual(controller.getState(), { theme: "green", mark: "dot" });
+  assert.deepEqual(controller.getState(), { theme: "green", mark: "dot", homeIcon: "planet" });
   assert.deepEqual(JSON.parse(fixture.values.get("focus-appearance")), { theme: "green", mark: "dot" });
   assert.equal(fixture.values.get("focus-mark"), "dot");
 });
