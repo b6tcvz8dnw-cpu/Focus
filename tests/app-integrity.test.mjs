@@ -155,7 +155,7 @@ test("hourglass CSS uses real rule separators and production cache is versioned"
   assert.ok(css.includes(".hourglass-grain{fill:var(--accent)"));
   assert.ok(css.includes(".hourglass-art.is-running .hourglass-grain{animation:sand-grain-fall"));
   const sw = await read("../public/sw.js");
-  assert.ok(sw.includes("focus-pwa-v35"));
+  assert.ok(sw.includes("focus-pwa-v36"));
 });
 
 test("calendar and analytics panels are mounted in their matching tabs", async () => {
@@ -228,7 +228,9 @@ test("PWA manifest remains valid and standalone-capable", async () => {
   const manifest = JSON.parse(await read("../public/manifest.webmanifest"));
   assert.equal(manifest.short_name, "FOCUS");
   assert.equal(manifest.display, "standalone");
-  assert.ok(Array.isArray(manifest.icons) && manifest.icons.length >= 2);
+  assert.ok(Array.isArray(manifest.icons) && manifest.icons.length >= 1);
+  assert.equal(manifest.icons[0].src, "icon.svg");
+  assert.equal(manifest.icons[0].type, "image/svg+xml");
 });
 
 test("app refreshes deadline-based timers after a back-forward cache restore", async () => {
@@ -258,7 +260,7 @@ test("Study Room animations pause while another page is selected", async () => {
 test("production service worker caches only successful responses and waits for cache writes", async () => {
   const sw = await read("../public/sw.js");
   const cacheName = sw.match(/const CACHE='([^']+)'/)?.[1];
-  assert.equal(cacheName, "focus-pwa-v35");
+  assert.equal(cacheName, "focus-pwa-v36");
   for (const asset of [
     "./index.html", "./manifest.webmanifest", "./icon.svg", "./icon-192.png", "./icon-512.png", "./icons/icon-planet.png", "./icons/icon-hourglass.png", "./icons/icon-window.png", "./icons/icon-comet.png"
   ]) {
@@ -322,7 +324,7 @@ test("Study Room sky progression preserves all existing thresholds", () => {
 
 test("production Service Worker only manages production-owned caches", async () => {
   const sw = await read("../public/sw.js");
-  assert.ok(sw.includes("const CACHE='focus-pwa-v35';"));
+  assert.ok(sw.includes("const CACHE='focus-pwa-v36';"));
   assert.ok(sw.includes("const CACHE_PREFIX='focus-pwa-';"));
   assert.ok(sw.includes("key.startsWith(CACHE_PREFIX) && key!==CACHE"));
 });
@@ -652,7 +654,8 @@ test("Vite keeps the GitHub Pages project path relative", async () => {
   assert.match(config, /publicDir:\s*["']public["']/);
   const html = await read("../index.html");
   assert.ok(html.includes('href="./manifest.webmanifest"'));
-  assert.ok(html.includes('href="./icons/icon-planet.png"'));
+  assert.ok(html.includes('href="./icon.svg"'));
+  assert.ok(html.includes('href="./icon-192.png"'));
 });
 
 test("production build injects generated bundles into the PWA precache", async () => {
@@ -1087,8 +1090,8 @@ test("stats replacement keeps the pre-import backup and old stats when the new w
 test("document head uses relative PWA asset paths for GitHub Pages subpaths", async () => {
   const html = await read("../index.html");
   assert.match(html, /<link rel="manifest" href="\.\/manifest\.webmanifest"/);
-  assert.match(html, /<link id="appFavicon" rel="icon" href="\.\/icons\/icon-planet\.png"/);
-  assert.match(html, /<link id="appleTouchIcon" rel="apple-touch-icon" href="\.\/icons\/icon-planet\.png"/);
+  assert.ok(html.includes('<link id="appFavicon" rel="icon" href="./icon.svg"'));
+  assert.ok(html.includes('<link id="appleTouchIcon" rel="apple-touch-icon" href="./icon-192.png"'));
   assert.doesNotMatch(html, /(?:href|src)="\/(?:manifest\.webmanifest|icon\.svg|icon-192\.png|icons\/)/);
 });
 
@@ -2284,13 +2287,14 @@ test("Home Screen icon stays fixed while theme and in-app mark remain changeable
   const html = await read("../index.html");
   const controller = await read("../src/features/appearance-controller.js");
   const sw = await read("../public/sw.js");
-  assert.match(html, /<link id="appleTouchIcon" rel="apple-touch-icon" href="\.\/icons\/icon-planet\.png"/);
-  assert.match(html, /<link id="appFavicon" rel="icon" href="\.\/icons\/icon-planet\.png"/);
-  assert.ok(html.includes('class="home-icon-fixed-preview"'));
-  assert.ok(html.includes("削除・再追加は必要ない"));
+  assert.ok(html.includes('<link id="appleTouchIcon" rel="apple-touch-icon" href="./icon-192.png"'));
+  assert.ok(html.includes('<link id="appFavicon" rel="icon" href="./icon.svg"'));
+  assert.ok(!html.includes("home-icon-fixed-preview"));
+  assert.ok(!html.includes("削除・再追加は必要ない"));
+  assert.ok(html.includes("./icon.svg"));
   assert.doesNotMatch(html, /homeIconPage|data-home-icon|アイコンを選ぶ/);
   assert.doesNotMatch(controller, /setHomeIcon|focus-home-icon|appleTouchIcon|appFavicon/);
   assert.ok(controller.includes("function setTheme"));
   assert.ok(controller.includes("function setMark"));
-  assert.ok(sw.includes("focus-pwa-v35"));
+  assert.ok(sw.includes("focus-pwa-v36"));
 });

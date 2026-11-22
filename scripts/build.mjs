@@ -50,7 +50,7 @@ const html = await readFile(join(dist, "index.html"), "utf8");
 if (!/src=["']\.\/assets\/[^"']+\.js["']/.test(html)) {
   throw new Error("Built application entry module was not found in dist/index.html.");
 }
-for (const url of ["./manifest.webmanifest", "./icons/icon-planet.png"]) {
+for (const url of ["./manifest.webmanifest", "./icon.svg"]) {
   if (!html.includes(url)) throw new Error(`Built HTML is missing relative PWA URL ${url}.`);
 }
 if (!/rel=["']apple-touch-icon["'] href=["']\.\/[^"']+["']/.test(html)) {
