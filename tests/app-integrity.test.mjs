@@ -155,7 +155,7 @@ test("hourglass CSS uses real rule separators and production cache is versioned"
   assert.ok(css.includes(".hourglass-grain{fill:var(--accent)"));
   assert.ok(css.includes(".hourglass-art.is-running .hourglass-grain{animation:sand-grain-fall"));
   const sw = await read("../public/sw.js");
-  assert.ok(sw.includes("focus-pwa-v36"));
+  assert.ok(sw.includes("focus-pwa-v37"));
 });
 
 test("calendar and analytics panels are mounted in their matching tabs", async () => {
@@ -172,6 +172,18 @@ test("calendar and analytics panels are mounted in their matching tabs", async (
   assert.ok(!overview.includes('id="calendarPanel"'));
   assert.ok(!overview.includes('id="analyticsPanel"'));
   assert.ok(calendar.includes('id="calendarPanel"'));
+  assert.ok(calendar.includes('id="calendarYear"'));
+  assert.ok(calendar.includes('id="calendarMonth"'));
+  assert.ok(calendar.includes('id="calendarDayDetails"'));
+  assert.ok(calendar.includes('id="calendarGo"'));
+  const views = await read("../src/views/study-views.js");
+  assert.ok(views.includes("data-calendar-date"));
+  assert.ok(views.includes("function renderDayDetails"));
+  assert.ok(views.includes("data-day-save"));
+  assert.ok(views.includes("data-day-add"));
+  const store = await read("../src/data/stats-store.js");
+  assert.ok(store.includes("setLegacyDayMinutes"));
+  assert.ok(store.includes("legacyHistory, legacyMinutes"));
   assert.ok(analytics.includes('id="analyticsPanel"'));
   const script = await read("../src/main.js");
   assert.ok(script.includes("if(b.dataset.page==='calendarPage')renderCalendar()"));
@@ -260,7 +272,7 @@ test("Study Room animations pause while another page is selected", async () => {
 test("production service worker caches only successful responses and waits for cache writes", async () => {
   const sw = await read("../public/sw.js");
   const cacheName = sw.match(/const CACHE='([^']+)'/)?.[1];
-  assert.equal(cacheName, "focus-pwa-v36");
+  assert.equal(cacheName, "focus-pwa-v37");
   for (const asset of [
     "./index.html", "./manifest.webmanifest", "./icon.svg", "./icon-192.png", "./icon-512.png", "./icons/icon-planet.png", "./icons/icon-hourglass.png", "./icons/icon-window.png", "./icons/icon-comet.png"
   ]) {
@@ -324,7 +336,7 @@ test("Study Room sky progression preserves all existing thresholds", () => {
 
 test("production Service Worker only manages production-owned caches", async () => {
   const sw = await read("../public/sw.js");
-  assert.ok(sw.includes("const CACHE='focus-pwa-v36';"));
+  assert.ok(sw.includes("const CACHE='focus-pwa-v37';"));
   assert.ok(sw.includes("const CACHE_PREFIX='focus-pwa-';"));
   assert.ok(sw.includes("key.startsWith(CACHE_PREFIX) && key!==CACHE"));
 });
@@ -1494,6 +1506,41 @@ test("study stats store adds sessions and keeps aggregate totals consistent afte
   assert.equal(reloaded.getState().minutes, 25);
 });
 
+test("legacy daily totals can be edited without losing other dates or detailed sessions", () => {
+  const h = createStatsHarness({ "focus-stats": {
+    completed: 2, minutes: 75,
+    history: { "2026-11-20": 50, "2026-11-21": 25 },
+    records: [{ id: "detail-1", timestamp: 1795219200000, date: "2026-11-21", minutes: 25, note: "" }]
+  } });
+  h.store.load();
+  assert.equal(h.store.getState().history["2026-11-20"], 50);
+  assert.equal(h.store.setLegacyDayMinutes("2026-11-20", 30), true);
+  assert.equal(h.store.getState().history["2026-11-20"], 30);
+  assert.equal(h.store.getState().history["2026-11-21"], 25);
+  assert.equal(h.store.getState().minutes, 55);
+  assert.equal(h.store.getState().records[0].minutes, 25);
+  assert.equal(h.store.setLegacyDayMinutes("2026-02-31", 20), false);
+  assert.equal(h.store.setLegacyDayMinutes("2026-11-20", 1441), false);
+});
+
+test("calendar view renders selectable dates and editable daily session details", () => {
+  const elements = new Map();
+  const root = { getElementById(id) {
+    if (!elements.has(id)) elements.set(id, { innerHTML: "", textContent: "", attributes: {}, setAttribute(key, value) { this.attributes[key] = value; } });
+    return elements.get(id);
+  } };
+  const views = createStudyViews({ root });
+  views.renderCalendar({ history: { "2026-11-22": 45 }, cursor: new Date(2026, 10, 1), selectedDate: "2026-11-22" });
+  assert.ok(elements.get("calendarGrid").innerHTML.includes('data-calendar-date="2026-11-22"'));
+  assert.ok(elements.get("calendarGrid").innerHTML.includes('aria-pressed="true"'));
+  views.renderDayDetails({
+    date: "2026-11-22",
+    records: [{ id: "day-record", timestamp: new Date(2026, 10, 22, 9, 30).getTime(), date: "2026-11-22", minutes: 45, note: "復習" }]
+  });
+  assert.ok(elements.get("calendarDayDetails").innerHTML.includes('data-day-save="day-record"'));
+  assert.ok(elements.get("calendarDayDetails").innerHTML.includes('data-day-delete="day-record"'));
+  assert.ok(elements.get("calendarDayDetails").innerHTML.includes("記録を追加"));
+});
 test("study stats store keeps its previous in-memory state when persistence fails", () => {
   const h = createStatsHarness();
   h.store.load();
@@ -2296,5 +2343,5 @@ test("Home Screen icon stays fixed while theme and in-app mark remain changeable
   assert.doesNotMatch(controller, /setHomeIcon|focus-home-icon|appleTouchIcon|appFavicon/);
   assert.ok(controller.includes("function setTheme"));
   assert.ok(controller.includes("function setMark"));
-  assert.ok(sw.includes("focus-pwa-v36"));
+  assert.ok(sw.includes("focus-pwa-v37"));
 });
