@@ -116,9 +116,21 @@ const savedQuietText=storage.getText('focus-room-quiet-text')==='true';$('studyR
 const appearanceController=createAppearanceController({root:document,storage,onMessage:message=>{$('toast').textContent=message}});
 appearanceController.initialize();
 try{const ts=normalizeTimerSettings(storage.getJSON('focus-timer-settings',null));if(ts){durations={focus:ts.focus,short:ts.short,long:ts.long};$('focusDuration').value=ts.focus;$('shortDuration').value=ts.short;$('longDuration').value=ts.long;$('cycleDuration').value=ts.cycle;storage.setJSON('focus-timer-settings',ts)}}catch(e){}
+const autoContinueEnabled=storage.getText('focus-auto-continue','false')==='true';
+$('autoContinue').checked=autoContinueEnabled;
 function syncTimerState(state){durations=state.durations;mode=state.mode;remaining=state.remaining;total=state.total;running=state.running;deadline=state.deadline;finished=state.finished;update()}
-timerController=createTimerController({durations,getCycleLength:cycle,getCompletedSessions:()=>completed,store:storage,onChange:syncTimerState,onFocusComplete({actualSeconds=durations.focus*60}={}){const actualMinutes=Math.floor(Math.max(0,Number(actualSeconds)||0)/60);const record=actualMinutes>=1?{id:String(Date.now())+'-'+Math.random().toString(36).slice(2,7),timestamp:Date.now(),date:dateKey(new Date()),minutes:Math.min(120,actualMinutes),note:'',intention:$('sessionIntention').value.trim()}:null;const saved=record?statsStore.addSession(record):true;if(saved&&record)updateChart();notify('集中セッション完了！休憩を始めよう。');if(!saved)$('toast').textContent='集中記録を保存できなかったよ。端末の空き容量を確認してね。';playCompletionSound();if(appReady){$('reflection').value='';$('sessionIntention').value='';$('reflectionPrompt').textContent='今のセッションで気づいたことを残してみよう。';renderAllRecords();$('reflectionPanel').open=true;$('reflectionPanel').scrollIntoView({behavior:'smooth',block:'nearest'})}},onBreakComplete(){notify('休憩終了！お疲れさま。');playCompletionSound()}});
+timerController=createTimerController({durations,autoContinue:autoContinueEnabled,getCycleLength:cycle,getCompletedSessions:()=>completed,store:storage,onChange:syncTimerState,onFocusComplete({actualSeconds=durations.focus*60}={}){const actualMinutes=Math.floor(Math.max(0,Number(actualSeconds)||0)/60);const record=actualMinutes>=1?{id:String(Date.now())+'-'+Math.random().toString(36).slice(2,7),timestamp:Date.now(),date:dateKey(new Date()),minutes:Math.min(120,actualMinutes),note:'',intention:$('sessionIntention').value.trim()}:null;const saved=record?statsStore.addSession(record):true;if(saved&&record)updateChart();notify('集中セッション完了！休憩を始めよう。');if(!saved)$('toast').textContent='集中記録を保存できなかったよ。端末の空き容量を確認してね。';playCompletionSound();if(appReady){$('reflection').value='';$('sessionIntention').value='';$('reflectionPrompt').textContent='今のセッションで気づいたことを残してみよう。';renderAllRecords();$('reflectionPanel').open=true;$('reflectionPanel').scrollIntoView({behavior:'smooth',block:'nearest'})}},onBreakComplete(){notify('休憩終了！お疲れさま。');playCompletionSound()}});
 ({durations,mode,remaining,total,running,deadline,finished}=timerController.getState());
+$('autoContinue').addEventListener('change',()=>{
+ const enabled=$('autoContinue').checked;
+ if(!storage.setText('focus-auto-continue',String(enabled))){
+  $('autoContinue').checked=!enabled;
+  $('toast').textContent='自動連続設定を保存できなかったよ。';
+  return;
+ }
+ timerController.setAutoContinue(enabled);
+ $('toast').textContent=enabled?'休憩終了後に次の集中を自動開始するよ。':'休憩終了後は待機する設定にしたよ。';
+});
 
 
 statsStore=createStudyStatsStore({storage,onChange:syncStatsState});

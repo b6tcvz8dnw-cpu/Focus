@@ -156,7 +156,7 @@ test("hourglass CSS uses real rule separators and production cache is versioned"
   assert.ok(css.includes(".hourglass-grain{fill:var(--accent)"));
   assert.ok(css.includes(".hourglass-art.is-running .hourglass-grain{animation:sand-grain-fall"));
   const sw = await read("../public/sw.js");
-  assert.ok(sw.includes("focus-pwa-v39"));
+  assert.ok(sw.includes("focus-pwa-v40"));
 });
 
 test("calendar and analytics panels are mounted in their matching tabs", async () => {
@@ -242,8 +242,8 @@ test("PWA manifest remains valid and standalone-capable", async () => {
   assert.equal(manifest.short_name, "FOCUS");
   assert.equal(manifest.display, "standalone");
   assert.ok(Array.isArray(manifest.icons) && manifest.icons.length >= 1);
-  assert.equal(manifest.icons[0].src, "icon.svg");
-  assert.equal(manifest.icons[0].type, "image/svg+xml");
+  assert.equal(manifest.icons[0].src, "icons/icon-planet.png");
+  assert.equal(manifest.icons[0].type, "image/png");
 });
 
 test("app refreshes deadline-based timers after a back-forward cache restore", async () => {
@@ -273,7 +273,7 @@ test("Study Room animations pause while another page is selected", async () => {
 test("production service worker caches only successful responses and waits for cache writes", async () => {
   const sw = await read("../public/sw.js");
   const cacheName = sw.match(/const CACHE='([^']+)'/)?.[1];
-  assert.equal(cacheName, "focus-pwa-v39");
+  assert.equal(cacheName, "focus-pwa-v40");
   for (const asset of [
     "./index.html", "./manifest.webmanifest", "./icon.svg", "./icon-192.png", "./icon-512.png", "./icons/icon-planet.png", "./icons/icon-hourglass.png", "./icons/icon-window.png", "./icons/icon-comet.png"
   ]) {
@@ -337,7 +337,7 @@ test("Study Room sky progression preserves all existing thresholds", () => {
 
 test("production Service Worker only manages production-owned caches", async () => {
   const sw = await read("../public/sw.js");
-  assert.ok(sw.includes("const CACHE='focus-pwa-v39';"));
+  assert.ok(sw.includes("const CACHE='focus-pwa-v40';"));
   assert.ok(sw.includes("const CACHE_PREFIX='focus-pwa-';"));
   assert.ok(sw.includes("key.startsWith(CACHE_PREFIX) && key!==CACHE"));
 });
@@ -668,8 +668,8 @@ test("Vite keeps the GitHub Pages project path relative", async () => {
   assert.match(config, /publicDir:\s*["']public["']/);
   const html = await read("../index.html");
   assert.ok(html.includes('href="./manifest.webmanifest"'));
-  assert.ok(html.includes('href="./icon.svg"'));
-  assert.ok(html.includes('href="./icon-192.png"'));
+  assert.ok(html.includes('href="./icons/icon-planet.png"'));
+  assert.ok(html.includes('href="./icons/icon-planet.png"'));
 });
 
 test("production build injects generated bundles into the PWA precache", async () => {
@@ -1104,8 +1104,8 @@ test("stats replacement keeps the pre-import backup and old stats when the new w
 test("document head uses relative PWA asset paths for GitHub Pages subpaths", async () => {
   const html = await read("../index.html");
   assert.match(html, /<link rel="manifest" href="\.\/manifest\.webmanifest"/);
-  assert.ok(html.includes('<link id="appFavicon" rel="icon" href="./icon.svg"'));
-  assert.ok(html.includes('<link id="appleTouchIcon" rel="apple-touch-icon" href="./icon-192.png"'));
+  assert.ok(html.includes('<link id="appFavicon" rel="icon" href="./icons/icon-planet.png"'));
+  assert.ok(html.includes('<link id="appleTouchIcon" rel="apple-touch-icon" href="./icons/icon-planet.png"'));
   assert.doesNotMatch(html, /(?:href|src)="\/(?:manifest\.webmanifest|icon\.svg|icon-192\.png|icons\/)/);
 });
 
@@ -1306,6 +1306,7 @@ function createFakeTimerHarness(options = {}) {
   };
   const controller = createTimerController({
     durations: options.durations || { focus: 1, short: 1, long: 2 },
+    autoContinue: options.autoContinue || false,
     getCycleLength: options.getCycleLength || (() => 2),
     getCompletedSessions: options.getCompletedSessions || (() => 1),
     store,
@@ -1370,7 +1371,7 @@ test("focus completion records once and automatically starts the correct break",
   assert.equal(state.finished, false);
 });
 
-test("break completion finishes without automatically starting another session", () => {
+test("break completion waits when automatic continuation is disabled", () => {
   let breakCompletions = 0;
   const h = createFakeTimerHarness({ onBreakComplete: () => breakCompletions++ });
   h.controller.setMode("short");
@@ -1382,6 +1383,33 @@ test("break completion finishes without automatically starting another session",
   assert.equal(state.remaining, 0);
   assert.equal(state.running, false);
   assert.equal(state.finished, true);
+});
+
+test("break completion automatically starts the next focus session when enabled", () => {
+  let breakCompletions = 0;
+  const h = createFakeTimerHarness({ autoContinue: true, onBreakComplete: () => breakCompletions++ });
+  h.controller.setMode("short");
+  h.controller.start();
+  h.advance(60000);
+  const state = h.controller.getState();
+  assert.equal(breakCompletions, 1);
+  assert.equal(state.mode, "focus");
+  assert.equal(state.remaining, 60);
+  assert.equal(state.total, 60);
+  assert.equal(state.running, true);
+  assert.equal(state.finished, false);
+  h.advance(60000);
+  assert.equal(h.controller.getState().mode, "short");
+  assert.equal(h.controller.getState().running, true);
+});
+
+test("automatic continuation can be changed while the timer is active", () => {
+  const h = createFakeTimerHarness();
+  assert.equal(h.controller.setAutoContinue(true), true);
+  h.controller.setMode("short");
+  h.controller.start();
+  h.advance(60000);
+  assert.equal(h.controller.getState().mode, "focus");
 });
 
 test("timer controller restores active and expired runtimes safely", () => {
@@ -2345,22 +2373,33 @@ test("subject selection and filtering are removed while legacy record data remai
 });
 
 
-test("Home Screen icon stays fixed while theme and in-app mark remain changeable without reinstall", async () => {
+test("Home Screen icon restores the planet design and follows the selected theme color", async () => {
   const html = await read("../index.html");
   const controller = await read("../src/features/appearance-controller.js");
+  const manifest = await read("../public/manifest.webmanifest");
   const sw = await read("../public/sw.js");
-  assert.ok(html.includes('<link id="appleTouchIcon" rel="apple-touch-icon" href="./icon-192.png"'));
-  assert.ok(html.includes('<link id="appFavicon" rel="icon" href="./icon.svg"'));
-  assert.ok(!html.includes("home-icon-fixed-preview"));
-  assert.ok(!html.includes("削除・再追加は必要ない"));
-  assert.ok(html.includes("./icon.svg"));
-  assert.doesNotMatch(html, /homeIconPage|data-home-icon|アイコンを選ぶ/);
-  assert.doesNotMatch(controller, /setHomeIcon|focus-home-icon|appleTouchIcon|appFavicon/);
-  assert.ok(controller.includes("function setTheme"));
-  assert.ok(controller.includes("function setMark"));
-  assert.ok(sw.includes("focus-pwa-v39"));
+  assert.ok(html.includes('id="appleTouchIcon" rel="apple-touch-icon" href="./icons/icon-planet.png"'));
+  assert.ok(html.includes('id="appFavicon" rel="icon" href="./icons/icon-planet.png"'));
+  assert.ok(html.includes('id="homeIconPreview"'));
+  assert.ok(html.includes("ホーム画面アイコン"));
+  assert.ok(manifest.includes('"src":"icons/icon-planet.png"'));
+  assert.ok(controller.includes("function renderHomeIcon(name)"));
+  assert.ok(controller.includes('canvas.toDataURL("image/png")'));
+  assert.ok(controller.includes('appleIcon.href = themedIcon'));
+  assert.ok(sw.includes("focus-pwa-v40"));
 });
 
+test("timer settings expose and persist automatic continuation", async () => {
+  const html = await read("../index.html");
+  const script = await read("../src/main.js");
+  const timer = await read("../src/features/timer-controller.js");
+  assert.ok(html.includes('id="autoContinue"'));
+  assert.ok(html.includes("休憩終了後に次の集中を自動開始"));
+  assert.ok(script.includes("focus-auto-continue"));
+  assert.ok(script.includes("autoContinue:autoContinueEnabled"));
+  assert.ok(script.includes("timerController.setAutoContinue(enabled)"));
+  assert.ok(timer.includes("setAutoContinue(enabled)"));
+});
 
 test("completion sound unlocks on the first user gesture and plays a soft ascending chime", async () => {
   const listeners = new Map();
