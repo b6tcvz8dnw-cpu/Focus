@@ -258,7 +258,7 @@ test("Study Room animations pause while another page is selected", async () => {
 test("production service worker caches only successful responses and waits for cache writes", async () => {
   const sw = await read("../public/sw.js");
   const cacheName = sw.match(/const CACHE='([^']+)'/)?.[1];
-  assert.equal(cacheName, "focus-preview-pwa-v15");
+  assert.equal(cacheName, "focus-pwa-v31");
   for (const asset of [
     "./index.html", "./manifest.webmanifest", "./icon.svg", "./icon-192.png", "./icon-512.png"
   ]) {
@@ -322,7 +322,7 @@ test("Study Room sky progression preserves all existing thresholds", () => {
 
 test("production Service Worker only manages production-owned caches", async () => {
   const sw = await read("../public/sw.js");
-  assert.ok(sw.includes("const CACHE='focus-preview-pwa-v15';"));
+  assert.ok(sw.includes("const CACHE='focus-pwa-v31';"));
   assert.ok(sw.includes("const CACHE_PREFIX='focus-pwa-';"));
   assert.ok(sw.includes("key.startsWith(CACHE_PREFIX) && key!==CACHE"));
 });
