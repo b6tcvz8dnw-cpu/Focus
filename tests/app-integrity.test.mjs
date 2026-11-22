@@ -149,13 +149,13 @@ test("hourglass has visible falling-grain animation and viewBox-based sand scali
   assert.ok(css.includes(".hourglass-art.is-running .hourglass-stream{animation:none"));
 });
 
-test("hourglass CSS uses real rule separators and preview cache is versioned", async () => {
+test("hourglass CSS uses real rule separators and production cache is versioned", async () => {
   const css = await readStyles();
   assert.doesNotMatch(css, /\\n\\.hourglass/);
   assert.ok(css.includes(".hourglass-grain{fill:var(--accent)"));
   assert.ok(css.includes(".hourglass-art.is-running .hourglass-grain{animation:sand-grain-fall"));
   const sw = await read("../public/sw.js");
-  assert.ok(sw.includes("focus-preview-pwa-v15"));
+  assert.ok(sw.includes("focus-pwa-v31"));
 });
 
 test("calendar and analytics panels are mounted in their matching tabs", async () => {
@@ -255,7 +255,7 @@ test("Study Room animations pause while another page is selected", async () => {
   assert.match(styles, /animation-play-state:paused!important/);
 });
 
-test("preview service worker caches only successful responses and waits for cache writes", async () => {
+test("production service worker caches only successful responses and waits for cache writes", async () => {
   const sw = await read("../public/sw.js");
   const cacheName = sw.match(/const CACHE='([^']+)'/)?.[1];
   assert.equal(cacheName, "focus-preview-pwa-v15");
@@ -320,10 +320,10 @@ test("Study Room sky progression preserves all existing thresholds", () => {
   assert.equal(getStudySkyLevel(180), 4);
 });
 
-test("preview Service Worker only manages preview-owned caches", async () => {
+test("production Service Worker only manages production-owned caches", async () => {
   const sw = await read("../public/sw.js");
   assert.ok(sw.includes("const CACHE='focus-preview-pwa-v15';"));
-  assert.ok(sw.includes("const CACHE_PREFIX='focus-preview-';"));
+  assert.ok(sw.includes("const CACHE_PREFIX='focus-pwa-';"));
   assert.ok(sw.includes("key.startsWith(CACHE_PREFIX) && key!==CACHE"));
 });
 
