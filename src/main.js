@@ -67,6 +67,7 @@ const notificationController=createNotificationController({
  root:document,
  storage,
  getNotificationApi:()=>window.Notification,
+ getServiceWorkerContainer:()=>('serviceWorker' in navigator ? navigator.serviceWorker : null),
  onMessage:message=>{$('toast').textContent=message},
  onStateChange:enabled=>{notificationsEnabled=enabled}
 });
