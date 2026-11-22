@@ -3,6 +3,7 @@ export function createNotificationController({
   root = document,
   storage,
   getNotificationApi = () => globalThis.Notification,
+  getServiceWorkerContainer = () => globalThis.navigator?.serviceWorker,
   onMessage = () => {},
   onStateChange = () => {}
 } = {}) {
@@ -67,9 +68,19 @@ export function createNotificationController({
     if (enabled) {
       const NotificationApi = getNotificationApi();
       if (NotificationApi && NotificationApi.permission === "granted") {
-        try {
-          new NotificationApi(title, { body: "FOCUS — 学習タイマー" });
-        } catch {}
+        const settings = { body: "FOCUS — 学習タイマー", icon: "./icon-192.png", badge: "./icon-192.png", tag: "focus-timer-completion", renotify: true };
+        const serviceWorker = getServiceWorkerContainer();
+        if (serviceWorker?.ready) {
+          Promise.resolve(serviceWorker.ready)
+            .then(registration => {
+              if (typeof registration?.showNotification === "function") return registration.showNotification(title, settings);
+              new NotificationApi(title, settings);
+              return undefined;
+            })
+            .catch(() => { try { new NotificationApi(title, settings); } catch {} });
+        } else {
+          try { new NotificationApi(title, settings); } catch {}
+        }
       }
     }
     onMessage(title);

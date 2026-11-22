@@ -155,7 +155,7 @@ test("hourglass CSS uses real rule separators and production cache is versioned"
   assert.ok(css.includes(".hourglass-grain{fill:var(--accent)"));
   assert.ok(css.includes(".hourglass-art.is-running .hourglass-grain{animation:sand-grain-fall"));
   const sw = await read("../public/sw.js");
-  assert.ok(sw.includes("focus-pwa-v37"));
+  assert.ok(sw.includes("focus-pwa-v38"));
 });
 
 test("calendar and analytics panels are mounted in their matching tabs", async () => {
@@ -272,7 +272,7 @@ test("Study Room animations pause while another page is selected", async () => {
 test("production service worker caches only successful responses and waits for cache writes", async () => {
   const sw = await read("../public/sw.js");
   const cacheName = sw.match(/const CACHE='([^']+)'/)?.[1];
-  assert.equal(cacheName, "focus-pwa-v37");
+  assert.equal(cacheName, "focus-pwa-v38");
   for (const asset of [
     "./index.html", "./manifest.webmanifest", "./icon.svg", "./icon-192.png", "./icon-512.png", "./icons/icon-planet.png", "./icons/icon-hourglass.png", "./icons/icon-window.png", "./icons/icon-comet.png"
   ]) {
@@ -336,7 +336,7 @@ test("Study Room sky progression preserves all existing thresholds", () => {
 
 test("production Service Worker only manages production-owned caches", async () => {
   const sw = await read("../public/sw.js");
-  assert.ok(sw.includes("const CACHE='focus-pwa-v37';"));
+  assert.ok(sw.includes("const CACHE='focus-pwa-v38';"));
   assert.ok(sw.includes("const CACHE_PREFIX='focus-pwa-';"));
   assert.ok(sw.includes("key.startsWith(CACHE_PREFIX) && key!==CACHE"));
 });
@@ -1897,6 +1897,7 @@ function createNotificationHarness(options = {}) {
     root,
     storage,
     getNotificationApi: () => options.unsupported ? undefined : FakeNotification,
+    getServiceWorkerContainer: () => options.serviceWorker ?? null,
     onMessage: message => messages.push(message)
   });
   return { controller, button, storage, values, messages, deliveries, FakeNotification };
@@ -1958,6 +1959,18 @@ test("notification delivery respects enabled state and backup restoration update
   h.controller.notify("休憩終了！");
   assert.equal(h.deliveries.length, 1);
   assert.equal(h.values.get("focus-notifications"), "false");
+});
+
+test("notification delivery uses Service Worker showNotification when available", async () => {
+  const deliveries = [];
+  const h = createNotificationHarness({ permission: "granted", serviceWorker: { ready: Promise.resolve({ showNotification: async (title, settings) => deliveries.push({ title, settings }) }) } });
+  h.controller.setEnabled(true);
+  h.controller.notify("集中セッション完了！");
+  await Promise.resolve();
+  await Promise.resolve();
+  assert.equal(deliveries.length, 1);
+  assert.equal(deliveries[0].title, "集中セッション完了！");
+  assert.equal(deliveries[0].settings.body, "FOCUS — 学習タイマー");
 });
 
 test("main delegates notification settings, delivery, and backup restoration", async () => {
@@ -2344,5 +2357,5 @@ test("Home Screen icon stays fixed while theme and in-app mark remain changeable
   assert.doesNotMatch(controller, /setHomeIcon|focus-home-icon|appleTouchIcon|appFavicon/);
   assert.ok(controller.includes("function setTheme"));
   assert.ok(controller.includes("function setMark"));
-  assert.ok(sw.includes("focus-pwa-v37"));
+  assert.ok(sw.includes("focus-pwa-v38"));
 });
