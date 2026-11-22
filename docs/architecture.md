@@ -8,11 +8,11 @@
 
 - HTMLエントリーポイント: `index.html`
 - JavaScriptエントリーポイント: `src/main.js`（ES module）
-- HTML/CSS: HTMLは `index.html`、CSSは引き続きインライン
+- HTML/CSS: HTMLは `index.html`、CSSは `src/styles/` の責務別ファイル
 - JavaScript: `src/main.js` と `src/core/`・`src/data/` のモジュールに分割開始
 - `index.html`: 約91 KB / 約1,330行（JavaScript本体を外部化）
 - インラインJavaScript: 約254行、約40個の関数
-- CSS: 1つのインライン `<style>`
+- CSS: `src/styles/main.css` から6つの責務別スタイルシートを順序付きで読み込む（インラインCSSなし）
 - Vite設定: `vite.config.js`（`base: './'`、`dist/`出力）
 - ビルドスクリプト: `scripts/build.mjs`（ハッシュ付きバンドルをService Workerへ注入）
 - PWAマニフェスト / Service Worker / SVGアイコン: `public/`
@@ -22,10 +22,13 @@
 - テスト: Node.js標準テストランナー
 - モジュール: `src/core/date-time.js`（`formatClock`, `dateKey`, `buildWeekData`, `getStudySkyLevel`）
 - タイマー計算: `src/core/timer.js`（絶対時刻からの残り時間、不正値の防御、休憩モードの選択）
+- 外観設定: `src/features/appearance-controller.js`（テーマ5種・ブランドマーク3種の適用、ボタン状態、既存保存キーの読み書き）
+- 復旧UI: `src/features/recovery-controller.js`（復旧候補の描画、原文書き出し、復元前保護、統計ストアへの安全な置換）\n- タイマー状態管理: `src/features/timer-controller.js`（開始・一時停止・リセット・モード変更・自動休憩・期限切れ復元・実行状態保存。DOM非依存、UI/統計/通知はコールバック注入）
 - 保存層: `src/data/storage.js`（文字列・JSONの読み書き、利用不可・不正JSONへの防御処理）
 - 学習記録集計: `src/data/records.js`（累計・日別履歴の再計算、重複ID排除）
 - 復旧データ検査: `src/data/recovery.js`（端末内スナップショットの一覧化、形式検証、将来スキーマの復元拒否、現在の保護データの原文書き出し）
-- 品質保証: `tests/app-integrity.test.mjs`（Node.js標準テスト40項目、HTML/DOM契約・移行・タイマー・記録・保存の検証）
+- 保存トランザクション: `src/data/transactions.js`（復元前バックアップを確保してから統計データを置き換える。いずれかの書き込み失敗時は旧統計を維持）
+- 品質保証: `tests/app-integrity.test.mjs`（Node.js標準テスト80項目、HTML/DOM契約・移行・タイマー・記録・保存・復旧トランザクションの検証）
 - アプリ本体の保存API直接呼び出し: 0件
 
 ## 画面
@@ -41,15 +44,15 @@
 
 | 領域 | 現在の関数例 |
 |---|---|
-| タイマー | `startTimer`, `stop`, `tick`, `complete`, `restoreTimerRuntime`。純粋計算は `src/core/timer.js` |
+| タイマー | 状態遷移・保存・復元は `src/features/timer-controller.js`。画面描画は `src/main.js` の `update` と `syncTimerState` |
 | 学習統計 | `save`, `recalculateStats`, `getWeekData`。集計本体は `src/data/records.js` |
 | カレンダー・履歴 | `renderCalendar`, `renderHistory`, `renderAllRecords` |
 | 分析 | `renderAnalytics`, `updateChart` |
 | 書斎 | `updateStudyRoom`, `updateStudySky`, `loadStudyRoomWeather` |
 | 砂時計 | `startHourglass`, `tickHourglass`, `resetHourglass` |
-| 外観・設定 | `setTheme`, `setMark`, `setStudyRoomMode` |
+| 外観・設定 | テーマとマークは `src/features/appearance-controller.js`。書斎全画面切替は `src/main.js` |
 | 環境音 | `startAmbient`, `setAmbientLayer`, `stopAmbient` |
-| バックアップ | `exportData` / `importData` のイベント処理 |
+| バックアップ | 検証は `src/data/schema.js`。インポートの確認・退避・設定復元・統計置換の調整は `src/features/backup-import-controller.js`。復旧候補UI・原文書き出し・安全な復元は `src/features/recovery-controller.js` |
 
 ## 既存localStorageキー
 
@@ -60,7 +63,7 @@
 - `focus-room-quiet-text`
 - `focus-appearance`
 - `focus-mark`
-- `focus-preimport-backup`（インポート直前の自動退避）
+- `focus-preimport-backup`（インポート直前の自動退避。学習記録と設定を含む）
 - `focus-pre-migration-backup`（旧スキーマ移行前の退避）
 - `focus-corrupt-stats-backup`（破損したJSONの原文退避）
 - `focus-pre-recovery-raw-stats`（復元操作直前の統計データ退避）
@@ -106,3 +109,190 @@
 - `.github/workflows/deploy-pages.yml` を追加。PRはテストとビルドのみ、`main` へのpushまたは `main` 上での手動実行だけがPagesへデプロイする。
 - GitHub PagesのSource設定はプロジェクト所有者がGitHub Actionsへ切り替えたと確認済み。設定自体は接続ツールから独立検証できていない。
 - PRはDraftのまま。PRビルドは成功しているが、公開デプロイとiPhone実機確認は未実施。
+
+
+## Preview data-protection hardening — 2026-11-21
+
+- Backup import now writes the pre-import snapshot before attempting to replace `focus-stats`.
+- The application updates in-memory study records only after the new stats payload has been saved successfully.
+- If pre-import snapshot creation fails, import stops without changing stats.
+- If the new stats write fails, the old stats remain intact and the pre-import snapshot remains available for recovery.
+- `src/data/transactions.js` contains the storage transaction helper; three tests cover success, backup-write failure, and stats-write failure.
+- These changes are limited to `Focus-preview`; production repository `Focus` was not modified.
+
+
+## UI / PWA path audit — 2026-11-21
+
+- Found root-relative manifest and icon references in the document head, which are incorrect for a GitHub Pages project site mounted below `/Focus-preview/`.
+- Changed the manifest, favicon, and Apple touch icon references to `./` relative paths.
+- Added a regression test to prevent these root-relative asset references from returning.
+- Recheck Home Screen installation after this deployment because the prior manual installation check predates this path correction.
+
+
+## UI / navigation audit — 2026-11-21
+
+- Found that the Calendar and Analytics tab destinations contained placeholder copy while their actual panels remained nested in Overview.
+- Moved the monthly calendar panel into Calendar and the day/week/month analytics panel into Analytics.
+- Calendar redraws when its tab opens; analytics redraws on entry and when its range changes.
+- Added a regression test confirming each panel is mounted in its matching page and not in Overview.
+- Latest preview quality workflow: 47/47 tests passed; production build succeeded. Preview Pages deployment succeeded for commit `3ef042a04ec631a1d3c11638e89515808d271902`.
+
+
+## Settings UX audit — 2026-11-21
+
+- Added a clear Settings heading, short explanatory copy, and an explicit return-to-Timer action.
+- Applying changed timer durations now asks for confirmation when the current session is running or has elapsed from its starting state; cancelling leaves the current timer untouched.
+- Added two regression tests for the Settings return path and timer reset warning.
+- Latest preview quality checks: 49 tests passed, 0 failed; Vite production build succeeded.
+- Preview Pages deployment succeeded for commit `c6358e67e5b9ebd71ccc063b034a77ed43127d21`.
+- Manual iPhone validation of this latest settings change remains outstanding.
+
+
+## Accessibility and performance audit — 2026-11-21
+
+- Added visible keyboard focus outlines and minimum 44px touch targets for controls; tab navigation has a 48px minimum height.
+- Timer display now exposes the timer role, the decorative SVG ring is hidden from assistive technology, and the current timer state is announced politely.
+- Mode selection synchronizes its pressed state for assistive technology.
+- Expanded reduced-motion support to disable CSS animations and transitions across the app when the OS preference requests reduced motion.
+- Focus timer and Study Room hourglass intervals now update once per second, matching the displayed MM:SS precision; both continue to derive remaining time from absolute deadlines.
+- Latest quality workflow: 52/52 tests passed; production build succeeded. Preview Pages deployment succeeded for commit `f518903118a35cc746d3a09552f2016accdf7d69`.
+- Manual iPhone validation of the new reduced-motion, keyboard focus, and touch-target changes remains outstanding.
+
+
+## Study Room interaction and animation audit — 2026-11-21
+
+- Found a state-refresh bug in `updateStudyRoom()`: assigning `view.className` replaced the entire Study Room class list every minute, removing the structural `little-planet-view` class and other UI state. The refresh now updates only the date-dependent `season-*` and `time-*` classes.
+- Raised the hourglass shelf above decorative scene layers and explicitly enabled touch interaction with `pointer-events:auto` and `touch-action:manipulation`.
+- Bumped the preview Service Worker cache to `focus-preview-pwa-v3` so the repaired HTML, CSS, and JS are fetched as a fresh cache generation.
+- Added regression coverage for structural class preservation, touch interaction layering, celestial animation definitions, and the reduced-motion fallback.
+- Automated verification and a fresh iPhone retest are required before continuing the next development phase. Production remains unchanged.
+
+
+## Hourglass module extraction — 2026-11-21
+
+- Extracted the hourglass countdown state, rendering, tap/pause, long-press reset, and one-second tick into `src/features/hourglass.js`.
+- The main entry point now mounts the controller and only calls its public `tick()` method when the document becomes visible again.
+- The module exposes a small state snapshot for future focused tests; the main Pomodoro timer and Study Room presentation remain unchanged.
+- Regression tests verify the controller wiring and confirm that hourglass implementation details no longer live in `src/main.js`.
+- This is the first incremental step of the Study Room/hourglass separation. Weather and scene presentation remain in the main entry point for a later extraction.
+
+
+## Study Room feature extraction — 2026-11-21
+
+- Moved season/time-of-day presentation, date and clock labels, sky refresh integration, Nagoya weather fetching/caching, weather-to-scene classes, and sun-position adjustment into `src/features/study-room.js`.
+- The main entry point now mounts the Study Room controller and calls its public update/load/visibility methods from page navigation and document visibility handling.
+- The existing Study Room markup, CSS, quiet-text setting, fullscreen control, and hourglass module remain separate and unchanged.
+- Added regression coverage for module boundaries and the timer/page/visibility integration.
+
+
+## Textless Study Room hourglass readout — 2026-11-21
+
+- The quiet-text mode continues to hide surrounding labels and information, but no longer hides the hourglass countdown digits.
+- Added a regression test ensuring the countdown remains visible while the hourglass label stays hidden.
+
+
+## CSS responsibility split — 2026-11-21
+
+- Extracted the former 71 KB inline stylesheet into six files under `src/styles/`: foundation, Study Room, app components, device layout, Study Room visuals, and accessibility.
+- Added `src/styles/main.css` as a single ordered entry point. The import order exactly follows the former inline stylesheet order to preserve the cascade and overrides.
+- The HTML now links the stylesheet through a Vite-relative path; no inline CSS remains. No selector, declaration, animation, or visual value was intentionally changed.
+- Updated regression tests to inspect the extracted stylesheets and added coverage for stylesheet ordering and absence of inline styles.
+- Automated validation and iPhone visual retest are required before any production integration.
+
+
+## Timer state controller extraction — 2026-11-21
+
+- Extracted the timer lifecycle into `src/features/timer-controller.js`. The controller owns mode, remaining seconds, total duration, running/finished state, absolute deadline, interval lifecycle, runtime persistence, restoration, and focus-to-break transitions.
+- The controller has no DOM dependency. It receives the storage adapter, clock, interval scheduler, cycle/session getters, and UI/statistics side effects through injected dependencies and callbacks.
+- `src/main.js` now acts as the UI adapter: it mirrors controller snapshots for rendering, sends user actions to the controller, and supplies focus-completion / break-completion callbacks for records, totals, notifications, and sounds.
+- The existing `focus-timer-runtime` and `focus-timer-settings` keys and runtime payload shape are preserved. Deadline-based timing and automatic break start remain unchanged.
+- Added deterministic tests for start/pause, deadline persistence, focus completion, automatic long-break selection, break completion, active/expired restoration, mode/skip/reset/duration changes, and page-suspension persistence.
+- iPhone Safari/PWA manual validation is still required before any production integration.
+
+
+## Study statistics store extraction — 2026-11-21
+
+- Added `src/data/stats-store.js` as the single owner of in-memory learning records, lifetime totals, daily history, legacy aggregates, goals, and persistence. The store is independent of the DOM and publishes immutable snapshots to the UI adapter.
+- Moved startup parsing, corrupt-data snapshot protection, legacy-schema migration, future-schema write blocking, and normalized persistence into the store. Existing storage keys and schema/backup versions are unchanged.
+- Routed focus-session completion, history edits/deletes, reflection notes, goal updates, daily-record clearing, backup export, backup import, and recovery replacement through the store.
+- Kept the existing pure aggregation functions in `src/data/records.js`; the main entry point no longer calculates or mutates aggregate record state directly.
+- Added deterministic tests for legacy migration, aggregate consistency across reload, immutable snapshots, note/duration edits, deletion, clearing a day while preserving lifetime totals, future-schema protection, migration-backup failure, and transactional replacement.
+- Manual iPhone validation remains required, especially focus completion, record editing, daily clearing, backup import/export, and recovery UI.
+
+
+## Study presentation extraction — 2026-11-21
+
+- Added `src/views/study-views.js` for the DOM presentation of achievements, weekly summaries, goal progress, calendar, history, and analytics.
+- The view module receives records, aggregate history, goals, date cursor, and analytics range as inputs. It does not access storage or mutate learning data.
+- `src/main.js` retains application state and user interaction handlers, and delegates HTML rendering to the view module. Study Room sky progression remains coordinated by the app and is refreshed with the weekly view.
+- Reflection text and record IDs are escaped before being inserted into history markup.
+- Added tests for weekly totals, goals, calendar output, safe history rendering, analytics periods, and main/view integration.
+- Manual iPhone validation is still required for all affected pages and interactions.
+
+
+## Ambient sound controller
+
+- `src/features/ambient-sound.js` owns generated ambient audio layers, preset composition, volume updates, accessible button state, and stopping active sources.
+- The controller receives the document root, AudioContext constructor provider, shared AudioContext accessors, volume provider, and unsupported-audio callback as dependencies. It does not read application storage or timer state. Ambient layers and completion tones reuse the same AudioContext.
+- `src/main.js` wires the existing sound buttons and slider to the controller; sound types, presets, synthesis parameters, and settings UI remain unchanged.
+- Deterministic tests use a fake Web Audio graph to verify layer toggling, preset replacement, volume distribution, unsupported-browser handling, and cleanup.
+- iOS may suspend Web Audio when the PWA is backgrounded; this extraction does not add or promise background audio playback.
+
+
+## Notification controller
+
+- `src/features/notification-controller.js` owns the notification preference, permission request, accessible settings button state, browser notification delivery, and persistence of `focus-notifications`.
+- The controller receives the storage adapter, document root, Notification API provider, and message/state callbacks. Timer completion calls its `notify` method through the existing main-layer callback.
+- Backup restoration updates the controller through `setEnabled`, keeping the existing backup field and storage key unchanged.
+- Permission denial and unsupported browsers leave notifications disabled and report a user-facing message. Notification delivery remains best-effort; browser and iOS PWA lifecycle restrictions still apply.
+- Tests use a fake Notification API to verify permission grant/denial, unsupported environments, delivery gating, persistence, and backup restoration.
+
+
+## Appearance controller extraction — 2026-11-22
+
+- Extracted the five existing color themes and three brand marks into `src/features/appearance-controller.js`.
+- The controller owns theme CSS-variable application, browser theme-color metadata, selected/pressed button states, preference restoration, and persistence.
+- Existing storage keys `focus-appearance` and `focus-mark`, palette values, visible labels, and backup format are preserved. Backup import now calls the controller rather than the former main-entry-point functions.
+- Unknown or corrupt appearance preferences safely fall back to the existing Forest / dot defaults.
+- Automated tests cover restore, switching, persistence, fallback behavior, accessible button state, and listener cleanup.
+- No intentional visual redesign or new appearance option was introduced.
+
+
+## Recovery UI controller — 2026-11-22
+
+- Extracted recovery panel rendering, raw snapshot download, restore confirmation, and pre-restore protection into `src/features/recovery-controller.js`.
+- Kept snapshot classification and schema/future-version checks in `src/data/recovery.js`; all learning-data replacement remains owned by `src/data/stats-store.js`.
+- The main entry point now supplies DOM, confirmation, messages, and post-restore refresh callbacks only.
+- Added tests for export-only corrupt data, JSON export, successful restore, listener cleanup, and aborting when the pre-restore snapshot cannot be saved.
+- Removed a stale pre-extraction appearance call path that referenced removed global theme functions; appearance initialization remains owned by `appearance-controller.js`.
+- Preview Service Worker cache advanced to v7. Production repository remains unchanged.
+
+
+## Backup import controller — 2026-11-22
+
+- Moved file selection, JSON parsing, schema validation handoff, confirmation, pre-import snapshot, settings application/rollback, and statistics replacement orchestration into `src/features/backup-import-controller.js`.
+- The controller writes the complete pre-import backup before touching settings or stats. If snapshot creation fails, import stops.
+- Settings are captured as exact raw storage values. If any setting write or the later stats write fails, the prior setting values are restored; absent keys are removed through the storage adapter.
+- Appearance and notification controllers expose non-persisting state application for this coordinated transaction, avoiding duplicate writes after the import controller has already persisted settings.
+- Statistics state is only published by `statsStore.replaceStats` after the stats payload is saved. A failed stats write leaves the prior stats state intact.
+- The backup JSON schema and existing storage keys remain unchanged. Preview cache advanced to v8.
+
+
+## Phase 6 — Transactional stats mutations audit — 2026-11-22
+
+- A persistence-failure audit found that `stats-store.js` previously published a candidate state before confirming that `focus-stats` had been saved.
+- The store now normalizes and serializes a candidate first, writes it, and only then publishes the new in-memory state and notifies views.
+- If persistence fails, add/edit/delete/clear-day/goal mutations return `false`; the previous in-memory snapshot and rendered state remain authoritative.
+- The UI now reports failed writes for session completion, goals, history edits/deletions, reflections, and day clearing. Clearing records no longer resets the timer before the record write succeeds.
+- Added regression coverage for failed writes across all stats mutation operations.
+
+- The entry-point audit also removed an obsolete recovery-data import and unused audio state fields left behind by earlier feature extractions.
+
+
+## Phase 6 — network and lifecycle audit — 2026-11-22
+
+- The service worker previously cached every successful GET response, including third-party weather API responses. Its cache-first lookup could then return an old weather response despite the feature requesting `cache: 'no-store'`.
+- The fetch handler now bypasses all cross-origin requests. The cache namespace was bumped to `focus-preview-pwa-v9`, which also removes the previous preview cache during activation.
+- Study Room weather requests now use an abort controller with a 10-second timeout. The scene cancels pending work and removes its weather click listener when destroyed; late responses cannot update the detached scene.
+- Backup import now catches failures while creating the pre-import snapshot and checks whether settings rollback actually succeeded. The user is explicitly warned if rollback is incomplete; the pre-import snapshot remains available.
+- Regression tests cover external request bypass, weather request timeout/teardown, snapshot preparation failure, and rollback failure.
