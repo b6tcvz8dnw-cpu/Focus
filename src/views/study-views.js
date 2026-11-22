@@ -68,7 +68,7 @@ export function createStudyViews({ root = document } = {}) {
     $("goalProgress").innerHTML = item("今日", today, dailyGoal) + item("今週", week, weeklyGoal);
   }
 
-  function renderCalendar({ history, cursor }) {
+  function renderCalendar({ history, cursor, selectedDate = "" }) {
     const year = cursor.getFullYear(), month = cursor.getMonth();
     const first = new Date(year, month, 1).getDay();
     const days = new Date(year, month + 1, 0).getDate();
@@ -82,16 +82,61 @@ export function createStudyViews({ root = document } = {}) {
     for (let index = 0; index < first; index++) cells.push('<div class="calendar-cell" aria-hidden="true"></div>');
     for (let day = 1; day <= days; day++) {
       const key = dateKey(new Date(year, month, day));
-      const value = Number(history[key] || 0);
+      const value = Math.max(0, Number(history[key]) || 0);
       const heat = value ? Math.max(.15, value / max) : 0;
       const today = key === dateKey(new Date());
+      const active = key === selectedDate;
       const accessibleValue = value ? value + "分の集中記録" : "集中記録なし";
-      cells.push('<div class="calendar-cell ' + (today ? "today" : "") + '" role="img" aria-label="' + year + '年' + (month + 1) + '月' + day + '日、' + accessibleValue + '"' + (today ? ' aria-current="date"' : "") + '><span aria-hidden="true">' + day + '</span><i class="heat" aria-hidden="true" style="--heat:' + heat + '"></i></div>');
+      cells.push('<button type="button" class="calendar-cell calendar-day ' + (today ? "today " : "") + (active ? "selected" : "") +
+        '" data-calendar-date="' + key + '" aria-label="' + year + "年" + (month + 1) + "月" + day + "日、" + accessibleValue +
+        '" aria-pressed="' + active + '"' + (today ? ' aria-current="date"' : "") +
+        '><span>' + day + '</span><i class="heat" aria-hidden="true" style="--heat:' + heat + '"></i>' +
+        (value ? '<small>' + value + '分</small>' : "") + '</button>');
     }
     $("calendarTitle").textContent = year + "年 " + (month + 1) + "月";
     $("calendarGrid").setAttribute("role", "group");
     $("calendarGrid").setAttribute("aria-label", year + "年" + (month + 1) + "月の学習時間カレンダー");
     $("calendarGrid").innerHTML = cells.join("");
+  }
+
+  function renderDayDetails({ date, records, legacyMinutes = 0 }) {
+    const target = new Date(date + "T12:00:00");
+    if (!Number.isFinite(target.getTime())) {
+      $("calendarDayDetails").innerHTML = '<p class="muted">日付を選ぶと、その日の学習記録を確認できるよ。</p>';
+      return;
+    }
+    const title = target.toLocaleDateString("ja-JP", { year: "numeric", month: "long", day: "numeric", weekday: "short" });
+    const dayRecords = [...records].filter(record => record.date === date).sort((a, b) => a.timestamp - b.timestamp);
+    const legacy = Math.max(0, Number(legacyMinutes) || 0);
+    const total = legacy + dayRecords.reduce((sum, record) => sum + Math.max(0, Number(record.minutes) || 0), 0);
+    const duration = value => {
+      const number = Math.max(0, Number(value) || 0);
+      return number >= 60 ? Math.floor(number / 60) + "時間" + (number % 60 ? number % 60 + "分" : "") : number + "分";
+    };
+    const cards = dayRecords.length ? dayRecords.map(record => {
+      const time = new Date(record.timestamp);
+      const timeValue = Number.isFinite(time.getTime())
+        ? String(time.getHours()).padStart(2, "0") + ":" + String(time.getMinutes()).padStart(2, "0")
+        : "12:00";
+      return '<article class="day-record" data-day-record="' + escapeHTML(record.id) + '">' +
+        '<div class="day-record-head"><strong>' + escapeHTML(timeValue) + '</strong><span>' + escapeHTML(duration(record.minutes)) + '</span></div>' +
+        '<div class="day-record-fields"><label>時刻<input type="time" data-day-time value="' + escapeHTML(timeValue) + '"></label>' +
+        '<label>集中時間（分）<input type="number" min="1" max="120" step="1" data-day-minutes value="' + escapeHTML(record.minutes) + '"></label></div>' +
+        '<label class="day-record-note">振り返り<textarea data-day-note maxlength="2000" rows="2">' + escapeHTML(record.note || "") + '</textarea></label>' +
+        (record.intention ? '<small class="muted">開始前の意図：' + escapeHTML(record.intention) + '</small>' : "") +
+        '<div class="history-actions"><button type="button" data-day-save="' + escapeHTML(record.id) + '">変更を保存</button><button type="button" data-day-delete="' + escapeHTML(record.id) + '">削除</button></div></article>';
+    }).join("") : '<p class="muted">この日の詳細なセッション記録はありません。</p>';
+    const now = new Date();
+    const defaultTime = date === dateKey(now)
+      ? String(now.getHours()).padStart(2, "0") + ":" + String(now.getMinutes()).padStart(2, "0")
+      : "12:00";
+    $("calendarDayTitle").textContent = title;
+    $("calendarDayDetails").innerHTML =
+      '<div class="day-details-summary"><div><span class="muted">この日の学習時間</span><strong>' + escapeHTML(duration(total)) +
+      '</strong></div><span class="muted">' + dayRecords.length + ' セッション</span></div>' +
+      (legacy ? '<div class="legacy-day-editor"><label>詳細が残っていない過去の記録（分）<input type="number" min="0" max="1440" step="1" id="legacyDayMinutes" value="' + legacy + '"></label><button type="button" data-legacy-save>合計を修正</button></div>' : "") +
+      '<div class="day-record-list">' + cards + '</div>' +
+      '<div class="day-add-record"><h3>記録を追加</h3><div class="day-record-fields"><label>時刻<input type="time" id="newDayTime" value="' + defaultTime + '"></label><label>集中時間（分）<input type="number" id="newDayMinutes" min="1" max="120" value="25"></label></div><label class="day-record-note">振り返り<textarea id="newDayNote" maxlength="2000" rows="2" placeholder="任意"></textarea></label><button type="button" data-day-add>この日の記録を追加</button></div>';
   }
 
   function renderHistory({ records, query = "", reflectionOnly = false, period = "all", now = new Date() }) {
@@ -168,5 +213,5 @@ export function createStudyViews({ root = document } = {}) {
     return buckets;
   }
 
-  return { renderAchievements, renderWeekly, renderGoals, renderCalendar, renderHistory, renderAnalytics };
+  return { renderAchievements, renderWeekly, renderGoals, renderCalendar, renderDayDetails, renderHistory, renderAnalytics };
 }
