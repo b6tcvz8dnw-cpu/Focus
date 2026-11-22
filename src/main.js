@@ -150,8 +150,10 @@ function renderCalendarDayDetails(){
  studyViews.renderDayDetails({date:selectedCalendarDate,records,legacyMinutes:legacyHistory[selectedCalendarDate]||0});
 }
 function moveCalendarTo(year,month){
- if(!Number.isInteger(year)||year<1970||year>2100||!Number.isInteger(month)||month<0||month>11){$('toast').textContent='年は1970〜2100年、月は1〜12月で指定してね。';return}
- calendarCursor=new Date(year,month,1);selectedCalendarDate=dateKey(calendarCursor);renderCalendar();
+ if(!Number.isInteger(year)||year<1970||year>2100||!Number.isInteger(month)||month< -1||month>12){$('toast').textContent='年は1970〜2100年、月は1〜12月で指定してね。';return}
+ const target=new Date(year,month,1);
+ if(target.getFullYear()<1970||target.getFullYear()>2100){$('toast').textContent='表示できるのは1970〜2100年だよ。';return}
+ calendarCursor=target;selectedCalendarDate=dateKey(calendarCursor);renderCalendar();
 }
 $('monthPrev').onclick=()=>moveCalendarTo(calendarCursor.getFullYear(),calendarCursor.getMonth()-1);
 $('monthNext').onclick=()=>moveCalendarTo(calendarCursor.getFullYear(),calendarCursor.getMonth()+1);
