@@ -134,9 +134,9 @@ export function createStudyViews({ root = document } = {}) {
     $("calendarDayDetails").innerHTML =
       '<div class="day-details-summary"><div><span class="muted">この日の学習時間</span><strong>' + escapeHTML(duration(total)) +
       '</strong></div><span class="muted">' + dayRecords.length + ' セッション</span></div>' +
-      (legacy ? '<div class="legacy-day-editor"><label>詳細が残っていない過去の記録（分）<input type="number" min="0" max="1440" step="1" id="legacyDayMinutes" value="' + legacy + '"></label><button type="button" data-legacy-save>合計を修正</button></div>' : "") +
+      (legacy ? '<div class="legacy-day-editor"><label>詳細が残っていない過去の記録（分）<input type="number" min="0" max="1440" step="1" data-legacy-minutes value="' + legacy + '"></label><button type="button" data-legacy-save>合計を修正</button></div>' : "") +
       '<div class="day-record-list">' + cards + '</div>' +
-      '<div class="day-add-record"><h3>記録を追加</h3><div class="day-record-fields"><label>時刻<input type="time" id="newDayTime" value="' + defaultTime + '"></label><label>集中時間（分）<input type="number" id="newDayMinutes" min="1" max="120" value="25"></label></div><label class="day-record-note">振り返り<textarea id="newDayNote" maxlength="2000" rows="2" placeholder="任意"></textarea></label><button type="button" data-day-add>この日の記録を追加</button></div>';
+      '<div class="day-add-record"><h3>記録を追加</h3><div class="day-record-fields"><label>時刻<input type="time" data-new-day-time value="' + defaultTime + '"></label><label>集中時間（分）<input type="number" data-new-day-minutes min="1" max="120" value="25"></label></div><label class="day-record-note">振り返り<textarea data-new-day-note maxlength="2000" rows="2" placeholder="任意"></textarea></label><button type="button" data-day-add>この日の記録を追加</button></div>';
   }
 
   function renderHistory({ records, query = "", reflectionOnly = false, period = "all", now = new Date() }) {
