@@ -654,7 +654,8 @@ test("Vite keeps the GitHub Pages project path relative", async () => {
   assert.match(config, /publicDir:\s*["']public["']/);
   const html = await read("../index.html");
   assert.ok(html.includes('href="./manifest.webmanifest"'));
-  assert.ok(html.includes('href="./icons/icon-planet.png"'));
+  assert.ok(html.includes('href="./icon.svg"'));
+  assert.ok(html.includes('href="./icon-192.png"'));
 });
 
 test("production build injects generated bundles into the PWA precache", async () => {
