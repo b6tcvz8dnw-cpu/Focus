@@ -155,7 +155,7 @@ test("hourglass CSS uses real rule separators and production cache is versioned"
   assert.ok(css.includes(".hourglass-grain{fill:var(--accent)"));
   assert.ok(css.includes(".hourglass-art.is-running .hourglass-grain{animation:sand-grain-fall"));
   const sw = await read("../public/sw.js");
-  assert.ok(sw.includes("focus-pwa-v33"));
+  assert.ok(sw.includes("focus-pwa-v34"));
 });
 
 test("calendar and analytics panels are mounted in their matching tabs", async () => {
@@ -258,7 +258,7 @@ test("Study Room animations pause while another page is selected", async () => {
 test("production service worker caches only successful responses and waits for cache writes", async () => {
   const sw = await read("../public/sw.js");
   const cacheName = sw.match(/const CACHE='([^']+)'/)?.[1];
-  assert.equal(cacheName, "focus-pwa-v33");
+  assert.equal(cacheName, "focus-pwa-v34");
   for (const asset of [
     "./index.html", "./manifest.webmanifest", "./icon.svg", "./icon-192.png", "./icon-512.png", "./icons/icon-planet.png", "./icons/icon-hourglass.png", "./icons/icon-window.png", "./icons/icon-comet.png"
   ]) {
@@ -322,7 +322,7 @@ test("Study Room sky progression preserves all existing thresholds", () => {
 
 test("production Service Worker only manages production-owned caches", async () => {
   const sw = await read("../public/sw.js");
-  assert.ok(sw.includes("const CACHE='focus-pwa-v33';"));
+  assert.ok(sw.includes("const CACHE='focus-pwa-v34';"));
   assert.ok(sw.includes("const CACHE_PREFIX='focus-pwa-';"));
   assert.ok(sw.includes("key.startsWith(CACHE_PREFIX) && key!==CACHE"));
 });
@@ -2292,4 +2292,23 @@ test("subject selection and filtering are removed while legacy record data remai
   assert.doesNotMatch(script, /sessionSubject|historySubject|subject:/);
   assert.doesNotMatch(views.slice(views.indexOf("function renderHistory"), views.indexOf("function renderAnalytics")), /record\.subject|subject =/);
   assert.match(script, /sessionIntention/);
+});
+
+
+test("dedicated Home Screen icon page previews all four selectable icons and explains iOS re-add flow", async () => {
+  const html = await read("../index.html");
+  const controller = await read("../src/features/appearance-controller.js");
+  const sw = await read("../public/sw.js");
+  assert.ok(html.includes('id="homeIconPage"'));
+  assert.ok(html.includes('id="homeIconPreview"'));
+  assert.ok(html.includes('id="homeIconPreviewName"'));
+  for (const icon of ["planet", "hourglass", "window", "comet"]) {
+    assert.ok(html.includes('data-home-icon="' + icon + '"'));
+    assert.ok(html.includes("./icons/icon-" + icon + ".png"));
+  }
+  assert.ok(html.includes("ホーム画面に追加"));
+  assert.ok(html.includes("SafariでFOCUSを開き直す"));
+  assert.ok(controller.includes('root.getElementById("homeIconPreview")'));
+  assert.ok(controller.includes('root.getElementById("homeIconPreviewName")'));
+  assert.ok(sw.includes("focus-pwa-v34"));
 });
