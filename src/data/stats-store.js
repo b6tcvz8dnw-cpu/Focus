@@ -174,7 +174,9 @@ export function createStudyStatsStore({ storage, onChange = () => {} } = {}) {
   }
 
   function setLegacyDayMinutes(date, minutes) {
-    if (typeof date !== "string" || !/^\\d{4}-\\d{2}-\\d{2}$/.test(date)) return false;
+    if (typeof date !== "string" || date.length !== 10 || date[4] !== "-" || date[7] !== "-") return false;
+    const parsed = new Date(date + "T12:00:00");
+    if (!Number.isFinite(parsed.getTime()) || parsed.getFullYear() !== Number(date.slice(0, 4)) || parsed.getMonth() + 1 !== Number(date.slice(5, 7)) || parsed.getDate() !== Number(date.slice(8, 10))) return false;
     const value = Number(minutes);
     if (!Number.isInteger(value) || value < 0 || value > 1440) return false;
     const current = Math.max(0, Number(state.legacyHistory[date]) || 0);
