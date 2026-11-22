@@ -7,8 +7,8 @@
 <meta name="description" content="集中と休憩を切り替える学習用ポモドーロタイマー">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' https://api.open-meteo.com; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
 <link rel="manifest" href="./manifest.webmanifest">
-<link id="appFavicon" rel="icon" href="./icon.svg" type="image/svg+xml">
-<link id="appleTouchIcon" rel="apple-touch-icon" href="./icon-192.png">
+<link id="appFavicon" rel="icon" href="./icons/icon-planet.png" type="image/png">
+<link id="appleTouchIcon" rel="apple-touch-icon" href="./icons/icon-planet.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="FOCUS">
@@ -186,6 +186,8 @@
    <label>長い休憩（分）<input id="longDuration" type="number" min="1" max="90" value="15"></label>
    <label>長い休憩まで<input id="cycleDuration" type="number" min="2" max="8" value="4"></label>
   </div>
+  <label class="auto-continue-setting"><input id="autoContinue" type="checkbox">休憩終了後に次の集中を自動開始</label>
+  <p class="muted auto-continue-hint">オンにすると、集中 → 休憩 → 集中を繰り返すよ。オフなら休憩が終わったところで待機するよ。</p>
   <button class="secondary wide" id="apply">設定を適用</button>
  </details>
  <details class="panel"><summary>通知</summary><p class="muted" style="margin:12px 0 10px">タイマー終了時の通知を使うか選べるよ。iPhoneでは通知の許可やホーム画面アプリの状態に左右されるよ。</p><button class="secondary wide" id="notificationToggle" aria-pressed="false">完了通知：オフ</button></details>
@@ -197,6 +199,10 @@
    <button class="theme-choice" data-theme="purple" aria-pressed="false"><i style="background:#b8a0e8"></i>ラベンダー</button>
    <button class="theme-choice" data-theme="amber" aria-pressed="false"><i style="background:#e7b96f"></i>アンバー</button>
    <button class="theme-choice" data-theme="rose" aria-pressed="false"><i style="background:#e6a0ad"></i>ローズ</button>
+  </div>
+  <div class="home-icon-preview">
+   <img id="homeIconPreview" src="./icons/icon-planet.png" alt="テーマカラーに合わせたホーム画面アイコンのプレビュー">
+   <div><strong>ホーム画面アイコン</strong><p class="muted">惑星のデザインに戻し、色はテーマカラーに連動するよ。iPhoneに登録済みのアイコンへ反映するには、ホーム画面への再追加が必要だよ。</p></div>
   </div>
   <div class="muted" style="margin:16px 0 10px">アプリ内マーク</div>
   <div class="mark-grid" role="group" aria-label="アプリ内マーク">
