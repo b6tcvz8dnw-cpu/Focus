@@ -1090,7 +1090,7 @@ test("document head uses relative PWA asset paths for GitHub Pages subpaths", as
   const html = await read("../index.html");
   assert.match(html, /<link rel="manifest" href="\.\/manifest\.webmanifest"/);
   assert.match(html, /<link id="appFavicon" rel="icon" href="\\.\\/icon\\.svg"/);
-  assert.match(html, /<link id="appleTouchIcon" rel="apple-touch-icon" href="\\.\\/icon\\.svg"/);
+  assert.match(html, /<link id="appleTouchIcon" rel="apple-touch-icon" href="\\.\\/icon-192\\.png"/);
   assert.doesNotMatch(html, /(?:href|src)="\/(?:manifest\.webmanifest|icon\.svg|icon-192\.png|icons\/)/);
 });
 
@@ -2286,7 +2286,7 @@ test("Home Screen icon stays fixed while theme and in-app mark remain changeable
   const html = await read("../index.html");
   const controller = await read("../src/features/appearance-controller.js");
   const sw = await read("../public/sw.js");
-  assert.match(html, /<link id="appleTouchIcon" rel="apple-touch-icon" href="\\.\\/icon\\.svg"/);
+  assert.match(html, /<link id="appleTouchIcon" rel="apple-touch-icon" href="\\.\\/icon-192\\.png"/);
   assert.match(html, /<link id="appFavicon" rel="icon" href="\\.\\/icon\\.svg"/);
   assert.ok(!html.includes("home-icon-fixed-preview"));
   assert.ok(!html.includes("削除・再追加は必要ない"));
