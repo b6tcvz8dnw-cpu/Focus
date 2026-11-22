@@ -668,7 +668,7 @@ test("Vite keeps the GitHub Pages project path relative", async () => {
   assert.match(config, /publicDir:\s*["']public["']/);
   const html = await read("../index.html");
   assert.ok(html.includes('href="./manifest.webmanifest"'));
-  assert.ok(html.includes('href="./icon.svg"'));
+  assert.ok(html.includes('href="./icons/icon-planet.png"'));
   assert.ok(html.includes('href="./icon-192.png"'));
 });
 
@@ -1104,8 +1104,8 @@ test("stats replacement keeps the pre-import backup and old stats when the new w
 test("document head uses relative PWA asset paths for GitHub Pages subpaths", async () => {
   const html = await read("../index.html");
   assert.match(html, /<link rel="manifest" href="\.\/manifest\.webmanifest"/);
-  assert.ok(html.includes('<link id="appFavicon" rel="icon" href="./icon.svg"'));
-  assert.ok(html.includes('<link id="appleTouchIcon" rel="apple-touch-icon" href="./icon-192.png"'));
+  assert.ok(html.includes('<link id="appFavicon" rel="icon" href="./icons/icon-planet.png"'));
+  assert.ok(html.includes('<link id="appleTouchIcon" rel="apple-touch-icon" href="./icons/icon-planet.png"'));
   assert.doesNotMatch(html, /(?:href|src)="\/(?:manifest\.webmanifest|icon\.svg|icon-192\.png|icons\/)/);
 });
 
@@ -1306,6 +1306,7 @@ function createFakeTimerHarness(options = {}) {
   };
   const controller = createTimerController({
     durations: options.durations || { focus: 1, short: 1, long: 2 },
+    autoContinue: options.autoContinue || false,
     getCycleLength: options.getCycleLength || (() => 2),
     getCompletedSessions: options.getCompletedSessions || (() => 1),
     store,
