@@ -173,6 +173,16 @@ export function createStudyStatsStore({ storage, onChange = () => {} } = {}) {
     return commit({ ...state, records, legacyHistory, legacyCompleted, legacyMinutes });
   }
 
+  function setLegacyDayMinutes(date, minutes) {
+    if (typeof date !== "string" || !/^\\d{4}-\\d{2}-\\d{2}$/.test(date)) return false;
+    const value = Number(minutes);
+    if (!Number.isInteger(value) || value < 0 || value > 1440) return false;
+    const current = Math.max(0, Number(state.legacyHistory[date]) || 0);
+    const legacyHistory = { ...state.legacyHistory, [date]: value };
+    const legacyMinutes = Math.max(0, state.legacyMinutes + value - current);
+    return commit({ ...state, legacyHistory, legacyMinutes });
+  }
+
   function setGoals(dailyGoal, weeklyGoal) {
     return commit({ ...state, dailyGoal, weeklyGoal });
   }
