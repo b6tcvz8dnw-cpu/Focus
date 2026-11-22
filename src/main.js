@@ -9,12 +9,13 @@ import { mountStudyRoom } from './features/study-room.js';
 import { createStudyViews } from './views/study-views.js';
 import { createAmbientSoundController } from './features/ambient-sound.js';
 import { createNotificationController } from './features/notification-controller.js';
+import { createCompletionSoundController } from './features/completion-sound.js';
 import { createAppearanceController } from './features/appearance-controller.js';
 import { createRecoveryController } from './features/recovery-controller.js';
 import { createBackupImportController } from './features/backup-import-controller.js';
 const $=id=>document.getElementById(id);
 const studyViews=createStudyViews();
-let durations={focus:25,short:5,long:15},mode='focus',remaining=1500,total=1500,running=false,deadline=0,completed=0,minutes=0,finished=false,history={},legacyHistory={},records=[],selectedCalendarDate=dateKey(new Date()),dailyGoal=60,weeklyGoal=300,statsStore=null,calendarCursor=new Date(new Date().getFullYear(),new Date().getMonth(),1),audioContext=null,appReady=false,timerController=null;
+let durations={focus:25,short:5,long:15},mode='focus',remaining=1500,total=1500,running=false,deadline=0,completed=0,minutes=0,finished=false,history={},legacyHistory={},records=[],selectedCalendarDate=dateKey(new Date()),dailyGoal=60,weeklyGoal=300,statsStore=null,calendarCursor=new Date(new Date().getFullYear(),new Date().getMonth(),1),appReady=false,timerController=null;
 const labels={focus:'集中する時間',short:'短い休憩',long:'長い休憩'},hints={focus:'ひとつのことに集中しよう。',short:'少し頭を休めよう。',long:'ゆっくり休んで次のセットに備えよう。'},circ=2*Math.PI*88;
 function cycle(){return Math.max(2,Math.min(8,+$('cycleDuration').value||4))}
 function updateAutoBackupStatus(){
@@ -72,7 +73,8 @@ const notificationController=createNotificationController({
  onStateChange:enabled=>{notificationsEnabled=enabled}
 });
 function notify(title){notificationController.notify(title)}
-function playCompletionSound(){try{const C=window.AudioContext||window.webkitAudioContext;if(!C)return;const c=audioContext||new C();audioContext=c;c.resume().then(()=>{[660,880].forEach((hz,i)=>{const o=c.createOscillator(),g=c.createGain(),t=c.currentTime+i*.16;o.type='sine';o.frequency.value=hz;g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.12,t+.025);g.gain.exponentialRampToValueAtTime(.0001,t+.42);o.connect(g);g.connect(c.destination);o.start(t);o.stop(t+.45)})}).catch(()=>{})}catch(e){}}
+const completionSoundController=createCompletionSoundController({target:document});
+function playCompletionSound(){completionSoundController.play()}
 $('start').onclick=()=>{if(running){timerController.pause();return}if(finished){$('toast').textContent='次のモードを選んでスタートしよう。';return}timerController.start()};
 function setLargeMode(enabled){
  document.body.classList.toggle('timer-large-mode',enabled);

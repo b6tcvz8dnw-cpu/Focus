@@ -19,6 +19,7 @@ import { writeStatsWithBackup } from "../src/data/transactions.js";
 import { createTimerController } from "../src/features/timer-controller.js";
 import { createAmbientSoundController } from "../src/features/ambient-sound.js";
 import { createNotificationController } from "../src/features/notification-controller.js";
+import { createCompletionSoundController } from "../src/features/completion-sound.js";
 import { createAppearanceController } from "../src/features/appearance-controller.js";
 import { createRecoveryController } from "../src/features/recovery-controller.js";
 import { createBackupImportController, MAX_BACKUP_BYTES } from "../src/features/backup-import-controller.js";
@@ -155,7 +156,7 @@ test("hourglass CSS uses real rule separators and production cache is versioned"
   assert.ok(css.includes(".hourglass-grain{fill:var(--accent)"));
   assert.ok(css.includes(".hourglass-art.is-running .hourglass-grain{animation:sand-grain-fall"));
   const sw = await read("../public/sw.js");
-  assert.ok(sw.includes("focus-pwa-v38"));
+  assert.ok(sw.includes("focus-pwa-v39"));
 });
 
 test("calendar and analytics panels are mounted in their matching tabs", async () => {
@@ -272,7 +273,7 @@ test("Study Room animations pause while another page is selected", async () => {
 test("production service worker caches only successful responses and waits for cache writes", async () => {
   const sw = await read("../public/sw.js");
   const cacheName = sw.match(/const CACHE='([^']+)'/)?.[1];
-  assert.equal(cacheName, "focus-pwa-v38");
+  assert.equal(cacheName, "focus-pwa-v39");
   for (const asset of [
     "./index.html", "./manifest.webmanifest", "./icon.svg", "./icon-192.png", "./icon-512.png", "./icons/icon-planet.png", "./icons/icon-hourglass.png", "./icons/icon-window.png", "./icons/icon-comet.png"
   ]) {
@@ -336,7 +337,7 @@ test("Study Room sky progression preserves all existing thresholds", () => {
 
 test("production Service Worker only manages production-owned caches", async () => {
   const sw = await read("../public/sw.js");
-  assert.ok(sw.includes("const CACHE='focus-pwa-v38';"));
+  assert.ok(sw.includes("const CACHE='focus-pwa-v39';"));
   assert.ok(sw.includes("const CACHE_PREFIX='focus-pwa-';"));
   assert.ok(sw.includes("key.startsWith(CACHE_PREFIX) && key!==CACHE"));
 });
@@ -2357,5 +2358,60 @@ test("Home Screen icon stays fixed while theme and in-app mark remain changeable
   assert.doesNotMatch(controller, /setHomeIcon|focus-home-icon|appleTouchIcon|appFavicon/);
   assert.ok(controller.includes("function setTheme"));
   assert.ok(controller.includes("function setMark"));
-  assert.ok(sw.includes("focus-pwa-v38"));
+  assert.ok(sw.includes("focus-pwa-v39"));
+});
+
+
+test("completion sound unlocks on the first user gesture and plays a soft ascending chime", async () => {
+  const listeners = new Map();
+  const target = {
+    addEventListener(type, listener) { listeners.set(type, listener); },
+    removeEventListener(type, listener) { if (listeners.get(type) === listener) listeners.delete(type); }
+  };
+  const oscillators = [];
+  class FakeAudioContext {
+    constructor() { this.state = "suspended"; this.currentTime = 2; this.destination = {}; }
+    async resume() { this.state = "running"; }
+    async close() { this.state = "closed"; }
+    createOscillator() {
+      const oscillator = {
+        frequency: { value: 0 }, type: "", startedAt: null, stoppedAt: null,
+        connect() {}, start(at) { this.startedAt = at; }, stop(at) { this.stoppedAt = at; }
+      };
+      oscillators.push(oscillator);
+      return oscillator;
+    }
+    createGain() {
+      return {
+        gain: { setValueAtTime() {}, exponentialRampToValueAtTime() {} },
+        connect() {}
+      };
+    }
+  }
+  const controller = createCompletionSoundController({
+    getAudioContext: () => FakeAudioContext,
+    target
+  });
+
+  await listeners.get("pointerdown")();
+  assert.equal(controller.play(), true);
+  assert.equal(oscillators.length, 3);
+  assert.deepEqual(oscillators.map(item => item.frequency.value), [659.25, 783.99, 987.77]);
+  assert.ok(oscillators.every(item => item.startedAt !== null && item.stoppedAt > item.startedAt));
+  controller.destroy();
+});
+
+test("completion sound safely does nothing when Web Audio is unavailable", () => {
+  const controller = createCompletionSoundController({ getAudioContext: () => null, target: null });
+  assert.equal(controller.play(), false);
+  assert.equal(controller.isSupported(), false);
+  controller.destroy();
+});
+
+test("main uses the completion sound controller for both focus and break completion", async () => {
+  const script = await read("../src/main.js");
+  assert.ok(script.includes("createCompletionSoundController({target:document})"));
+  assert.ok(script.includes("function playCompletionSound(){completionSoundController.play()}"));
+  assert.ok(script.includes("onFocusComplete({actualSeconds=durations.focus*60}"));
+  assert.ok(script.includes("onBreakComplete(){notify("));
 });
