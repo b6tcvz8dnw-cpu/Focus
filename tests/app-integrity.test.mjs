@@ -258,9 +258,9 @@ test("Study Room animations pause while another page is selected", async () => {
 test("production service worker caches only successful responses and waits for cache writes", async () => {
   const sw = await read("../public/sw.js");
   const cacheName = sw.match(/const CACHE='([^']+)'/)?.[1];
-  assert.equal(cacheName, "focus-pwa-v32");
+  assert.equal(cacheName, "focus-pwa-v33");
   for (const asset of [
-    "./index.html", "./manifest.webmanifest", "./icon.svg", "./icon-192.png", "./icon-512.png"
+    "./index.html", "./manifest.webmanifest", "./icon.svg", "./icon-192.png", "./icon-512.png", "./icons/icon-planet.png", "./icons/icon-hourglass.png", "./icons/icon-window.png", "./icons/icon-comet.png"
   ]) {
     assert.ok(sw.includes(asset), "service worker should cache " + asset);
   }
@@ -1940,13 +1940,16 @@ function makeAppearanceFixture(saved = {}, options = {}) {
   };
   const themes = ["green", "blue", "purple", "amber", "rose"].map(value => makeButton(value, "theme"));
   const marks = ["dot", "star", "leaf"].map(value => makeButton(value, "mark"));
+  const homeIcons = ["planet", "hourglass", "window", "comet"].map(value => makeButton(value, "homeIcon"));
   const css = new Map();
+  const appleTouchIcon = { attributes: {}, setAttribute(name, value) { this.attributes[name] = value; } };
+  const favicon = { attributes: {}, setAttribute(name, value) { this.attributes[name] = value; } };
   const brand = { textContent: "●" };
   const meta = { attributes: {}, setAttribute(name, value) { this.attributes[name] = value; } };
   const root = {
     documentElement: { style: { setProperty(name, value) { css.set(name, value); } } },
-    querySelectorAll(selector) { return selector === "[data-theme]" ? themes : selector === "[data-mark]" ? marks : []; },
-    querySelector(selector) { return selector === 'meta[name="theme-color"]' ? meta : null; },
+    querySelectorAll(selector) { return selector === "[data-theme]" ? themes : selector === "[data-mark]" ? marks : selector === "[data-home-icon]" ? homeIcons : []; },
+    querySelector(selector) { return selector === 'meta[name="theme-color"]' ? meta : selector === "#appleTouchIcon" ? appleTouchIcon : selector === "#appFavicon" ? favicon : null; },
     getElementById(id) { return id === "brandMark" ? brand : null; }
   };
   const storage = {
@@ -1955,19 +1958,21 @@ function makeAppearanceFixture(saved = {}, options = {}) {
     getJSON(key, fallback = null) { try { return values.has(key) ? JSON.parse(values.get(key)) : fallback; } catch { return fallback; } },
     setJSON(key, value) { if (options.failWrite) return false; values.set(key, JSON.stringify(value)); return true; }
   };
-  return { root, storage, values, themes, marks, css, brand, meta };
+  return { root, storage, values, themes, marks, homeIcons, css, brand, meta, appleTouchIcon, favicon };
 }
 
-test("appearance controller restores the saved theme and mark without rewriting preferences", () => {
+test("appearance controller restores theme, mark, and home icon without rewriting preferences", () => {
   const fixture = makeAppearanceFixture({
     "focus-appearance": JSON.stringify({ theme: "blue", mark: "leaf" }),
     "focus-mark": "star"
   });
   const controller = createAppearanceController(fixture);
-  assert.deepEqual(controller.initialize(), { theme: "blue", mark: "star" });
+  assert.deepEqual(controller.initialize(), { theme: "blue", mark: "star", homeIcon: "planet" });
   assert.equal(fixture.css.get("--bg"), "#101923");
   assert.equal(fixture.meta.attributes.content, "#101923");
   assert.equal(fixture.brand.textContent, "✦");
+  assert.equal(fixture.appleTouchIcon.attributes.href, "./icons/icon-planet.png");
+  assert.equal(fixture.favicon.attributes.href, "./icons/icon-planet.png");
   assert.equal(fixture.themes.find(button => button.dataset.theme === "blue").selected, true);
   assert.equal(fixture.marks.find(button => button.dataset.mark === "star").attributes["aria-pressed"], "true");
   assert.equal(fixture.values.get("focus-appearance"), JSON.stringify({ theme: "blue", mark: "leaf" }));
@@ -1978,13 +1983,18 @@ test("appearance controller applies and persists theme and mark choices", () => 
   const controller = createAppearanceController(fixture);
   controller.initialize();
   fixture.themes.find(button => button.dataset.theme === "rose").click();
-  assert.deepEqual(controller.getState(), { theme: "rose", mark: "dot" });
+  assert.deepEqual(controller.getState(), { theme: "rose", mark: "dot", homeIcon: "planet" });
   assert.deepEqual(JSON.parse(fixture.values.get("focus-appearance")), { theme: "rose", mark: "dot" });
   assert.equal(fixture.css.get("--accent"), "#e6a0ad");
   fixture.marks.find(button => button.dataset.mark === "leaf").click();
   assert.equal(fixture.brand.textContent, "❧");
   assert.equal(fixture.values.get("focus-mark"), "leaf");
   assert.equal(fixture.marks.find(button => button.dataset.mark === "leaf").attributes["aria-pressed"], "true");
+  fixture.homeIcons.find(button => button.dataset.homeIcon === "comet").click();
+  assert.equal(controller.getState().homeIcon, "comet");
+  assert.equal(fixture.values.get("focus-home-icon"), "comet");
+  assert.equal(fixture.appleTouchIcon.attributes.href, "./icons/icon-comet.png");
+  assert.equal(fixture.homeIcons.find(button => button.dataset.homeIcon === "comet").attributes["aria-pressed"], "true");
 });
 
 test("appearance controller preserves the selected appearance when preference persistence fails", () => {
@@ -1994,14 +2004,17 @@ test("appearance controller preserves the selected appearance when preference pe
   controller.initialize();
 
   assert.equal(controller.setTheme("rose"), false);
-  assert.deepEqual(controller.getState(), { theme: "green", mark: "dot" });
+  assert.deepEqual(controller.getState(), { theme: "green", mark: "dot", homeIcon: "planet" });
   assert.equal(fixture.css.get("--bg"), "#101915");
   assert.match(messages.at(-1), /テーマを保存できなかった/);
 
   assert.equal(controller.setMark("leaf"), false);
-  assert.deepEqual(controller.getState(), { theme: "green", mark: "dot" });
+  assert.deepEqual(controller.getState(), { theme: "green", mark: "dot", homeIcon: "planet" });
   assert.equal(fixture.brand.textContent, "●");
   assert.match(messages.at(-1), /マークを保存できなかった/);
+  assert.equal(controller.setHomeIcon("hourglass"), false);
+  assert.equal(controller.getState().homeIcon, "planet");
+  assert.match(messages.at(-1), /ホーム画面アイコンの設定を保存できなかった/);
 });
 
 test("appearance controller falls back safely for unknown or corrupt stored preferences", () => {
@@ -2010,7 +2023,7 @@ test("appearance controller falls back safely for unknown or corrupt stored pref
     "focus-mark": "unknown"
   });
   const controller = createAppearanceController(fixture);
-  assert.deepEqual(controller.initialize(), { theme: "green", mark: "dot" });
+  assert.deepEqual(controller.initialize(), { theme: "green", mark: "dot", homeIcon: "planet" });
   assert.equal(fixture.css.get("--bg"), "#101915");
   assert.equal(fixture.brand.textContent, "●");
   assert.equal(fixture.themes.find(button => button.dataset.theme === "green").selected, true);
@@ -2033,9 +2046,11 @@ test("appearance controller removes only its own button listeners on destroy", (
   controller.initialize();
   assert.equal(fixture.themes[0].listenerCount, 1);
   assert.equal(fixture.marks[0].listenerCount, 1);
+  assert.equal(fixture.homeIcons[0].listenerCount, 1);
   controller.destroy();
   assert.equal(fixture.themes[0].listenerCount, 0);
   assert.equal(fixture.marks[0].listenerCount, 0);
+  assert.equal(fixture.homeIcons[0].listenerCount, 0);
 });
 
 
@@ -2180,11 +2195,11 @@ test("session records preserve optional subject and intention metadata", () => {
   assert.equal("intention" in legacy.records[0], false);
 });
 
-test("history filters search notes, intentions, and subjects with date and subject constraints", () => {
+test("history ignores legacy subject metadata while retaining date filters and searchable intentions", () => {
   const h = createViewHarness();
   const now = new Date(2026, 10, 21, 12);
   h.views.renderHistory({
-    now, subject: "数学", period: "7",
+    now, period: "7",
     records: [
       { id: "new-math", timestamp: new Date(2026, 10, 20).getTime(), minutes: 25, subject: "数学", intention: "関数を復習" },
       { id: "old-math", timestamp: new Date(2026, 10, 1).getTime(), minutes: 20, subject: "数学" },
@@ -2193,8 +2208,9 @@ test("history filters search notes, intentions, and subjects with date and subje
   });
   const html = h.elements.get("historyList").innerHTML;
   assert.match(html, /new-math/);
+  assert.match(html, /new-english/);
   assert.match(html, /関数を復習/);
-  assert.doesNotMatch(html, /old-math|new-english/);
+  assert.doesNotMatch(html, /old-math|数学|英語/);
 });
 
 test("compact timer remains available on other pages while a session is running or paused", async () => {
@@ -2269,8 +2285,12 @@ test("compact timer is outside page containers and updates on Settings navigatio
   assert.ok(script.includes("updateMiniTimer();return}setStudyRoomMode"));
 });
 
-test("landscape immersive timer hides optional session metadata fields to protect the grid layout", async () => {
-  const styles = await read("../src/styles/foundation.css");
-  assert.match(styles, /body\.timer-large-mode #timerPanel \.session-subject-control/);
-  assert.match(styles, /body\.timer-large-mode #timerPanel \.session-intention-control/);
+test("subject selection and filtering are removed while legacy record data remains untouched", async () => {
+  const html = await read("../index.html");
+  const script = await read("../src/main.js");
+  const views = await read("../src/views/study-views.js");
+  assert.doesNotMatch(html, /sessionSubject|historySubject|科目（任意）/);
+  assert.doesNotMatch(script, /sessionSubject|historySubject|subject:/);
+  assert.doesNotMatch(views.slice(views.indexOf("function renderHistory"), views.indexOf("function renderAnalytics")), /record\.subject|subject =/);
+  assert.match(script, /sessionIntention/);
 });
