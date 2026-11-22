@@ -7,8 +7,8 @@
 <meta name="description" content="集中と休憩を切り替える学習用ポモドーロタイマー">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' https://api.open-meteo.com; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
 <link rel="manifest" href="./manifest.webmanifest">
-<link id="appFavicon" rel="icon" href="./icons/icon-planet.png" type="image/png">
-<link id="appleTouchIcon" rel="apple-touch-icon" href="./icons/icon-planet.png">
+<link id="appFavicon" rel="icon" href="./icon.svg" type="image/png">
+<link id="appleTouchIcon" rel="apple-touch-icon" href="./icon.svg">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="FOCUS">
@@ -182,17 +182,12 @@
    <button class="theme-choice" data-theme="amber" aria-pressed="false"><i style="background:#e7b96f"></i>アンバー</button>
    <button class="theme-choice" data-theme="rose" aria-pressed="false"><i style="background:#e6a0ad"></i>ローズ</button>
   </div>
-  <div class="home-icon-fixed-preview">
-   <img src="./icons/icon-planet.png" alt="FOCUSの固定ホーム画面アイコン">
-   <div><strong>ホーム画面アイコン</strong><p class="muted">惑星のアイコンを固定して、再追加なしで使い続けられるようにしたよ。</p></div>
-  </div>
   <div class="muted" style="margin:16px 0 10px">アプリ内マーク</div>
   <div class="mark-grid" role="group" aria-label="アプリ内マーク">
    <button class="mark-choice selected" data-mark="dot" aria-pressed="true">● ドット</button>
    <button class="mark-choice" data-mark="star" aria-pressed="false">✦ スター</button>
    <button class="mark-choice" data-mark="leaf" aria-pressed="false">❧ リーフ</button>
   </div>
-  <p class="muted" style="margin:14px 0 0">テーマカラーとアプリ内マークは、その場で画面全体に反映されるよ。ホーム画面のアイコンは固定なので、設定を変えても削除・再追加は必要ないよ。</p>
  </details>
  <details class="panel"><summary>目標設定</summary><div class="settings"><label>1日の目標（分）<input id="dailyGoal" type="number" min="0" max="1440" value="60"></label><label>1週間の目標（分）<input id="weeklyGoal" type="number" min="0" max="10080" value="300"></label></div><button class="secondary wide" id="saveGoals">目標を保存</button></details>
 <details class="panel"><summary>自動バックアップ</summary><p class="muted">学習記録を変更するたびに、この端末内へ最新とひとつ前の2世代を自動保存するよ。端末間同期やクラウド保存ではないので、機種変更前にはJSONを書き出してね。</p><p class="muted" id="autoBackupStatus">自動バックアップを確認中…</p><div class="settings"><button class="secondary wide" id="restoreLatestAutoBackup" type="button">最新の自動バックアップから復元</button><button class="secondary wide" id="restorePreviousAutoBackup" type="button">ひとつ前の自動バックアップから復元</button></div></details>
