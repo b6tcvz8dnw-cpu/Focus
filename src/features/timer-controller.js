@@ -9,6 +9,7 @@ const VALID_MODES = new Set(["focus", "short", "long"]);
  */
 export function createTimerController({
   durations = DEFAULT_DURATIONS,
+  autoContinue = false,
   getCycleLength = () => 4,
   getCompletedSessions = () => 0,
   store,
@@ -20,6 +21,7 @@ export function createTimerController({
   cancel = (handle) => clearInterval(handle)
 } = {}) {
   let config = { ...DEFAULT_DURATIONS, ...durations };
+  let shouldAutoContinue = !!autoContinue;
   let mode = "focus";
   let remaining = config.focus * 60;
   let total = remaining;
@@ -99,6 +101,13 @@ export function createTimerController({
     persist();
     emit();
     onBreakComplete();
+    if (shouldAutoContinue) {
+      mode = "focus";
+      finished = false;
+      remaining = config.focus * 60;
+      total = remaining;
+      start();
+    }
   }
 
   function tick() {
@@ -234,6 +243,7 @@ export function createTimerController({
     reset,
     setMode,
     setDurations,
+    setAutoContinue(enabled) { shouldAutoContinue = !!enabled; return shouldAutoContinue; },
     skip,
     restore,
     persistCurrent,
