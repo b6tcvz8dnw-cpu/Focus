@@ -188,13 +188,13 @@ $('calendarDayDetails').addEventListener('click',e=>{
   $('toast').textContent='学習記録を削除したよ。';renderAllRecords();return;
  }
  if(legacySave){
-  const value=Number($('legacyDayMinutes').value);
+  const value=Number($('calendarDayDetails').querySelector('[data-legacy-minutes]').value);
   if(!Number.isInteger(value)||value<0||value>1440){$('toast').textContent='0〜1440分の整数で入力してね。';return}
   if(!statsStore.setLegacyDayMinutes(selectedCalendarDate,value)){$('toast').textContent='過去の記録を更新できなかったよ。';return}
   $('toast').textContent='過去の学習時間を更新したよ。';renderAllRecords();return;
  }
  if(add){
-  const time=$('newDayTime').value,minutesValue=Number($('newDayMinutes').value),note=$('newDayNote').value;
+  const time=$('calendarDayDetails').querySelector('[data-new-day-time]').value,minutesValue=Number($('calendarDayDetails').querySelector('[data-new-day-minutes]').value),note=$('calendarDayDetails').querySelector('[data-new-day-note]').value;
   if(!/^([01]\\d|2[0-3]):[0-5]\\d$/.test(time)||!Number.isInteger(minutesValue)||minutesValue<1||minutesValue>120){$('toast').textContent='時刻と集中時間を正しく入力してね。';return}
   const [hour,minute]=time.split(':').map(Number),date=new Date(selectedCalendarDate+'T12:00:00');date.setHours(hour,minute,0,0);
   const record={id:String(Date.now())+'-'+Math.random().toString(36).slice(2,7),timestamp:date.getTime(),date:selectedCalendarDate,minutes:minutesValue,note,intention:''};
