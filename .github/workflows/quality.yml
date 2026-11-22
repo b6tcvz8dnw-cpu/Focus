@@ -1,0 +1,47 @@
+name: FOCUS quality checks
+
+on:
+  push:
+    branches:
+      - main
+      - "refactor/**"
+  pull_request:
+    branches:
+      - main
+      - "refactor/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  integrity:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install build tooling
+        run: npm ci --no-audit --no-fund
+      - name: Audit production dependency tree
+        run: npm audit --audit-level=high
+      - name: Run integrity tests
+        run: npm test
+      - name: Verify reproducible production build
+        run: |
+          npm run build
+          find dist -type f -print0 | sort -z | xargs -0 sha256sum > /tmp/focus-build-first.sha256
+          npm run build
+          find dist -type f -print0 | sort -z | xargs -0 sha256sum > /tmp/focus-build-second.sha256
+          diff -u /tmp/focus-build-first.sha256 /tmp/focus-build-second.sha256
+
+      - name: Upload production build for review
+        uses: actions/upload-artifact@v4
+        with:
+          name: focus-production-build
+          path: dist/
+          if-no-files-found: error
+          retention-days: 7
