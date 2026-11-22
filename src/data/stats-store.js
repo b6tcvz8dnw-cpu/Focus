@@ -217,6 +217,7 @@ export function createStudyStatsStore({ storage, onChange = () => {} } = {}) {
     updateRecord,
     deleteRecord,
     clearDayRecords,
+    setLegacyDayMinutes,
     setGoals,
     replaceStats,
     exportStats: () => serialize()
