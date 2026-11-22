@@ -1897,6 +1897,7 @@ function createNotificationHarness(options = {}) {
     root,
     storage,
     getNotificationApi: () => options.unsupported ? undefined : FakeNotification,
+    getServiceWorkerContainer: () => options.serviceWorker ?? null,
     onMessage: message => messages.push(message)
   });
   return { controller, button, storage, values, messages, deliveries, FakeNotification };
@@ -1958,6 +1959,18 @@ test("notification delivery respects enabled state and backup restoration update
   h.controller.notify("休憩終了！");
   assert.equal(h.deliveries.length, 1);
   assert.equal(h.values.get("focus-notifications"), "false");
+});
+
+test("notification delivery uses Service Worker showNotification when available", async () => {
+  const deliveries = [];
+  const h = createNotificationHarness({ permission: "granted", serviceWorker: { ready: Promise.resolve({ showNotification: async (title, settings) => deliveries.push({ title, settings }) }) } });
+  h.controller.setEnabled(true);
+  h.controller.notify("集中セッション完了！");
+  await Promise.resolve();
+  await Promise.resolve();
+  assert.equal(deliveries.length, 1);
+  assert.equal(deliveries[0].title, "集中セッション完了！");
+  assert.equal(deliveries[0].settings.body, "FOCUS — 学習タイマー");
 });
 
 test("main delegates notification settings, delivery, and backup restoration", async () => {
