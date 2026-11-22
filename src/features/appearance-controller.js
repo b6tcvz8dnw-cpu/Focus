@@ -13,16 +13,10 @@ export function createAppearanceController({ root, storage, onMessage = () => {}
   if (!root || !storage) throw new TypeError("root and storage are required");
   let theme = "green";
   let mark = "dot";
-  let homeIcon = "planet";
   const listeners = [];
-
   function renderTheme(name) {
     const palette = THEMES[name];
-    const variables = {
-      bg: palette.bg, panel: palette.panel, "surface-deep": palette.deep,
-      line: palette.line, text: palette.text, muted: palette.muted,
-      accent: palette.accent, accent2: palette.accent2, "tab-bg": palette.tab
-    };
+    const variables = { bg: palette.bg, panel: palette.panel, "surface-deep": palette.deep, line: palette.line, text: palette.text, muted: palette.muted, accent: palette.accent, accent2: palette.accent2, "tab-bg": palette.tab };
     for (const [key, value] of Object.entries(variables)) root.documentElement.style.setProperty("--" + key, value);
     for (const button of root.querySelectorAll("[data-theme]")) {
       const active = button.dataset.theme === name;
@@ -31,7 +25,6 @@ export function createAppearanceController({ root, storage, onMessage = () => {}
     }
     root.querySelector('meta[name="theme-color"]')?.setAttribute("content", palette.bg);
   }
-
   function renderMark(name) {
     const brand = root.getElementById("brandMark");
     if (brand) brand.textContent = MARKS[name];
@@ -41,94 +34,42 @@ export function createAppearanceController({ root, storage, onMessage = () => {}
       button.setAttribute("aria-pressed", String(active));
     }
   }
-
-  function renderHomeIcon(name) {
-    const href = HOME_ICONS[name];
-    for (const selector of ['#appleTouchIcon', '#appFavicon']) {
-      const link = root.querySelector(selector);
-      if (link) link.setAttribute("href", href);
-    }
-    const preview = root.getElementById("homeIconPreview");
-    if (preview) {
-      preview.setAttribute("src", href);
-      preview.setAttribute("alt", HOME_ICON_LABELS[name] + "のホーム画面アイコン");
-    }
-    const previewName = root.getElementById("homeIconPreviewName");
-    if (previewName) previewName.textContent = HOME_ICON_LABELS[name];
-    for (const button of root.querySelectorAll("[data-home-icon]")) {
-      const active = button.dataset.homeIcon === name;
-      button.classList.toggle("selected", active);
-      button.setAttribute("aria-pressed", String(active));
-    }
-  }
-
-  function setHomeIcon(name, { persist = true } = {}) {
-    const nextIcon = Object.hasOwn(HOME_ICONS, name) ? name : "planet";
-    if (persist && !storage.setText("focus-home-icon", nextIcon)) {
-      onMessage("ホーム画面アイコンの設定を保存できなかったよ。端末の空き容量やブラウザの状態を確認してね。");
-      return false;
-    }
-    homeIcon = nextIcon;
-    renderHomeIcon(homeIcon);
-    return getState();
-  }
-
   function setTheme(name, { persist = true } = {}) {
     const nextTheme = Object.hasOwn(THEMES, name) ? name : "green";
     if (persist && !storage.setJSON("focus-appearance", { theme: nextTheme, mark })) {
       onMessage("テーマを保存できなかったよ。端末の空き容量やブラウザの状態を確認してね。");
       return false;
     }
-    theme = nextTheme;
-    renderTheme(theme);
-    return getState();
+    theme = nextTheme; renderTheme(theme); return getState();
   }
-
   function setMark(name, { persist = true } = {}) {
     const nextMark = Object.hasOwn(MARKS, name) ? name : "dot";
     if (persist && !storage.setText("focus-mark", nextMark)) {
       onMessage("マークを保存できなかったよ。端末の空き容量やブラウザの状態を確認してね。");
       return false;
     }
-    mark = nextMark;
-    renderMark(mark);
-    return getState();
+    mark = nextMark; renderMark(mark); return getState();
   }
-
   function initialize() {
     const savedAppearance = storage.getJSON("focus-appearance", null);
     theme = Object.hasOwn(THEMES, savedAppearance?.theme) ? savedAppearance.theme : "green";
     const savedMark = storage.getText("focus-mark", "dot");
     mark = Object.hasOwn(MARKS, savedMark) ? savedMark : "dot";
-    const savedHomeIcon = storage.getText("focus-home-icon", "planet");
-    homeIcon = Object.hasOwn(HOME_ICONS, savedHomeIcon) ? savedHomeIcon : "planet";
-    renderTheme(theme);
-    renderMark(mark);
-    renderHomeIcon(homeIcon);
+    renderTheme(theme); renderMark(mark);
     for (const button of root.querySelectorAll("[data-theme]")) {
       const handler = () => setTheme(button.dataset.theme);
-      button.addEventListener("click", handler);
-      listeners.push([button, handler]);
+      button.addEventListener("click", handler); listeners.push([button, handler]);
     }
     for (const button of root.querySelectorAll("[data-mark]")) {
       const handler = () => setMark(button.dataset.mark);
-      button.addEventListener("click", handler);
-      listeners.push([button, handler]);
-    }
-    for (const button of root.querySelectorAll("[data-home-icon]")) {
-      const handler = () => setHomeIcon(button.dataset.homeIcon);
-      button.addEventListener("click", handler);
-      listeners.push([button, handler]);
+      button.addEventListener("click", handler); listeners.push([button, handler]);
     }
     return getState();
   }
-
-  function getState() { return { theme, mark, homeIcon }; }
-
+  function getState() { return { theme, mark }; }
   function destroy() {
     for (const [button, handler] of listeners) button.removeEventListener("click", handler);
     listeners.length = 0;
   }
-
-  return { initialize, setTheme, setMark, setHomeIcon, getState, destroy };
+  return { initialize, setTheme, setMark, getState, destroy };
 }
