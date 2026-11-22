@@ -51,7 +51,23 @@
 <section class="panel" id="historyPanel"><h2>学習履歴</h2><div class="muted" style="margin:-4px 0 10px">最近の集中セッション。記録の削除や修正もできるよ。</div><input id="historySearch" type="search" placeholder="メモや意図を検索" aria-label="履歴を検索"><div class="history-filters"><label>期間<select id="historyPeriod"><option value="all">すべて</option><option value="7">直近7日</option><option value="30">直近30日</option><option value="90">直近90日</option></select></label></div><label class="muted" style="display:flex;align-items:center;gap:8px;margin:0 0 10px"><input id="reflectionOnly" type="checkbox" style="width:auto;margin:0">振り返りがある記録だけ表示</label><div class="history-list" id="historyList"></div></section>
 
 </div>
-<div class="page" id="calendarPage" hidden><section class="panel" id="calendarPanel"><div class="calendar-head"><button id="monthPrev" aria-label="前の月">‹</button><h2 id="calendarTitle" style="margin:0">月間カレンダー</h2><button id="monthNext" aria-label="次の月">›</button></div><div class="calendar-grid" id="calendarGrid"></div><p class="muted" style="margin:10px 0 0">丸印が大きい日ほど集中時間が長いよ。</p></section></div>
+<div class="page" id="calendarPage" hidden>
+ <section class="panel" id="calendarPanel">
+  <div class="calendar-head"><button id="monthPrev" type="button" aria-label="前の月">‹</button><h2 id="calendarTitle" style="margin:0">月間カレンダー</h2><button id="monthNext" type="button" aria-label="次の月">›</button></div>
+  <div class="calendar-jump" aria-label="表示する年月">
+   <label>年<input id="calendarYear" type="number" min="1970" max="2100" inputmode="numeric" aria-label="表示する年"></label>
+   <label>月<select id="calendarMonth" aria-label="表示する月"><option value="1">1月</option><option value="2">2月</option><option value="3">3月</option><option value="4">4月</option><option value="5">5月</option><option value="6">6月</option><option value="7">7月</option><option value="8">8月</option><option value="9">9月</option><option value="10">10月</option><option value="11">11月</option><option value="12">12月</option></select></label>
+   <button id="calendarGo" type="button" class="secondary">移動</button>
+   <button id="calendarToday" type="button" class="secondary">今月</button>
+  </div>
+  <div class="calendar-grid" id="calendarGrid"></div>
+  <p class="muted" style="margin:10px 0 0">日付を選ぶと、その日の学習時間とセッションを確認・編集できるよ。</p>
+ </section>
+ <section class="panel calendar-day-panel" id="calendarDayPanel">
+  <h2 id="calendarDayTitle">日付を選択</h2>
+  <div id="calendarDayDetails"><p class="muted">カレンダーの日付をタップしてね。</p></div>
+ </section>
+</div>
 <div class="page" id="analyticsPage" hidden><section class="panel" id="analyticsPanel"><h2>学習分析</h2><div class="muted" style="margin:-4px 0 10px">日・週・月ごとの記録を、静かに振り返るための集計。</div><div class="analytics-switch"><button class="secondary selected" type="button" data-analytics-range="day" aria-pressed="true">日</button><button class="secondary" type="button" data-analytics-range="week" aria-pressed="false">週</button><button class="secondary" type="button" data-analytics-range="month" aria-pressed="false">月</button></div><div id="analyticsContent"></div></section></div>
 
 
