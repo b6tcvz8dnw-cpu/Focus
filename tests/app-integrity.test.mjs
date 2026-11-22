@@ -576,7 +576,7 @@ test("startup restores timer only after statistics and completion callbacks are 
   const restore = script.indexOf("timerController.restore()");
   const controller = script.indexOf("timerController=createTimerController(");
   assert.ok(controller >= 0 && statsLoad > controller && restore > statsLoad);
-  assert.ok(script.includes("onFocusComplete(){"), "focus completion callback must be registered before restore");
+  assert.ok(script.includes("onFocusComplete({actualSeconds="), "focus completion callback must be registered before restore");
   assert.ok(script.includes("if(appReady){"), "startup completion must defer UI-only effects");
   assert.ok(script.includes("appReady=true;"), "UI becomes ready after initial rendering");
   const timer = await read("../src/features/timer-controller.js");
@@ -616,7 +616,7 @@ test("focus completion callback is the only session-record creation path", async
   const created = [...script.matchAll(/statsStore\.addSession\(record\)/g)];
   assert.equal(created.length, 1);
   assert.ok(script.includes("onFocusComplete(){"));
-  assert.ok(script.includes("minutes:durations.focus"));
+  assert.ok(script.includes("minutes:Math.min(120,actualMinutes)"));
   assert.ok(script.includes("if(appReady){"));
 });
 
@@ -1232,7 +1232,7 @@ test("Study Room scene and weather logic are isolated in a feature module", asyn
   const main = await read("../src/main.js");
   const room = await read("../src/features/study-room.js");
   assert.ok(main.includes("import { mountStudyRoom } from './features/study-room.js'"));
-  assert.ok(main.includes("const studyRoom = mountStudyRoom({ updateSky: updateStudySky })"));
+  assert.ok(main.includes("const studyRoom = mountStudyRoom({ updateSky: updateStudySky, storage })"));
   assert.ok(main.includes("studyRoom.onVisible()"));
   assert.doesNotMatch(main, /function updateStudyRoom|function loadStudyRoomWeather|const studyRoomSeasons/);
   assert.ok(room.includes("export function mountStudyRoom"));
@@ -1249,7 +1249,7 @@ test("Study Room scene and weather logic are isolated in a feature module", asyn
 test("Study Room keeps weather refresh, date updates, and sky progress connected", async () => {
   const main = await read("../src/main.js");
   const room = await read("../src/features/study-room.js");
-  assert.ok(main.includes("studyRoom.update();studyRoom.loadWeather()"));
+  assert.ok(main.includes("studyRoom.onEnter();studyRoom.loadWeather()"));
   assert.ok(main.includes("hourglass.tick();timerController.setVisible(true);hourglass.setVisible(true);studyRoom.onVisible()"));
   assert.ok(room.includes("window.setInterval(()=>{if(!root.hidden&&!$('studyRoomPage')?.hidden)update()},60000)"));
   assert.ok(room.includes("updateSky();"));
@@ -1313,7 +1313,7 @@ test("timer controller starts, pauses, and persists a deadline-based runtime", (
   h.controller.start();
   assert.deepEqual(h.controller.getState(), {
     durations: { focus: 1, short: 1, long: 2 }, mode: "focus",
-    remaining: 60, total: 60, running: true, deadline: 61000, finished: false
+    remaining: 60, total: 60, running: true, deadline: 61000, finished: false, focusElapsedSeconds: 0
   });
   h.advance(12500);
   h.controller.pause();
