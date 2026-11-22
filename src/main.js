@@ -14,7 +14,7 @@ import { createRecoveryController } from './features/recovery-controller.js';
 import { createBackupImportController } from './features/backup-import-controller.js';
 const $=id=>document.getElementById(id);
 const studyViews=createStudyViews();
-let durations={focus:25,short:5,long:15},mode='focus',remaining=1500,total=1500,running=false,deadline=0,completed=0,minutes=0,finished=false,history={},records=[],dailyGoal=60,weeklyGoal=300,statsStore=null,calendarCursor=new Date(new Date().getFullYear(),new Date().getMonth(),1),audioContext=null,appReady=false,timerController=null;
+let durations={focus:25,short:5,long:15},mode='focus',remaining=1500,total=1500,running=false,deadline=0,completed=0,minutes=0,finished=false,history={},legacyHistory={},records=[],selectedCalendarDate=dateKey(new Date()),dailyGoal=60,weeklyGoal=300,statsStore=null,calendarCursor=new Date(new Date().getFullYear(),new Date().getMonth(),1),audioContext=null,appReady=false,timerController=null;
 const labels={focus:'集中する時間',short:'短い休憩',long:'長い休憩'},hints={focus:'ひとつのことに集中しよう。',short:'少し頭を休めよう。',long:'ゆっくり休んで次のセットに備えよう。'},circ=2*Math.PI*88;
 function cycle(){return Math.max(2,Math.min(8,+$('cycleDuration').value||4))}
 function updateAutoBackupStatus(){
@@ -25,7 +25,7 @@ function updateAutoBackupStatus(){
  if(latestButton)latestButton.disabled=!latest?.stats;
  if(previousButton)previousButton.disabled=!previous?.stats;
 }
-function syncStatsState(state){completed=state.completed;minutes=state.minutes;history=state.history;records=state.records;dailyGoal=state.dailyGoal;weeklyGoal=state.weeklyGoal;updateAutoBackupStatus()}
+function syncStatsState(state){completed=state.completed;minutes=state.minutes;history=state.history;legacyHistory=state.legacyHistory;records=state.records;dailyGoal=state.dailyGoal;weeklyGoal=state.weeklyGoal;updateAutoBackupStatus()}
 function updateStudySky(){
  const todayMinutes=Math.max(0,Number(history[dateKey(new Date())]||0));
  const level=getStudySkyLevel(todayMinutes);
@@ -141,9 +141,65 @@ timerController.restore();
 $('dailyGoal').value=dailyGoal;$('weeklyGoal').value=weeklyGoal;
 $('saveGoals').onclick=()=>{const d=Number($('dailyGoal').value),w=Number($('weeklyGoal').value);if(!Number.isInteger(d)||!Number.isInteger(w)||d<0||w<0||d>1440||w>10080){$('toast').textContent='目標は範囲内の整数で入力してね。';return}if(!statsStore.setGoals(d,w)){$('dailyGoal').value=dailyGoal;$('weeklyGoal').value=weeklyGoal;$('toast').textContent='目標を保存できなかったよ。端末の空き容量を確認してね。';return}renderGoals();$('toast').textContent='目標を保存したよ。'};
 function renderGoals(){studyViews.renderGoals({history,dailyGoal,weeklyGoal})}
-function renderCalendar(){studyViews.renderCalendar({history,cursor:calendarCursor})}
-$('monthPrev').onclick=()=>{calendarCursor=new Date(calendarCursor.getFullYear(),calendarCursor.getMonth()-1,1);renderCalendar()};
-$('monthNext').onclick=()=>{calendarCursor=new Date(calendarCursor.getFullYear(),calendarCursor.getMonth()+1,1);renderCalendar()};
+function renderCalendar(){
+ $('calendarYear').value=calendarCursor.getFullYear();$('calendarMonth').value=String(calendarCursor.getMonth()+1);
+ studyViews.renderCalendar({history,cursor:calendarCursor,selectedDate:selectedCalendarDate});
+ if(selectedCalendarDate)renderCalendarDayDetails();
+}
+function renderCalendarDayDetails(){
+ studyViews.renderDayDetails({date:selectedCalendarDate,records,legacyMinutes:legacyHistory[selectedCalendarDate]||0});
+}
+function moveCalendarTo(year,month){
+ if(!Number.isInteger(year)||year<1970||year>2100||!Number.isInteger(month)||month<0||month>11){$('toast').textContent='年は1970〜2100年、月は1〜12月で指定してね。';return}
+ calendarCursor=new Date(year,month,1);selectedCalendarDate=dateKey(calendarCursor);renderCalendar();
+}
+$('monthPrev').onclick=()=>moveCalendarTo(calendarCursor.getFullYear(),calendarCursor.getMonth()-1);
+$('monthNext').onclick=()=>moveCalendarTo(calendarCursor.getFullYear(),calendarCursor.getMonth()+1);
+$('calendarGo').onclick=()=>moveCalendarTo(Number($('calendarYear').value),Number($('calendarMonth').value)-1);
+$('calendarYear').addEventListener('keydown',e=>{if(e.key==='Enter')$('calendarGo').click()});
+$('calendarToday').onclick=()=>{const now=new Date();moveCalendarTo(now.getFullYear(),now.getMonth());selectedCalendarDate=dateKey(now);renderCalendar()};
+$('calendarGrid').addEventListener('click',e=>{
+ const day=e.target.closest('[data-calendar-date]');if(!day)return;
+ selectedCalendarDate=day.dataset.calendarDate;renderCalendar();
+ $('calendarDayPanel').scrollIntoView({behavior:'smooth',block:'nearest'});
+});
+$('calendarDayDetails').addEventListener('click',e=>{
+ const save=e.target.closest('[data-day-save]');
+ const del=e.target.closest('[data-day-delete]');
+ const legacySave=e.target.closest('[data-legacy-save]');
+ const add=e.target.closest('[data-day-add]');
+ if(save){
+  const card=save.closest('[data-day-record]');if(!card)return;
+  const id=card.dataset.dayRecord,time=card.querySelector('[data-day-time]').value;
+  const minutesValue=Number(card.querySelector('[data-day-minutes]').value);
+  const note=card.querySelector('[data-day-note]').value;
+  if(!/^([01]\\d|2[0-3]):[0-5]\\d$/.test(time)||!Number.isInteger(minutesValue)||minutesValue<1||minutesValue>120){$('toast').textContent='時刻と集中時間を正しく入力してね。';return}
+  const [hour,minute]=time.split(':').map(Number),date=new Date(selectedCalendarDate+'T12:00:00');
+  date.setHours(hour,minute,0,0);
+  if(!statsStore.updateRecord(id,{timestamp:date.getTime(),date:selectedCalendarDate,minutes:minutesValue,note})){ $('toast').textContent='記録を更新できなかったよ。';return}
+  $('toast').textContent='学習記録を更新したよ。';renderAllRecords();return;
+ }
+ if(del){
+  const id=del.dataset.dayDelete;
+  if(!confirm('この学習記録を削除する？'))return;
+  if(!statsStore.deleteRecord(id)){$('toast').textContent='記録を削除できなかったよ。';return}
+  $('toast').textContent='学習記録を削除したよ。';renderAllRecords();return;
+ }
+ if(legacySave){
+  const value=Number($('legacyDayMinutes').value);
+  if(!Number.isInteger(value)||value<0||value>1440){$('toast').textContent='0〜1440分の整数で入力してね。';return}
+  if(!statsStore.setLegacyDayMinutes(selectedCalendarDate,value)){$('toast').textContent='過去の記録を更新できなかったよ。';return}
+  $('toast').textContent='過去の学習時間を更新したよ。';renderAllRecords();return;
+ }
+ if(add){
+  const time=$('newDayTime').value,minutesValue=Number($('newDayMinutes').value),note=$('newDayNote').value;
+  if(!/^([01]\\d|2[0-3]):[0-5]\\d$/.test(time)||!Number.isInteger(minutesValue)||minutesValue<1||minutesValue>120){$('toast').textContent='時刻と集中時間を正しく入力してね。';return}
+  const [hour,minute]=time.split(':').map(Number),date=new Date(selectedCalendarDate+'T12:00:00');date.setHours(hour,minute,0,0);
+  const record={id:String(Date.now())+'-'+Math.random().toString(36).slice(2,7),timestamp:date.getTime(),date:selectedCalendarDate,minutes:minutesValue,note,intention:''};
+  if(!statsStore.addSession(record)){$('toast').textContent='学習記録を追加できなかったよ。';return}
+  $('toast').textContent='学習記録を追加したよ。';renderAllRecords();
+ }
+});
 function renderHistory(){studyViews.renderHistory({records,query:$('historySearch')?.value||'',reflectionOnly:$('reflectionOnly')?.checked||false,period:$('historyPeriod')?.value||'all'})}
 $('historyList').onclick=e=>{const del=e.target.closest('[data-record-delete]'),edit=e.target.closest('[data-record-edit]');if(del){const id=del.dataset.recordDelete,r=records.find(x=>x.id===id);if(!r||!confirm('この学習記録を削除する？'))return;if(!statsStore.deleteRecord(id)){$('toast').textContent='学習記録を削除できなかったよ。';return}renderAllRecords()}else if(edit){const r=records.find(x=>x.id===edit.dataset.recordEdit);if(!r)return;const n=Number(prompt('このセッションの集中時間（分）',String(r.minutes)));if(!Number.isInteger(n)||n<1||n>120)return;if(!statsStore.updateRecord(r.id,{minutes:n})){$('toast').textContent='学習記録を更新できなかったよ。';return}renderAllRecords()}};
 let analyticsRange='day';
