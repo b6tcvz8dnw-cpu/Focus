@@ -31,7 +31,7 @@ const staticPwaAssets = [
   "./icon.svg",
   "./icon-192.png",
   "./icon-512.png",
-  "./icon.svg",
+  "./icons/icon-planet.png",
   "./icons/icon-hourglass.png",
   "./icons/icon-window.png",
   "./icons/icon-comet.png"
