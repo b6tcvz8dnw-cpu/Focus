@@ -6,14 +6,14 @@ const THEMES = {
   rose: { bg: "#1b1317", panel: "#2a1d23", deep: "#21171c", line: "#50333d", text: "#f8edf0", muted: "#bea5ad", accent: "#e6a0ad", accent2: "#59323d", tab: "rgba(27,19,23,.96)" }
 };
 const MARKS = { dot: "●", star: "✦", leaf: "❧" };
-const HOME_ICONS = { planet: "./icons/icon-planet.png", hourglass: "./icons/icon-hourglass.png", window: "./icons/icon-window.png", comet: "./icons/icon-comet.png" };
-const HOME_ICON_LABELS = { planet: "小さな惑星", hourglass: "砂時計", window: "書斎の窓", comet: "流れ星" };
+const HOME_ICON_SOURCE = "./icons/icon-planet.png";
 
 export function createAppearanceController({ root, storage, onMessage = () => {} }) {
   if (!root || !storage) throw new TypeError("root and storage are required");
   let theme = "green";
   let mark = "dot";
   const listeners = [];
+  let iconRenderVersion = 0;
   function renderTheme(name) {
     const palette = THEMES[name];
     const variables = { bg: palette.bg, panel: palette.panel, "surface-deep": palette.deep, line: palette.line, text: palette.text, muted: palette.muted, accent: palette.accent, accent2: palette.accent2, "tab-bg": palette.tab };
@@ -24,6 +24,54 @@ export function createAppearanceController({ root, storage, onMessage = () => {}
       button.setAttribute("aria-pressed", String(active));
     }
     root.querySelector('meta[name="theme-color"]')?.setAttribute("content", palette.bg);
+    renderHomeIcon(name);
+  }
+  function hexToRgb(hex) {
+    const value = String(hex).replace("#", "");
+    return [0, 2, 4].map(index => parseInt(value.slice(index, index + 2), 16));
+  }
+  function renderHomeIcon(name) {
+    const version = ++iconRenderVersion;
+    const ImageCtor = root.defaultView?.Image;
+    const preview = root.getElementById("homeIconPreview");
+    const appleIcon = root.getElementById("appleTouchIcon");
+    const favicon = root.getElementById("appFavicon");
+    if (!ImageCtor || !root.createElement || (!preview && !appleIcon && !favicon)) return;
+    const palette = THEMES[name];
+    const image = new ImageCtor();
+    image.onload = () => {
+      if (version !== iconRenderVersion) return;
+      try {
+        const canvas = root.createElement("canvas");
+        canvas.width = 192;
+        canvas.height = 192;
+        const context = canvas.getContext("2d", { willReadFrequently: true });
+        if (!context) return;
+        context.drawImage(image, 0, 0, 192, 192);
+        const pixels = context.getImageData(0, 0, 192, 192);
+        const background = hexToRgb(palette.bg);
+        const accent = hexToRgb(palette.accent);
+        for (let index = 0; index < pixels.data.length; index += 4) {
+          if (pixels.data[index + 3] === 0) continue;
+          const luminance = (pixels.data[index] * 0.2126 + pixels.data[index + 1] * 0.7152 + pixels.data[index + 2] * 0.0722) / 255;
+          const amount = Math.max(0, Math.min(1, (luminance - 0.035) / 0.78));
+          pixels.data[index] = Math.round(background[0] * (1 - amount) + accent[0] * amount);
+          pixels.data[index + 1] = Math.round(background[1] * (1 - amount) + accent[1] * amount);
+          pixels.data[index + 2] = Math.round(background[2] * (1 - amount) + accent[2] * amount);
+        }
+        context.putImageData(pixels, 0, 0);
+        const themedIcon = canvas.toDataURL("image/png");
+        if (preview) preview.src = themedIcon;
+        if (appleIcon) appleIcon.href = themedIcon;
+        if (favicon) favicon.href = themedIcon;
+      } catch {
+        if (preview) preview.src = HOME_ICON_SOURCE;
+      }
+    };
+    image.onerror = () => {
+      if (version === iconRenderVersion && preview) preview.src = HOME_ICON_SOURCE;
+    };
+    image.src = HOME_ICON_SOURCE;
   }
   function renderMark(name) {
     const brand = root.getElementById("brandMark");
