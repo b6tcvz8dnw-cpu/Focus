@@ -2293,3 +2293,22 @@ test("subject selection and filtering are removed while legacy record data remai
   assert.doesNotMatch(views.slice(views.indexOf("function renderHistory"), views.indexOf("function renderAnalytics")), /record\.subject|subject =/);
   assert.match(script, /sessionIntention/);
 });
+
+
+test("dedicated Home Screen icon page previews all four selectable icons and explains iOS re-add flow", async () => {
+  const html = await read("../index.html");
+  const controller = await read("../src/features/appearance-controller.js");
+  const sw = await read("../public/sw.js");
+  assert.ok(html.includes('id="homeIconPage"'));
+  assert.ok(html.includes('id="homeIconPreview"'));
+  assert.ok(html.includes('id="homeIconPreviewName"'));
+  for (const icon of ["planet", "hourglass", "window", "comet"]) {
+    assert.ok(html.includes('data-home-icon="' + icon + '"'));
+    assert.ok(html.includes("./icons/icon-" + icon + ".png"));
+  }
+  assert.ok(html.includes("ホーム画面に追加"));
+  assert.ok(html.includes("SafariでFOCUSを開き直す"));
+  assert.ok(controller.includes('root.getElementById("homeIconPreview")'));
+  assert.ok(controller.includes('root.getElementById("homeIconPreviewName")'));
+  assert.ok(sw.includes("focus-pwa-v34"));
+});
