@@ -50,7 +50,8 @@ function normalizeRecords(value) {
       minutes,
       note: typeof raw.note === "string" ? raw.note.slice(0, 2000) : "",
       ...(typeof raw.subject === "string" && raw.subject.trim() ? { subject: raw.subject.trim().slice(0, 40) } : {}),
-      ...(typeof raw.intention === "string" && raw.intention.trim() ? { intention: raw.intention.trim().slice(0, 120) } : {})
+      ...(typeof raw.intention === "string" && raw.intention.trim() ? { intention: raw.intention.trim().slice(0, 120) } : {}),
+      ...(Array.isArray(raw.distractions) && raw.distractions.length ? { distractions: raw.distractions.filter(item => typeof item === "string" && item.trim()).slice(0, 8).map(item => item.trim().slice(0, 120)) } : {})
     });
   });
   return result;
