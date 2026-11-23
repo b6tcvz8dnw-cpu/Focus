@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#142433">
+<meta name="theme-color" content="#26372f">
 <meta name="description" content="集中と休憩を切り替える学習用ポモドーロタイマー">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' https://api.open-meteo.com; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
 <link rel="manifest" href="./manifest.webmanifest">
@@ -28,6 +28,14 @@
  <div class="controls"><button class="secondary" id="reset">↺ リセット</button><button class="primary" id="start">▶ スタート</button><button class="secondary" id="skip">次へ →</button><button class="secondary" id="largeToggle" aria-pressed="false">⛶ 大画面</button></div>
  <p class="hint" id="hint">25分間、ひとつのことに集中しよう。</p>
 </section>
+<section class="panel antique-hourglass-panel" aria-labelledby="antiqueHourglassTitle">
+ <div class="antique-hourglass-copy"><span class="antique-eyebrow">A MOMENT TO PAUSE</span><h2 id="antiqueHourglassTitle">小さな休息</h2><p>急がなくていい時間を、ここに。</p></div>
+ <div class="antique-hourglass-stage"><button class="desk-hourglass antique-hourglass-control" id="hourglassStart" type="button" aria-label="5分間の休憩を始める" aria-describedby="hourglassInstructions" aria-keyshortcuts="R">
+    <svg class="hourglass-art" id="hourglassArt" viewBox="0 0 100 120" role="img" aria-label="砂が落ちる砂時計"><path class="hourglass-frame" d="M27 7H73 M27 113H73 M31 9C31 35 48 43 50 60C52 77 69 85 69 111 M69 9C69 35 52 43 50 60C48 77 31 85 31 111"/><path class="hourglass-glass" d="M32 12C32 34 47 43 50 58C53 43 68 34 68 12Z M50 62C47 78 32 87 32 108H68C68 87 53 78 50 62Z"/><path class="hourglass-sand-top" id="hourglassSandTop" d="M35 15H65C64 31 57 39 50 48C43 39 36 31 35 15Z"/><path class="hourglass-sand-bottom" id="hourglassSandBottom" d="M35 105C37 89 43 82 50 74C57 82 63 89 65 105Z"/><path class="hourglass-stream" d="M50 48V74"/><circle class="hourglass-grain grain-a" cx="48.5" cy="50" r="1.5"/><circle class="hourglass-grain grain-b" cx="51.5" cy="50" r="1.5"/><circle class="hourglass-grain grain-c" cx="50" cy="50" r="1.6"/></svg>
+    <span class="desk-hourglass-time" id="hourglassTime">05:00</span><span class="desk-hourglass-label" id="hourglassState">タップで休憩 · 長押しでリセット</span>
+   </button><span class="visually-hidden" id="hourglassInstructions">タップで開始または一時停止。長押し、またはこのボタンにフォーカスしてRキーを押すと5分にリセット。</span></div>
+</section>
+
 <details class="panel"><summary>環境音を設定</summary><p class="muted" style="margin:12px 0 10px">音を重ねて、自分に合う静かな環境をつくれるよ。音は端末内で生成するよ。</p><div class="muted" style="margin-bottom:7px">プリセット</div><div class="sound-controls"><button class="secondary" data-sound-preset="rainy">雨の窓辺</button><button class="secondary" data-sound-preset="breeze">そよ風</button><button class="secondary" data-sound-preset="quiet">静かな部屋</button><button class="secondary" data-sound-preset="off">オフ</button></div><div class="muted" style="margin:13px 0 7px">音の層（複数選択可）</div><div class="sound-controls"><button class="secondary" data-sound="rain" aria-pressed="false">雨音</button><button class="secondary" data-sound="wind" aria-pressed="false">風</button><button class="secondary" data-sound="noise" aria-pressed="false">ノイズ</button></div><div class="sound-mixer"><label for="soundVolume-rain">雨音 <input id="soundVolume-rain" type="range" min="0" max="100" value="38"></label><label for="soundVolume-wind">風 <input id="soundVolume-wind" type="range" min="0" max="100" value="24"></label><label for="soundVolume-noise">ノイズ <input id="soundVolume-noise" type="range" min="0" max="100" value="12"></label></div><label class="muted" for="soundVolume" style="display:block;margin-top:12px">全体の音量</label><input id="soundVolume" type="range" min="0" max="30" value="10" style="margin:6px 0"></details>
 <details class="panel" id="reflectionPanel"><summary>セッションの振り返り</summary><p class="muted" id="reflectionPrompt" style="margin:12px 0 8px">集中セッションのあと、気づいたことを短く残せるよ。</p><textarea class="field-select" id="reflection" maxlength="500" placeholder="例：思ったより進んだこと、次に取り組むこと…"></textarea><button class="secondary wide" id="saveReflection">振り返りを保存</button></details>
 
@@ -73,128 +81,19 @@
 <div class="page" id="analyticsPage" hidden><section class="panel" id="analyticsPanel"><h2>学習分析</h2><div class="muted" style="margin:-4px 0 10px">日・週・月ごとの記録を、静かに振り返るための集計。</div><div class="analytics-switch"><button class="secondary selected" type="button" data-analytics-range="day" aria-pressed="true">日</button><button class="secondary" type="button" data-analytics-range="week" aria-pressed="false">週</button><button class="secondary" type="button" data-analytics-range="month" aria-pressed="false">月</button></div><div id="analyticsContent"></div></section></div>
 
 
-<div class="page" id="studyRoomPage" hidden>
- <section class="study-room-panel">
-  <div class="study-room-view sanctuary-view season-autumn time-day" id="studyRoomView">
-   <div class="study-room-top">
-    <div><div class="study-room-kicker">A QUIET PLACE IN THE UNIVERSE</div><div class="study-room-title">星を眺める場所</div><div class="study-room-return" id="studyRoomReturn">ここは、いつでも戻ってこられる場所。</div></div>
-    <div class="study-room-top-actions"><div class="study-room-season" id="studyRoomSeason">秋 · 昼</div><button class="room-chill-toggle" id="chillModeToggle" type="button" aria-pressed="false" aria-label="チルモードを開始する">☾ チル</button><button class="room-text-toggle" id="roomTextToggle" type="button" aria-label="文字情報を隠す" aria-pressed="false" title="文字情報の表示切替">Aa</button><button class="study-room-weather" id="studyRoomWeather" type="button" aria-label="名古屋市の今日の天気を再取得">名古屋市 · 天気</button><button class="room-exit" id="roomExit" type="button" aria-label="書斎を閉じる" title="書斎を閉じる">×</button></div>
-   </div>
-   <div class="study-window sanctuary-window" aria-hidden="true">
-    <svg class="room-landscape sanctuary-landscape" viewBox="0 0 1200 820" preserveAspectRatio="xMidYMid slice" role="presentation">
- <defs>
-  <linearGradient id="sanctuarySky" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#172d4b"/><stop offset=".48" stop-color="#536d82"/><stop offset="1" stop-color="#d0aeb0"/></linearGradient>
-  <radialGradient id="sanctuaryMoon"><stop stop-color="#fff6df"/><stop offset=".38" stop-color="#f8e6d0" stop-opacity=".82"/><stop offset="1" stop-color="#f7d9cf" stop-opacity="0"/></radialGradient>
-  <linearGradient id="sanctuaryWater" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#829aa6"/><stop offset=".45" stop-color="#425f73"/><stop offset="1" stop-color="#23394f"/></linearGradient>
-  <linearGradient id="sanctuaryHill" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#7e9a91"/><stop offset="1" stop-color="#334d54"/></linearGradient>
-  <linearGradient id="sanctuaryGlass" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#e5e8d8" stop-opacity=".72"/><stop offset=".5" stop-color="#9fc5c4" stop-opacity=".2"/><stop offset="1" stop-color="#f4d8c2" stop-opacity=".52"/></linearGradient>
-  <radialGradient id="sanctuaryAurora"><stop stop-color="#a9d5d0" stop-opacity=".34"/><stop offset="1" stop-color="#a9d5d0" stop-opacity="0"/></radialGradient>
-  <linearGradient id="sanctuaryMist" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#d9d9d2" stop-opacity="0"/><stop offset=".5" stop-color="#e7d7d0" stop-opacity=".52"/><stop offset="1" stop-color="#d9d9d2" stop-opacity="0"/></linearGradient>
-  <clipPath id="sanctuaryWaterClip"><path d="M0 525 Q230 490 420 530 T820 520 T1200 530 V820 H0Z"/></clipPath>
-  <filter id="sanctuaryBlur"><feGaussianBlur stdDeviation="22"/></filter>
- </defs>
- <rect width="1200" height="820" fill="url(#sanctuarySky)"/>
- <ellipse class="sanctuary-aurora aurora-one" cx="300" cy="160" rx="430" ry="170" fill="url(#sanctuaryAurora)" filter="url(#sanctuaryBlur)"/>
- <ellipse class="sanctuary-aurora aurora-two" cx="980" cy="230" rx="360" ry="150" fill="url(#sanctuaryAurora)" filter="url(#sanctuaryBlur)"/>
- <g class="sanctuary-stars" fill="#fff4dc">
-  <circle cx="76" cy="102" r="2"/><circle cx="145" cy="198" r="1.4"/><circle cx="230" cy="76" r="1.8"/><circle cx="315" cy="148" r="1.3"/><circle cx="390" cy="65" r="2.1"/><circle cx="490" cy="120" r="1.2"/><circle cx="590" cy="62" r="1.8"/><circle cx="735" cy="105" r="1.4"/><circle cx="860" cy="76" r="2"/><circle cx="1010" cy="152" r="1.4"/><circle cx="1120" cy="92" r="2"/>
-  <circle cx="104" cy="320" r="1.3"/><circle cx="260" cy="275" r="1.7"/><circle cx="470" cy="250" r="1.3"/><circle cx="690" cy="210" r="1.5"/><circle cx="920" cy="300" r="1.6"/><circle cx="1100" cy="350" r="1.2"/>
- </g>
- <g class="sanctuary-constellation" fill="none" stroke="#f4e5d4" stroke-opacity=".34" stroke-width="1.2"><path d="M145 198L230 76 315 148 390 65 M735 105L860 76 1010 152 1120 92"/><circle cx="230" cy="76" r="4"/><circle cx="860" cy="76" r="4"/></g>
- <circle class="sanctuary-moon-halo" cx="830" cy="190" r="150" fill="url(#sanctuaryMoon)"/>
- <circle class="sanctuary-moon" cx="830" cy="190" r="48" fill="#f5e8d4"/>
- <path d="M810 160q-24 28-3 58q21 28 53 10q-35 15-53-12q-17-28 3-56Z" fill="#d4d0c7" opacity=".42"/>
- <g class="sanctuary-clouds cloud-layer-far" fill="#d7d5d0" opacity=".28">
-  <path d="M-80 390q70-45 150-10q50-75 140-25q70-65 150-8q75-28 135 40q-80 40-180 30H-80Z"/>
-  <path d="M720 375q70-55 145-15q55-72 130-25q75-55 140 5q70-5 115 48H720Z"/>
- </g>
- <g class="sanctuary-ridges">
-  <path d="M-40 500L130 380l100 75 150-180 145 190 115-105 130 125 140-170 180 185 150-105 100 80v250H-40Z" fill="#536c78" opacity=".48"/>
-  <path d="M-40 535L150 430l120 72 150-135 150 152 145-90 140 110 150-135 170 118 110-75v240H-40Z" fill="#3d5b67" opacity=".68"/>
- </g>
- <path class="sanctuary-cloudbank cloudbank-back" d="M-80 515q110-75 220-20q95-100 205-18q105-75 210-10q115-95 235-8q100-75 210-8q120-80 260 10v160H-80Z" fill="#d6d4d0" opacity=".48"/>
- <path class="sanctuary-cloudbank cloudbank-front" d="M-80 560q100-75 200-8q95-65 190-5q110-90 230-10q115-75 220-2q100-65 200 0q115-70 220 0v125H-80Z" fill="#e6d8d0" opacity=".42"/>
- <g class="sanctuary-island">
-  <path d="M255 490q145-100 280-35q145-90 275-15q100-58 180 25q-35 100-145 145q-150 70-330 38q-180-25-260-158Z" fill="#314b51"/>
-  <path d="M280 477q135-85 255-24q130-85 252-13q95-50 170 24q-95 40-175 22q-150-38-255 10q-130 55-247-19Z" fill="url(#sanctuaryHill)"/>
-  <path d="M350 480q95-48 178-10t190-5q80-20 145 8" fill="none" stroke="#b8c6ae" stroke-opacity=".48" stroke-width="7" stroke-linecap="round"/>
-  <g class="sanctuary-glasshouse">
-   <path d="M490 440q0-92 85-125q85 33 85 125Z" fill="url(#sanctuaryGlass)" stroke="#d7dfd0" stroke-opacity=".78" stroke-width="4"/>
-   <path d="M575 316v124M510 394h130M529 350q46 38 92 0M525 421h100" fill="none" stroke="#d9e4d9" stroke-opacity=".58" stroke-width="3"/>
-   <path d="M575 440v-88" stroke="#e9e4d1" stroke-opacity=".48" stroke-width="2"/>
-   <circle cx="575" cy="380" r="9" fill="#f5d8a8" opacity=".8"/>
-  </g>
-  <g class="sanctuary-tree tree-left" fill="#344f4b" stroke="#8fa58e" stroke-opacity=".4" stroke-width="2">
-   <path d="M390 470q8-82 4-125" fill="none" stroke="#4b5147" stroke-width="9"/><path d="M394 380l-42-38m43 20l40-42m-40 73l-32-12" fill="none" stroke="#4b5147" stroke-width="5"/>
-   <ellipse cx="349" cy="333" rx="34" ry="18" transform="rotate(25 349 333)"/><ellipse cx="439" cy="342" rx="37" ry="19" transform="rotate(-28 439 342)"/><ellipse cx="397" cy="310" rx="38" ry="22"/>
-  </g>
-  <g class="sanctuary-tree tree-right" fill="#3c5c50" stroke="#9eae91" stroke-opacity=".38" stroke-width="2">
-   <path d="M735 470q-3-76 8-124" fill="none" stroke="#4b5147" stroke-width="8"/><ellipse cx="704" cy="346" rx="34" ry="18" transform="rotate(25 704 346)"/><ellipse cx="764" cy="337" rx="39" ry="21" transform="rotate(-22 764 337)"/><ellipse cx="744" cy="310" rx="36" ry="20"/>
-  </g>
-  <g class="sanctuary-lanterns"><circle cx="470" cy="455" r="5" fill="#f7dcae"/><circle cx="690" cy="447" r="4" fill="#f7dcae"/><circle cx="805" cy="470" r="3" fill="#f7dcae"/></g>
-  <path d="M310 510q110 28 210 0t230 0q95 22 160-3" fill="none" stroke="#e4d8bf" stroke-opacity=".3" stroke-width="3"/>
- </g>
- <path class="sanctuary-water" d="M0 525Q230 490 420 530T820 520T1200 530V820H0Z" fill="url(#sanctuaryWater)"/>
- <g clip-path="url(#sanctuaryWaterClip)" class="sanctuary-reflections">
-  <path d="M480 540q100 12 190 0t180 5" fill="none" stroke="#f3d9bb" stroke-opacity=".35" stroke-width="10"/>
-  <path d="M510 590q90 10 170 0t170 4M430 650q130 12 250 0t220 3M300 710q120 9 220 0t210 3" fill="none" stroke="#d4d9d1" stroke-opacity=".22" stroke-width="4"/>
-  <path d="M0 555q150 12 290 0t260 0" fill="none" stroke="#b9d3d4" stroke-opacity=".18" stroke-width="3"/>
-  <g class="sanctuary-water-glints" fill="#f5e7d0"><ellipse cx="750" cy="580" rx="20" ry="2"/><ellipse cx="830" cy="635" rx="13" ry="1.5"/><ellipse cx="610" cy="690" rx="18" ry="2"/><ellipse cx="950" cy="730" rx="22" ry="1.5"/></g>
- </g>
- <path class="sanctuary-mist" d="M-50 555q190-35 360 0t360 0t360 0t250 0" fill="none" stroke="url(#sanctuaryMist)" stroke-width="32" stroke-linecap="round"/>
- <g class="sanctuary-fireflies" fill="#fff0c8"><circle cx="280" cy="440" r="3"/><circle cx="445" cy="390" r="2.4"/><circle cx="690" cy="410" r="2.8"/><circle cx="855" cy="455" r="2"/><circle cx="930" cy="370" r="2.3"/></g>
- <g class="sanctuary-birds" fill="none" stroke="#f0e7d9" stroke-width="2" stroke-linecap="round" opacity=".56"><path d="M170 350q12-13 24 0q12-13 24 0"/><path d="M250 315q9-10 18 0q9-10 18 0"/><path d="M1010 410q10-11 20 0q10-11 20 0"/></g>
-</svg>
-   </div>
-   <svg class="cosmic-motion" viewBox="0 0 1000 700" preserveAspectRatio="none" aria-hidden="true">
-    <defs>
-     <linearGradient id="windRibbon" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#c5e3ed" stop-opacity="0"/><stop offset=".48" stop-color="#d8e7e8" stop-opacity=".42"/><stop offset="1" stop-color="#f3d8cf" stop-opacity="0"/></linearGradient>
-     <linearGradient id="shootingGlow" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#fff4d8" stop-opacity="0"/><stop offset=".72" stop-color="#fff1d5" stop-opacity=".78"/><stop offset="1" stop-color="#fffdf0"/></linearGradient>
-    </defs>
-    <g class="wind-ribbons" fill="none" stroke="url(#windRibbon)" stroke-linecap="round">
-     <path d="M-90 300 C120 245 210 350 390 292 S690 250 1090 310" stroke-width="3"/>
-     <path d="M-110 330 C100 285 220 390 420 330 S760 290 1080 350" stroke-width="1.6" opacity=".7"/>
-     <path d="M-100 430 C120 390 250 465 430 420 S760 390 1080 445" stroke-width="2.2" opacity=".55"/>
-    </g>
-    <g class="wind-dust" fill="#f8e9d7">
-     <circle cx="155" cy="318" r="2"/><circle cx="260" cy="350" r="1.4"/><circle cx="720" cy="300" r="1.8"/><circle cx="870" cy="385" r="1.5"/>
-    </g>
-    <g class="shooting-star shooting-star-one">
-     <path d="M-90 0 L0 0" stroke="url(#shootingGlow)" stroke-width="2.6" stroke-linecap="round"/>
-     <circle cx="0" cy="0" r="3.2" fill="#fff9e8"/>
-    </g>
-    <g class="shooting-star shooting-star-two">
-     <path d="M-65 0 L0 0" stroke="url(#shootingGlow)" stroke-width="1.8" stroke-linecap="round"/>
-     <circle cx="0" cy="0" r="2.4" fill="#fff9e8"/>
-    </g>
-   </svg>
-   <svg class="earned-sky" viewBox="0 0 1000 700" preserveAspectRatio="none" aria-hidden="true">
-    <defs><linearGradient id="milkyWayGlow" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#c9c9ef" stop-opacity="0"/><stop offset=".48" stop-color="#f0dff0" stop-opacity=".72"/><stop offset="1" stop-color="#b9d5ed" stop-opacity="0"/></linearGradient></defs>
-    <g class="earned-milkyway" fill="none" stroke="url(#milkyWayGlow)" stroke-linecap="round">
-     <path d="M-80 190 C150 80 260 250 450 155 S760 65 1080 170" stroke-width="74" opacity=".22"/>
-     <path d="M-60 205 C160 105 270 260 470 170 S770 95 1060 190" stroke-width="27" opacity=".34"/>
-     <path d="M-40 210 C170 125 290 255 480 180 S790 110 1050 200" stroke-width="2" stroke-dasharray="2 13" opacity=".7"/>
-    </g>
-    <g class="earned-star-dust" fill="#fff4df"><circle cx="190" cy="150" r="2"/><circle cx="310" cy="195" r="1.5"/><circle cx="440" cy="125" r="2.2"/><circle cx="590" cy="180" r="1.4"/><circle cx="760" cy="125" r="2"/><circle cx="870" cy="185" r="1.6"/><circle cx="520" cy="90" r="1.3"/><circle cx="260" cy="90" r="1.2"/></g>
-    <g class="earned-meteors" fill="none" stroke-linecap="round">
-     <path d="M0 0 L-78 30" stroke="#fff4dc" stroke-width="2.2"/><path d="M0 0 L-78 30" stroke="#c9d9f3" stroke-width="7" opacity=".16"/>
-     <path d="M0 0 L-55 22" stroke="#fff4dc" stroke-width="1.7"/>
-    </g>
-   </svg>
-   <div class="sky-progress-label" id="skyProgressLabel" aria-live="polite">今夜の星空</div><p class="chill-mode-note" id="chillModeNote" hidden>ここでは、何も急がなくていい。少し休もう。</p>
-   <div class="room-window-shelf planet-hourglass"><button class="desk-hourglass room-hourglass-shelf" id="hourglassStart" type="button" aria-label="5分間の休憩を始める" aria-describedby="hourglassInstructions" aria-keyshortcuts="R">
-    <svg class="hourglass-art" id="hourglassArt" viewBox="0 0 100 120" role="img" aria-label="砂が落ちる砂時計"><path class="hourglass-frame" d="M27 7H73 M27 113H73 M31 9C31 35 48 43 50 60C52 77 69 85 69 111 M69 9C69 35 52 43 50 60C48 77 31 85 31 111"/><path class="hourglass-glass" d="M32 12C32 34 47 43 50 58C53 43 68 34 68 12Z M50 62C47 78 32 87 32 108H68C68 87 53 78 50 62Z"/><path class="hourglass-sand-top" id="hourglassSandTop" d="M35 15H65C64 31 57 39 50 48C43 39 36 31 35 15Z"/><path class="hourglass-sand-bottom" id="hourglassSandBottom" d="M35 105C37 89 43 82 50 74C57 82 63 89 65 105Z"/><path class="hourglass-stream" d="M50 48V74"/><circle class="hourglass-grain grain-a" cx="48.5" cy="50" r="1.5"/><circle class="hourglass-grain grain-b" cx="51.5" cy="50" r="1.5"/><circle class="hourglass-grain grain-c" cx="50" cy="50" r="1.6"/></svg>
-    <span class="desk-hourglass-time" id="hourglassTime">05:00</span><span class="desk-hourglass-label" id="hourglassState">タップで休憩 · 長押しでリセット</span>
-   </button><span class="visually-hidden" id="hourglassInstructions">タップで開始または一時停止。長押し、またはこのボタンにフォーカスしてRキーを押すと5分にリセット。</span></div>
-   <div class="study-room-bottom"><div><div class="study-room-clock" id="studyRoomClock">15:00</div><div class="study-room-date" id="studyRoomDate">11月21日 土曜日</div></div><div class="study-room-foot">A LITTLE WORLD, SOMEWHERE</div></div>
-   <p class="study-room-note" id="studyRoomMessage">遠くの星にも、誰かの大切なものがある。</p>
-  </div>
- </section>
+<div class="page antique-legacy" id="studyRoomPage" hidden aria-hidden="true">
+ <div class="study-room-view" id="studyRoomView">
+  <span id="studyRoomReturn"></span><span id="studyRoomSeason"></span><span id="studyRoomWeather"></span>
+  <span id="studyRoomClock"></span><span id="studyRoomDate"></span><span id="studyRoomMessage"></span>
+  <span id="skyProgressLabel"></span><span id="chillModeNote" hidden></span>
+  <button id="chillModeToggle" type="button"></button><button id="roomTextToggle" type="button"></button><button id="roomExit" type="button"></button>
+  <select id="roomClockFormat"><option value="24">24</option><option value="12">12</option></select><input id="roomShowDate" type="checkbox">
+ </div>
 </div>
 <div class="page" id="settingsPage" hidden>
- <section class="panel"><h2 style="margin:0 0 6px">設定</h2><p class="muted" style="margin:0 0 12px">タイマーや書斎の環境を、自分の使いやすい形に整えられるよ。</p><button class="secondary wide" type="button" data-page="timerPage">← タイマーへ戻る</button></section>
- <details class="panel"><summary>チルモード</summary><label class="muted" style="display:flex;align-items:center;gap:8px;margin-top:12px"><input id="chillAuto" type="checkbox" style="width:auto;margin:0" checked>集中セッション終了後、休憩中は自動でチルモードにする</label><p class="muted" style="margin:8px 0 0">景色と光を穏やかにし、再生中の環境音はゆっくり小さくするよ。音は自分で再生したときだけ流れるよ。</p></details>
-  <details class="panel"><summary>書斎の時計</summary><label class="muted" for="roomClockFormat">時刻の表示</label><select id="roomClockFormat"><option value="24">24時間表示</option><option value="12">12時間表示（午前・午後）</option></select><label class="muted" style="display:flex;align-items:center;gap:8px;margin-top:12px"><input id="roomShowDate" type="checkbox" style="width:auto;margin:0" checked>書斎に日付を表示する</label></details>
+ <section class="panel"><h2 style="margin:0 0 6px">設定</h2><p class="muted" style="margin:0 0 12px">タイマーや画面の雰囲気を、自分の使いやすい形に整えられるよ。</p><button class="secondary wide" type="button" data-page="timerPage">← タイマーへ戻る</button></section>
+ <details class="panel"><summary>休憩の雰囲気</summary><label class="muted" style="display:flex;align-items:center;gap:8px;margin-top:12px"><input id="chillAuto" type="checkbox" style="width:auto;margin:0" checked>集中セッション終了後、休憩中は環境音を少し静かにする</label><p class="muted" style="margin:8px 0 0">音は自分で再生したときだけ流れるよ。休憩中は音量を穏やかに整えるよ。</p></details>
+  
  <details class="panel"><summary>タイマー設定</summary>
   <div class="settings">
    <label>集中時間（分）<input id="focusDuration" type="number" min="1" max="120" value="25"></label>
@@ -250,10 +149,10 @@
  <button class="tab" type="button" data-page="overviewPage"><span>▥</span>概要</button>
  <button class="tab" type="button" data-page="calendarPage"><span>▦</span>カレンダー</button>
   <button class="tab" type="button" data-page="analyticsPage"><span>⌁</span>分析</button>
- <button class="tab" type="button" data-page="studyRoomPage"><span>⌂</span>書斎</button>
+
 
 </nav>
-<div class="foot"><span>FOCUS · STUDY TIMER</span></div><div id="toast" role="status" aria-live="polite"></div>
+<div class="foot"><span>FOCUS · A QUIET STUDY COMPANION</span></div><div id="toast" role="status" aria-live="polite"></div>
 </main>
 <div class="landscape-system-status" id="landscapeSystemStatus" hidden aria-label="現在時刻とバッテリー情報">
  <span class="landscape-system-clock" id="landscapeClock">--:--</span>
