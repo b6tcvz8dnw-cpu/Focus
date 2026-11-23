@@ -27,7 +27,7 @@ import { mountHourglass } from "../src/features/hourglass.js";
 
 const read = (path) => readFile(new URL(path, import.meta.url), "utf8");
 
-const cssFiles = ["foundation.css", "study-room.css", "app-components.css", "device-layout.css", "study-room-visuals.css", "accessibility.css", "cyber-metal.css", "quiet-sanctuary.css"];
+const cssFiles = ["foundation.css", "study-room.css", "app-components.css", "device-layout.css", "study-room-visuals.css", "accessibility.css", "cyber-metal.css", "quiet-sanctuary.css", "stillness.css"];
 
 const readStyles = async () => (await Promise.all([
   read("../src/styles/foundation.css"),
@@ -2410,7 +2410,7 @@ test("compact timer is outside page containers and updates on Settings navigatio
   const script = await read("../src/main.js");
   assert.match(html, /<\/div>\s*<div class="mini-timer" id="miniTimer"/);
   assert.ok(html.indexOf('id="miniTimer"') < html.indexOf('id="overviewPage"'));
-  assert.ok(script.includes("updateMiniTimer();return}setStudyRoomMode"));
+  assert.ok(script.includes("stillnessScene.onLeave();updateMiniTimer();return}"));
 });
 
 test("subject selection and filtering are removed while legacy record data remains untouched", async () => {
