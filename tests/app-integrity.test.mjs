@@ -27,7 +27,7 @@ import { mountHourglass } from "../src/features/hourglass.js";
 
 const read = (path) => readFile(new URL(path, import.meta.url), "utf8");
 
-const cssFiles = ["foundation.css", "study-room.css", "app-components.css", "device-layout.css", "study-room-visuals.css", "accessibility.css", "cyber-metal.css", "quiet-sanctuary.css"];
+const cssFiles = ["foundation.css", "study-room.css", "app-components.css", "device-layout.css", "study-room-visuals.css", "accessibility.css", "cyber-metal.css", "quiet-sanctuary.css", "stillness.css"];
 
 const readStyles = async () => (await Promise.all([
   read("../src/styles/foundation.css"),
@@ -172,7 +172,7 @@ test("hourglass CSS uses real rule separators and production cache is versioned"
   assert.ok(css.includes(".hourglass-grain{fill:var(--accent)"));
   assert.ok(css.includes(".hourglass-art.is-running .hourglass-grain{animation:sand-grain-fall"));
   const sw = await read("../public/sw.js");
-  assert.ok(sw.includes("focus-pwa-v51"));
+  assert.ok(sw.includes("focus-pwa-v52"));
   assert.ok(sw.includes("icon-cyber-clock.svg"));
 });
 
@@ -303,7 +303,7 @@ test("Study Room animations pause while another page is selected", async () => {
 test("production service worker caches only successful responses and waits for cache writes", async () => {
   const sw = await read("../public/sw.js");
   const cacheName = sw.match(/const CACHE='([^']+)'/)?.[1];
-  assert.equal(cacheName, "focus-pwa-v51");
+  assert.equal(cacheName, "focus-pwa-v52");
   for (const asset of [
     "./index.html", "./manifest.webmanifest", "./icon.svg", "./icon-192.png", "./icon-512.png", "./icons/icon-cyber-clock.svg", "./icons/icon-planet.png", "./icons/icon-hourglass.png", "./icons/icon-window.png", "./icons/icon-comet.png"
   ]) {
@@ -368,7 +368,7 @@ test("Study Room sky progression is based on lifetime study time and never regre
 
 test("production Service Worker only manages production-owned caches", async () => {
   const sw = await read("../public/sw.js");
-  assert.ok(sw.includes("const CACHE='focus-pwa-v51';"));
+  assert.ok(sw.includes("const CACHE='focus-pwa-v52';"));
   assert.ok(sw.includes("const CACHE_PREFIX='focus-pwa-';"));
   assert.ok(sw.includes("key.startsWith(CACHE_PREFIX) && key!==CACHE"));
 });
@@ -2410,7 +2410,8 @@ test("compact timer is outside page containers and updates on Settings navigatio
   const script = await read("../src/main.js");
   assert.match(html, /<\/div>\s*<div class="mini-timer" id="miniTimer"/);
   assert.ok(html.indexOf('id="miniTimer"') < html.indexOf('id="overviewPage"'));
-  assert.ok(script.includes("updateMiniTimer();return}setStudyRoomMode"));
+  assert.ok(script.includes("if(b.dataset.page==='settingsPage'){stillnessScene.onLeave();"));
+  assert.ok(script.includes("updateMiniTimer();return}"));
 });
 
 test("subject selection and filtering are removed while legacy record data remains untouched", async () => {
@@ -2438,7 +2439,7 @@ test("Home Screen icon restores the planet design and follows the selected theme
   assert.ok(controller.includes("function renderHomeIcon(name)"));
   assert.ok(controller.includes('canvas.toDataURL("image/png")'));
   assert.ok(controller.includes('appleIcon.href = themedIcon'));
-  assert.ok(sw.includes("focus-pwa-v51"));
+  assert.ok(sw.includes("focus-pwa-v52"));
 });
 
 test("timer settings expose and persist automatic continuation", async () => {
@@ -2525,7 +2526,7 @@ test("cyber-metal theme and landscape system status are wired without requiring 
   assert.ok(main.includes("BATTERY · N/A"));
   assert.ok(main.includes("updateLandscapeStatus()"));
   assert.ok(views.includes("Math.max(120, Math.ceil(Math.max(0, ...data.map(day => day.minutes)) / 60) * 60)"));
-  assert.ok(sw.includes("focus-pwa-v51"));
+  assert.ok(sw.includes("focus-pwa-v52"));
 });
 
 test("weekly chart uses a two-hour minimum scale and rounds larger maxima to full hours", () => {
@@ -2602,7 +2603,7 @@ test("Chill mode is accessible, user-controllable, and auto-applies during break
   assert.ok(css.includes(".study-room-view.chill-mode::after"));
   assert.ok(css.includes("prefers-reduced-motion:reduce"));
   assert.ok(sound.includes("function setVolume(volume, transitionSeconds = 0.08)"));
-  assert.ok(sw.includes("focus-pwa-v51"));
+  assert.ok(sw.includes("focus-pwa-v52"));
 });
 
 test("cumulative sky progress uses lifetime minutes rather than today's history", async () => {
@@ -2630,5 +2631,24 @@ test("landscape status polling is minute-based rather than waking the page every
 
 test("battery optimization increments the service-worker cache version", async () => {
   const sw = await read("../public/sw.js");
-  assert.ok(sw.includes("focus-pwa-v51"));
+  assert.ok(sw.includes("focus-pwa-v52"));
+});
+
+
+test("quiet-time destination is independent from study records and uses local time phases", async () => {
+  const html = await read("../index.html");
+  const main = await read("../src/main.js");
+  const scene = await read("../src/features/stillness-scene.js");
+  const css = await read("../src/styles/stillness.css");
+  assert.ok(html.includes('id="stillnessPage"'));
+  assert.ok(html.includes('data-page="stillnessPage"'));
+  assert.ok(main.includes("mountStillnessScene($('stillnessPage'))"));
+  assert.ok(main.includes("stillnessScene.onEnter()"));
+  assert.ok(scene.includes("new Date()"));
+  assert.ok(scene.includes("function phaseFor(hour)"));
+  assert.ok(scene.includes("document.hidden"));
+  assert.ok(css.includes('.stillness-world[data-phase="dawn"]'));
+  assert.ok(css.includes('.stillness-world[data-phase="dusk"]'));
+  assert.ok(css.includes("prefers-reduced-motion:reduce"));
+  assert.ok(!scene.includes("storage.set") && !scene.includes("addSession"));
 });

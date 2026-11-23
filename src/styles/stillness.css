@@ -1,0 +1,53 @@
+@property --sky-top{syntax:"<color>";inherits:true;initial-value:#a9c8d3}
+@property --sky-bottom{syntax:"<color>";inherits:true;initial-value:#e8d9bf}
+@property --glow{syntax:"<color>";inherits:true;initial-value:#ffe8b9}
+@property --horizon{syntax:"<color>";inherits:true;initial-value:#b3c8bd}
+@property --distant{syntax:"<color>";inherits:true;initial-value:#8ea9a3}
+@property --island{syntax:"<color>";inherits:true;initial-value:#526f60}
+@property --island-edge{syntax:"<color>";inherits:true;initial-value:#9eb59b}
+@property --sun{syntax:"<color>";inherits:true;initial-value:#fff0c5}
+/* FOCUS — the quiet interval: a landscape that follows local time. */
+.stillness-page{gap:12px}
+.stillness-world{
+ --sky-top:#a9c8d3;--sky-bottom:#e8d9bf;--glow:rgba(255,232,185,.7);
+ --horizon:#b3c8bd;--distant:#8ea9a3;--island:#526f60;--island-edge:#9eb59b;
+ --sun:#fff0c5;--star-opacity:0;
+ position:relative;isolation:isolate;overflow:hidden;min-height:min(69vh,650px);
+ min-height:min(69svh,650px);border:1px solid rgba(255,255,255,.13);
+ border-radius:28px;background:linear-gradient(180deg,var(--sky-top),var(--sky-bottom));
+ box-shadow:0 22px 70px rgba(0,0,0,.16);transition:--sky-top 210s ease,--sky-bottom 210s ease,--glow 210s ease,--horizon 210s ease,--distant 210s ease,--island 210s ease,--island-edge 210s ease,--sun 210s ease;
+}
+.stillness-world[data-phase="dawn"]{--sky-top:#8f9eb4;--sky-bottom:#e7b99e;--glow:rgba(255,205,166,.62);--horizon:#bda69c;--distant:#718895;--island:#526d66;--island-edge:#c2a18b;--sun:#ffe0b2;--star-opacity:.18}
+.stillness-world[data-phase="day"]{--sky-top:#9dc5d4;--sky-bottom:#e7e3d0;--glow:rgba(255,244,206,.74);--horizon:#b8d0c6;--distant:#8caea9;--island:#547461;--island-edge:#b1c69e;--sun:#fff5d4;--star-opacity:0}
+.stillness-world[data-phase="dusk"]{--sky-top:#6f7896;--sky-bottom:#d6a58e;--glow:rgba(255,183,139,.54);--horizon:#a98c91;--distant:#687b88;--island:#455c59;--island-edge:#a58c7b;--sun:#ffd1a3;--star-opacity:.42}
+.stillness-world[data-phase="night"]{--sky-top:#18283f;--sky-bottom:#536078;--glow:rgba(133,163,199,.28);--horizon:#526176;--distant:#354b5a;--island:#2d4545;--island-edge:#647a78;--sun:#e2e6f1;--star-opacity:1}
+.stillness-sky-glow{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 55%,var(--glow),transparent 58%);transition:background 210s ease}
+.stillness-sun{position:absolute;z-index:-1;width:clamp(74px,20vw,138px);aspect-ratio:1;border-radius:50%;top:27%;left:65%;background:var(--sun);box-shadow:0 0 60px var(--glow);opacity:.88;transition:background 210s ease,top 210s ease,opacity 210s ease}
+.stillness-world[data-phase="dawn"] .stillness-sun{top:46%;left:56%}
+.stillness-world[data-phase="dusk"] .stillness-sun{top:48%;left:67%}
+.stillness-world[data-phase="night"] .stillness-sun{top:18%;left:70%;opacity:.52}
+.stillness-stars{position:absolute;inset:0;opacity:var(--star-opacity);transition:opacity 210s ease}
+.stillness-stars i{position:absolute;width:2px;height:2px;border-radius:50%;background:#f6f0df;box-shadow:0 0 7px #f6f0df}
+.stillness-stars i:nth-child(1){top:13%;left:18%}.stillness-stars i:nth-child(2){top:23%;left:42%}.stillness-stars i:nth-child(3){top:12%;left:83%}.stillness-stars i:nth-child(4){top:34%;left:76%}.stillness-stars i:nth-child(5){top:18%;left:59%}.stillness-stars i:nth-child(6){top:38%;left:25%}.stillness-stars i:nth-child(7){top:8%;left:68%}
+.stillness-cloud{position:absolute;width:190px;height:38px;border-radius:50%;background:rgba(255,255,255,.18);filter:blur(12px);animation:stillness-drift 86s ease-in-out infinite alternate;transition:opacity 210s ease}
+.stillness-cloud:before,.stillness-cloud:after{content:"";position:absolute;border-radius:50%;background:inherit}
+.stillness-cloud:before{width:92px;height:58px;left:30px;top:-22px}.stillness-cloud:after{width:76px;height:46px;right:24px;top:-14px}
+.stillness-cloud-a{top:28%;left:-5%}.stillness-cloud-b{top:42%;right:-8%;transform:scale(.72);animation-duration:112s;animation-delay:-35s;opacity:.7}
+.stillness-world[data-phase="night"] .stillness-cloud{opacity:.12}
+.stillness-landscape{position:absolute;z-index:1;inset:auto 0 0;width:100%;height:72%;overflow:visible}
+.stillness-distant{fill:var(--distant);opacity:.68;transition:fill 210s ease}
+.stillness-island-shadow{fill:rgba(20,30,34,.18);filter:blur(9px)}
+.stillness-island{fill:var(--island);transition:fill 210s ease}
+.stillness-island-edge{fill:none;stroke:var(--island-edge);stroke-width:3;opacity:.45;transition:stroke 210s ease}
+.stillness-grass{fill:none;stroke:var(--island-edge);stroke-width:3;stroke-linecap:round;opacity:.8}
+.stillness-flower{fill:#f0d4bd;stroke:#e8c9a9;stroke-width:2;stroke-linecap:round}.stillness-flower circle{fill:#f5dba0;stroke:none}.flower-two{opacity:.7;transform:translateY(8px)}
+.stillness-horizon{position:absolute;z-index:0;left:-20%;right:-20%;bottom:25%;height:22%;border-radius:50%;background:var(--horizon);filter:blur(38px);opacity:.4;transition:background 210s ease}
+.stillness-copy{position:absolute;z-index:2;top:9%;left:8%;right:8%;color:#243a43;text-shadow:0 1px 20px rgba(255,255,255,.16)}
+.stillness-kicker{font-size:9px;letter-spacing:.25em;opacity:.68}
+.stillness-copy h1{margin:13px 0 8px;font-family:"Yu Mincho","Hiragino Mincho ProN",serif;font-weight:400;font-size:clamp(22px,5.5vw,32px);letter-spacing:.12em}
+.stillness-copy p{margin:0;font-family:"Yu Mincho","Hiragino Mincho ProN",serif;font-size:clamp(10px,2.8vw,13px);letter-spacing:.08em;opacity:.78}
+.stillness-clock{position:absolute;z-index:3;right:8%;bottom:7%;color:rgba(245,246,235,.78);font-size:12px;letter-spacing:.16em;font-variant-numeric:tabular-nums;text-shadow:0 1px 8px rgba(0,0,0,.25)}
+.stillness-note{margin:0;text-align:center;color:var(--muted);font-family:"Yu Mincho","Hiragino Mincho ProN",serif;font-size:11px;letter-spacing:.1em;line-height:1.8}
+@keyframes stillness-drift{from{translate:-5% 0}to{translate:42% 7px}}
+@media(max-width:390px){.stillness-world{min-height:64svh;border-radius:23px}.stillness-copy{top:8%;left:7%;right:7%}.stillness-copy h1{font-size:22px}}
+@media(prefers-reduced-motion:reduce){.stillness-cloud{animation:none!important}.stillness-world,.stillness-world *{transition:none!important}}

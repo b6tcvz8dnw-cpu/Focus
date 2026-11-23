@@ -13,6 +13,7 @@ import { createCompletionSoundController } from './features/completion-sound.js'
 import { createAppearanceController } from './features/appearance-controller.js';
 import { createRecoveryController } from './features/recovery-controller.js';
 import { createBackupImportController } from './features/backup-import-controller.js';
+import { mountStillnessScene } from './features/stillness-scene.js';
 const $=id=>document.getElementById(id);
 const studyViews=createStudyViews();
 let durations={focus:25,short:5,long:15},mode='focus',remaining=1500,total=1500,running=false,deadline=0,completed=0,minutes=0,finished=false,history={},legacyHistory={},records=[],selectedCalendarDate=dateKey(new Date()),dailyGoal=60,weeklyGoal=300,statsStore=null,calendarCursor=new Date(new Date().getFullYear(),new Date().getMonth(),1),appReady=false,timerController=null,ambientSound=null;
@@ -152,7 +153,8 @@ $('skip').onclick=()=>{if(running&&!confirm('タイマーを停止して次の�
 document.querySelectorAll('[data-mode]').forEach(b=>b.onclick=()=>{if(running&&!confirm('タイマーを停止してモードを切り替える？'))return;timerController.setMode(b.dataset.mode)});
 $('apply').onclick=()=>{if((running||remaining!==total)&&!confirm('タイマーの設定を変更すると、現在のセッションは最初からになるよ。変更してもいい？'))return;let vals={focus:+$('focusDuration').value,short:+$('shortDuration').value,long:+$('longDuration').value,cycle:+$('cycleDuration').value};if(vals.focus<1||vals.focus>120||vals.short<1||vals.short>60||vals.long<1||vals.long>90||vals.cycle<2||vals.cycle>8||Object.values(vals).some(v=>!Number.isInteger(v))){$('toast').textContent='設定値を範囲内の整数で入力してね。';return}if(!storage.setJSON('focus-timer-settings',vals)){$('toast').textContent='タイマー設定を保存できなかったよ。端末の空き容量やブラウザの状態を確認してね。';return}timerController.setDurations({focus:vals.focus,short:vals.short,long:vals.long});$('toast').textContent='タイマー設定を保存したよ。'};
 
-document.querySelectorAll('[data-page]').forEach(b=>b.onclick=()=>{if(b.dataset.page==='settingsPage'){document.querySelectorAll('.page').forEach(p=>p.hidden=p.id!==b.dataset.page);document.querySelectorAll('.tab[data-page]').forEach(t=>t.removeAttribute('aria-current'));updateMiniTimer();return}setStudyRoomMode(b.dataset.page==='studyRoomPage');document.querySelectorAll('.page').forEach(p=>p.hidden=p.id!==b.dataset.page);document.querySelectorAll('.tab[data-page]').forEach(t=>{const active=t===b;t.classList.toggle('active',active);if(active)t.setAttribute('aria-current','page');else t.removeAttribute('aria-current')});if(b.dataset.page==='overviewPage')renderAllRecords();if(b.dataset.page==='calendarPage')renderCalendar();if(b.dataset.page==='analyticsPage')renderAnalytics();if(b.dataset.page==='studyRoomPage'){studyRoom.onEnter();studyRoom.loadWeather()}updateMiniTimer()});
+const stillnessScene=mountStillnessScene($('stillnessPage'));
+document.querySelectorAll('[data-page]').forEach(b=>b.onclick=()=>{if(b.dataset.page==='settingsPage'){stillnessScene.onLeave();document.querySelectorAll('.page').forEach(p=>p.hidden=p.id!==b.dataset.page);document.querySelectorAll('.tab[data-page]').forEach(t=>t.removeAttribute('aria-current'));updateMiniTimer();return}if(b.dataset.page!=='stillnessPage')stillnessScene.onLeave();setStudyRoomMode(b.dataset.page==='studyRoomPage');document.querySelectorAll('.page').forEach(p=>p.hidden=p.id!==b.dataset.page);document.querySelectorAll('.tab[data-page]').forEach(t=>{const active=t===b;t.classList.toggle('active',active);if(active)t.setAttribute('aria-current','page');else t.removeAttribute('aria-current')});if(b.dataset.page==='overviewPage')renderAllRecords();if(b.dataset.page==='calendarPage')renderCalendar();if(b.dataset.page==='analyticsPage')renderAnalytics();if(b.dataset.page==='stillnessPage')stillnessScene.onEnter();if(b.dataset.page==='studyRoomPage'){studyRoom.onEnter();studyRoom.loadWeather()}updateMiniTimer()});
 const hourglass = mountHourglass({ getRemainingSeconds });
 const studyRoom = mountStudyRoom({ updateSky: updateStudySky, storage });
  $('chillModeToggle').addEventListener('click',()=>setChillMode(!$('studyRoomView').classList.contains('chill-mode')));
@@ -391,6 +393,7 @@ window.addEventListener('pagehide',event=>{
  timerController.destroy();
  hourglass.destroy();
  studyRoom.destroy();
+ stillnessScene.destroy();
  ambientSound.destroy();
  notificationController.destroy();
  appearanceController.destroy();
