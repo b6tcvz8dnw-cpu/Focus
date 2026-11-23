@@ -1148,7 +1148,7 @@ test("document head uses relative PWA asset paths for GitHub Pages subpaths", as
 test("study room refresh preserves its structural class and visual state", async () => {
   const html = await read("../index.html");
   const main = await read("../src/main.js");
-  assert.match(html, /class="study-room-view little-planet-view season-/);
+  assert.match(html, /class="study-room-view sanctuary-view season-/);
   const room = await read("../src/features/study-room.js");
   assert.match(room, /for\(const name of \[\.\.\.view\.classList\]\)/);
   assert.ok(room.includes("view.classList.add('season-'+season.id,'time-'+time.id)"));
