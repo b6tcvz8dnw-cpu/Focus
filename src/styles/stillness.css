@@ -1,3 +1,11 @@
+@property --sky-top{syntax:"<color>";inherits:true;initial-value:#a9c8d3}
+@property --sky-bottom{syntax:"<color>";inherits:true;initial-value:#e8d9bf}
+@property --glow{syntax:"<color>";inherits:true;initial-value:#ffe8b9}
+@property --horizon{syntax:"<color>";inherits:true;initial-value:#b3c8bd}
+@property --distant{syntax:"<color>";inherits:true;initial-value:#8ea9a3}
+@property --island{syntax:"<color>";inherits:true;initial-value:#526f60}
+@property --island-edge{syntax:"<color>";inherits:true;initial-value:#9eb59b}
+@property --sun{syntax:"<color>";inherits:true;initial-value:#fff0c5}
 /* FOCUS — the quiet interval: a landscape that follows local time. */
 .stillness-page{gap:12px}
 .stillness-world{
@@ -7,7 +15,7 @@
  position:relative;isolation:isolate;overflow:hidden;min-height:min(69vh,650px);
  min-height:min(69svh,650px);border:1px solid rgba(255,255,255,.13);
  border-radius:28px;background:linear-gradient(180deg,var(--sky-top),var(--sky-bottom));
- box-shadow:0 22px 70px rgba(0,0,0,.16);transition:background-color 210s ease;
+ box-shadow:0 22px 70px rgba(0,0,0,.16);transition:--sky-top 210s ease,--sky-bottom 210s ease,--glow 210s ease,--horizon 210s ease,--distant 210s ease,--island 210s ease,--island-edge 210s ease,--sun 210s ease;
 }
 .stillness-world[data-phase="dawn"]{--sky-top:#8f9eb4;--sky-bottom:#e7b99e;--glow:rgba(255,205,166,.62);--horizon:#bda69c;--distant:#718895;--island:#526d66;--island-edge:#c2a18b;--sun:#ffe0b2;--star-opacity:.18}
 .stillness-world[data-phase="day"]{--sky-top:#9dc5d4;--sky-bottom:#e7e3d0;--glow:rgba(255,244,206,.74);--horizon:#b8d0c6;--distant:#8caea9;--island:#547461;--island-edge:#b1c69e;--sun:#fff5d4;--star-opacity:0}
