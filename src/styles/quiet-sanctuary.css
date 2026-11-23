@@ -107,3 +107,40 @@
 @media(prefers-reduced-motion:reduce){
  .sanctuary-aurora,.sanctuary-moon-halo,.sanctuary-clouds,.sanctuary-cloudbank,.sanctuary-island,.sanctuary-tree,.sanctuary-glasshouse,.sanctuary-reflections,.sanctuary-mist,.sanctuary-water-glints ellipse,.sanctuary-fireflies circle,.sanctuary-birds,.sanctuary-lanterns circle{animation:none!important;transition:none!important}
 }
+
+
+/* Battery-first rendering: preserve the scene, but animate only a few slow layers. */
+.sanctuary-view:after{display:none}
+.sanctuary-view .sanctuary-moon-halo,
+.sanctuary-view .cloudbank-back,
+.sanctuary-view .sanctuary-tree,
+.sanctuary-view .sanctuary-glasshouse,
+.sanctuary-view .sanctuary-reflections,
+.sanctuary-view .sanctuary-mist,
+.sanctuary-view .sanctuary-water-glints ellipse,
+.sanctuary-view .sanctuary-fireflies circle,
+.sanctuary-view .sanctuary-birds,
+.sanctuary-view .sanctuary-lanterns circle{animation:none!important;filter:none!important}
+.sanctuary-view .sanctuary-clouds,
+.sanctuary-view .sanctuary-cloudbank{will-change:auto}
+.sanctuary-view .sanctuary-aurora{animation-duration:96s}
+.sanctuary-view .cloud-layer-far{animation-duration:120s}
+.sanctuary-view .cloudbank-front{animation-duration:132s}
+.sanctuary-view .sanctuary-island{animation-duration:84s}
+.sanctuary-view .room-chill-toggle,
+.sanctuary-view .room-text-toggle,
+.sanctuary-view .room-exit,
+.sanctuary-view .study-room-weather,
+.sanctuary-view .study-room-note{backdrop-filter:none;-webkit-backdrop-filter:none}
+.sanctuary-view.chill-mode .sanctuary-aurora{animation-duration:150s}
+.sanctuary-view.chill-mode .cloud-layer-far{animation-duration:180s}
+.sanctuary-view.chill-mode .cloudbank-front{animation-duration:190s}
+.sanctuary-view.chill-mode .sanctuary-island{animation-duration:140s}
+body.app-document-hidden .sanctuary-view,
+body.app-document-hidden .sanctuary-view *{animation-play-state:paused!important;transition:none!important}
+@media(prefers-reduced-motion:reduce){
+ .sanctuary-view .sanctuary-aurora,
+ .sanctuary-view .cloud-layer-far,
+ .sanctuary-view .cloudbank-front,
+ .sanctuary-view .sanctuary-island{animation:none!important}
+}
