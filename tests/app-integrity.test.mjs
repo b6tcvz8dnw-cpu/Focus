@@ -244,8 +244,8 @@ test("PWA manifest remains valid and standalone-capable", async () => {
   assert.equal(manifest.short_name, "FOCUS");
   assert.equal(manifest.display, "standalone");
   assert.ok(Array.isArray(manifest.icons) && manifest.icons.length >= 1);
-  assert.equal(manifest.icons[0].src, "icons/icon-planet.png");
-  assert.equal(manifest.icons[0].type, "image/png");
+  assert.equal(manifest.icons[0].src, "icons/icon-cyber-clock.svg");
+  assert.equal(manifest.icons[0].type, "image/svg+xml");
 });
 
 test("app refreshes deadline-based timers after a back-forward cache restore", async () => {
@@ -275,7 +275,7 @@ test("Study Room animations pause while another page is selected", async () => {
 test("production service worker caches only successful responses and waits for cache writes", async () => {
   const sw = await read("../public/sw.js");
   const cacheName = sw.match(/const CACHE='([^']+)'/)?.[1];
-  assert.equal(cacheName, "focus-pwa-v42");
+  assert.equal(cacheName, "focus-pwa-v43");
   for (const asset of [
     "./index.html", "./manifest.webmanifest", "./icon.svg", "./icon-192.png", "./icon-512.png", "./icons/icon-planet.png", "./icons/icon-hourglass.png", "./icons/icon-window.png", "./icons/icon-comet.png"
   ]) {
@@ -339,7 +339,7 @@ test("Study Room sky progression preserves all existing thresholds", () => {
 
 test("production Service Worker only manages production-owned caches", async () => {
   const sw = await read("../public/sw.js");
-  assert.ok(sw.includes("const CACHE='focus-pwa-v42';"));
+  assert.ok(sw.includes("const CACHE='focus-pwa-v43';"));
   assert.ok(sw.includes("const CACHE_PREFIX='focus-pwa-';"));
   assert.ok(sw.includes("key.startsWith(CACHE_PREFIX) && key!==CACHE"));
 });
@@ -670,8 +670,8 @@ test("Vite keeps the GitHub Pages project path relative", async () => {
   assert.match(config, /publicDir:\s*["']public["']/);
   const html = await read("../index.html");
   assert.ok(html.includes('href="./manifest.webmanifest"'));
-  assert.ok(html.includes('href="./icons/icon-planet.png"'));
-  assert.ok(html.includes('href="./icons/icon-planet.png"'));
+  assert.ok(html.includes('href="./icons/icon-cyber-clock.svg"'));
+  assert.ok(html.includes('href="./icons/icon-cyber-clock.svg"'));
 });
 
 test("production build injects generated bundles into the PWA precache", async () => {
@@ -1106,8 +1106,8 @@ test("stats replacement keeps the pre-import backup and old stats when the new w
 test("document head uses relative PWA asset paths for GitHub Pages subpaths", async () => {
   const html = await read("../index.html");
   assert.match(html, /<link rel="manifest" href="\.\/manifest\.webmanifest"/);
-  assert.ok(html.includes('<link id="appFavicon" rel="icon" href="./icons/icon-planet.png"'));
-  assert.ok(html.includes('<link id="appleTouchIcon" rel="apple-touch-icon" href="./icons/icon-planet.png"'));
+  assert.ok(html.includes('<link id="appFavicon" rel="icon" href="./icons/icon-cyber-clock.svg"'));
+  assert.ok(html.includes('<link id="appleTouchIcon" rel="apple-touch-icon" href="./icons/icon-cyber-clock.svg"'));
   assert.doesNotMatch(html, /(?:href|src)="\/(?:manifest\.webmanifest|icon\.svg|icon-192\.png|icons\/)/);
 });
 
@@ -2389,7 +2389,7 @@ test("Home Screen icon restores the planet design and follows the selected theme
   assert.ok(controller.includes("function renderHomeIcon(name)"));
   assert.ok(controller.includes('canvas.toDataURL("image/png")'));
   assert.ok(controller.includes('appleIcon.href = themedIcon'));
-  assert.ok(sw.includes("focus-pwa-v42"));
+  assert.ok(sw.includes("focus-pwa-v43"));
 });
 
 test("timer settings expose and persist automatic continuation", async () => {
@@ -2476,7 +2476,7 @@ test("cyber-metal theme and landscape system status are wired without requiring 
   assert.ok(main.includes("BATTERY · N/A"));
   assert.ok(main.includes("updateLandscapeStatus()"));
   assert.ok(views.includes("Math.max(120, Math.ceil(Math.max(0, ...data.map(day => day.minutes)) / 60) * 60)"));
-  assert.ok(sw.includes("focus-pwa-v42"));
+  assert.ok(sw.includes("focus-pwa-v43"));
 });
 
 test("weekly chart uses a two-hour minimum scale and rounds larger maxima to full hours", () => {
