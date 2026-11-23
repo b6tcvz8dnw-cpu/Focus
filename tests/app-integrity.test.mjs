@@ -2456,7 +2456,7 @@ test("main uses the completion sound controller for both focus and break complet
   assert.ok(script.includes("createCompletionSoundController({target:document})"));
   assert.ok(script.includes("function playCompletionSound(){completionSoundController.play()}"));
   assert.ok(script.includes("onFocusComplete({actualSeconds=durations.focus*60}"));
-  assert.ok(script.includes("onBreakComplete(){notify("));
+  assert.ok(script.includes("onBreakComplete(){setChillMode(false);notify("));
 });
 
 
