@@ -43,7 +43,7 @@ export function createStudyViews({ root = document } = {}) {
   function renderWeekly({ history, now = new Date() }) {
     const data = buildWeekData(history, now);
     const sum = data.reduce((total, day) => total + day.minutes, 0);
-    const max = Math.max(30, ...data.map(day => day.minutes));
+    const max = Math.max(120, Math.ceil(Math.max(0, ...data.map(day => day.minutes)) / 60) * 60);
     $("todayMinutes").textContent = Number(history[dateKey(now)] || 0);
     $("weekTotal").textContent = sum >= 60
       ? Math.floor(sum / 60) + "時間" + (sum % 60 ? sum % 60 + "分" : "")
