@@ -27,7 +27,7 @@ import { mountHourglass } from "../src/features/hourglass.js";
 
 const read = (path) => readFile(new URL(path, import.meta.url), "utf8");
 
-const cssFiles = ["foundation.css", "study-room.css", "app-components.css", "device-layout.css", "study-room-visuals.css", "accessibility.css", "cyber-metal.css", "quiet-sanctuary.css", "antique-atelier.css"];
+const cssFiles = ["foundation.css", "study-room.css", "app-components.css", "device-layout.css", "study-room-visuals.css", "accessibility.css", "cyber-metal.css", "quiet-sanctuary.css"];
 
 const readStyles = async () => (await Promise.all([
   read("../src/styles/foundation.css"),
@@ -38,7 +38,6 @@ const readStyles = async () => (await Promise.all([
   read("../src/styles/accessibility.css"),
   read("../src/styles/cyber-metal.css"),
   read("../src/styles/quiet-sanctuary.css"),
-  read("../src/styles/antique-atelier.css")
 ])).join("\n");
 
 test("main document has a valid Japanese HTML shell", async () => {
@@ -208,22 +207,17 @@ test("calendar and analytics panels are mounted in their matching tabs", async (
   assert.ok(script.includes("if(b.dataset.page==='calendarPage')renderCalendar()"));
 });
 
-test("Study Room is removed from navigation and the app uses a calm antique atelier design", async () => {
+test("Study Room stays removed while the original cyber-metal design is restored", async () => {
   const html = await read("../index.html");
   const mainCss = await read("../src/styles/main.css");
-  const vintage = await read("../src/styles/antique-atelier.css");
   assert.ok(!html.includes('data-page="studyRoomPage"'), "Study Room must not appear in navigation");
   assert.ok(html.includes('id="studyRoomPage" hidden aria-hidden="true"'), "legacy hooks stay inert and hidden for safe migration");
   assert.ok(!html.includes('sanctuary-landscape'));
   assert.ok(!html.includes('sanctuary-view'));
-  assert.ok(html.includes('class="panel antique-hourglass-panel"'), "hourglass is moved into the timer page");
-  assert.ok(html.includes('id="hourglassStart"'));
-  assert.ok(mainCss.includes('antique-atelier.css'));
-  assert.ok(vintage.includes("--bg:#e9e1d2"));
-  assert.ok(vintage.includes("Georgia"));
-  assert.ok(vintage.includes("backdrop-filter:none"));
-  assert.ok(vintage.includes("animation:none"));
-  assert.ok(html.includes("A QUIET STUDY COMPANION"));
+  assert.ok(html.includes('id="hourglassStart"'), "the timer hourglass remains available");
+  assert.ok(!mainCss.includes('antique-atelier.css'));
+  assert.ok(html.includes('content="#142433"'));
+  assert.ok(html.includes("FOCUS · STUDY TIMER"));
 });
 
 test("HTML loads the external application module and its source parses", async () => {
