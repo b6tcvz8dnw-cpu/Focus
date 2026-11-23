@@ -110,6 +110,24 @@ export function normalizeTimerSettings(raw) {
     : { focus, short, long, cycle };
 }
 
+export function normalizeStillnessNotes(value) {
+  if (!Array.isArray(value)) return [];
+  const seen = new Set();
+  return value.filter(item => item && typeof item === "object" && !Array.isArray(item))
+    .map((item, index) => {
+      const text = typeof item.text === "string" ? item.text.trim().slice(0, 500) : "";
+      const timestamp = Number(item.timestamp);
+      const id = typeof item.id === "string" && item.id.trim() ? item.id.trim().slice(0, 100) : `letter-${timestamp}-${index}`;
+      return { id, timestamp: Number.isFinite(timestamp) && timestamp > 0 ? timestamp : Date.now(), text };
+    })
+    .filter(item => {
+      if (!item.text || seen.has(item.id)) return false;
+      seen.add(item.id);
+      return true;
+    })
+    .slice(-100);
+}
+
 const allowedThemes = new Set(["green", "blue", "purple", "amber", "rose"]);
 const allowedMarks = new Set(["dot", "star", "leaf"]);
 
@@ -147,7 +165,8 @@ export function validateBackupPayload(raw) {
       appearance: appearance ? { theme: appearance.theme } : null,
       mark,
       notificationsEnabled: typeof raw.notificationsEnabled === "boolean" ? raw.notificationsEnabled : null,
-      quietText: typeof raw.quietText === "boolean" ? raw.quietText : null
+      quietText: typeof raw.quietText === "boolean" ? raw.quietText : null,
+      stillnessNotes: raw.stillnessNotes == null ? null : normalizeStillnessNotes(raw.stillnessNotes)
     }
   };
 }

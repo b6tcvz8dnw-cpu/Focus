@@ -24,6 +24,7 @@ import { createAppearanceController } from "../src/features/appearance-controlle
 import { createRecoveryController } from "../src/features/recovery-controller.js";
 import { createBackupImportController, MAX_BACKUP_BYTES } from "../src/features/backup-import-controller.js";
 import { mountHourglass } from "../src/features/hourglass.js";
+import { normalizeStillnessNotes } from "../src/data/schema.js";
 
 const read = (path) => readFile(new URL(path, import.meta.url), "utf8");
 
@@ -2651,4 +2652,49 @@ test("quiet-time destination is independent from study records and uses local ti
   assert.ok(css.includes('.stillness-world[data-phase="dusk"]'));
   assert.ok(css.includes("prefers-reduced-motion:reduce"));
   assert.ok(!scene.includes("storage.set") && !scene.includes("addSession"));
+});
+
+
+test("stillness world includes occasional low-frequency natural visitors and pauses when hidden", async () => {
+  const scene = await read("../src/features/stillness-scene.js");
+  const html = await read("../index.html");
+  const css = await read("../src/styles/stillness.css");
+  assert.ok(html.includes('id="stillnessVisitorLayer"'));
+  assert.ok(html.includes('id="stillnessBird"'));
+  assert.ok(scene.includes("scheduleVisitor()"));
+  assert.ok(scene.includes("28_000 + Math.random() * 34_000"));
+  assert.ok(scene.includes("reducedMotion?.matches"));
+  assert.ok(scene.includes("stopVisitors()"));
+  assert.ok(css.includes("@keyframes stillness-bird-cross"));
+  assert.ok(css.includes("@keyframes stillness-mote-drift"));
+});
+
+test("stillness letters are local, bounded, safely normalized and included in transfer backups", async () => {
+  const html = await read("../index.html");
+  const main = await read("../src/main.js");
+  const css = await read("../src/styles/stillness-letters.css");
+  const normalized = normalizeStillnessNotes([
+    { id: "a", timestamp: 1795219200000, text: "  風の音  " },
+    { id: "a", timestamp: 1795219200001, text: "duplicate" },
+    { id: "b", timestamp: 1795219200002, text: "x".repeat(700) },
+    { id: "c", timestamp: 1795219200003, text: "   " },
+    null
+  ]);
+  assert.deepEqual(normalized.map(item => item.text), ["風の音", "x".repeat(500)]);
+  assert.ok(html.includes('id="stillnessLetterInput"'));
+  assert.ok(html.includes('id="stillnessLetterList"'));
+  assert.ok(main.includes("mountStillnessNotes"));
+  assert.ok(main.includes("stillnessNotes:storage.getJSON('focus-stillness-notes',[])"));
+  assert.ok(main.includes("storage.setJSON('focus-stillness-notes',obj.stillnessNotes)"));
+  assert.ok(css.includes(".stillness-letter-item"));
+});
+
+test("older backups remain valid when they do not contain stillness letters", () => {
+  const result = validateBackupPayload({
+    app: "FOCUS",
+    version: CURRENT_BACKUP_VERSION,
+    stats: { records: [] }
+  });
+  assert.equal(result.valid, true);
+  assert.equal(result.data.stillnessNotes, null);
 });
