@@ -34,6 +34,7 @@ export function mountStillnessScene(root) {
     if (!active || document.hidden || reducedMotion?.matches || !visitorLayer) return;
     if (Math.random() < 0.2 && bird && !bird.classList.contains('is-flying')) {
       bird.classList.remove('is-flying');
+      bird.addEventListener('animationend', () => bird.classList.remove('is-flying'), { once: true });
       void bird.getBoundingClientRect();
       bird.classList.add('is-flying');
       return;
@@ -81,7 +82,7 @@ export function mountStillnessScene(root) {
   }
 
   function onVisibility() {
-    if (document.hidden) {
+    if (document.hidden || reducedMotion?.matches) {
       if (interval !== null) window.clearInterval(interval);
       interval = null;
       stopVisitors();

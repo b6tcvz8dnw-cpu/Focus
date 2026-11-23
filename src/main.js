@@ -376,7 +376,7 @@ const importController=createBackupImportController({
   $('roomTextToggle').setAttribute('aria-pressed',String(quiet));
   return ok;
  },
- onRefresh:()=>{$('dailyGoal').value=dailyGoal;$('weeklyGoal').value=weeklyGoal;renderAllRecords();recoveryController.render()},
+ onRefresh:()=>{$('dailyGoal').value=dailyGoal;$('weeklyGoal').value=weeklyGoal;stillnessNotes.refresh();renderAllRecords();recoveryController.render()},
  onMessage:message=>{$('toast').textContent=message}
 });
 
