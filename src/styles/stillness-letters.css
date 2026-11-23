@@ -1,0 +1,22 @@
+.stillness-letters{padding:clamp(18px,4vw,28px);border:1px solid rgba(255,255,255,.12);border-radius:24px;background:linear-gradient(145deg,rgba(255,255,255,.075),rgba(255,255,255,.025));box-shadow:0 16px 44px rgba(0,0,0,.08)}
+.stillness-letters-heading{text-align:center;margin:0 auto 18px;max-width:34rem}
+.stillness-letters-kicker{font-size:9px;letter-spacing:.24em;color:var(--muted);opacity:.8}
+.stillness-letters-heading h2{font-family:"Yu Mincho","Hiragino Mincho ProN",serif;font-weight:400;letter-spacing:.16em;font-size:20px;margin:8px 0}
+.stillness-letters-heading p{font-family:"Yu Mincho","Hiragino Mincho ProN",serif;color:var(--muted);font-size:12px;line-height:1.9;margin:0}
+#stillnessLetterInput{display:block;width:100%;min-height:94px;resize:vertical;border:1px solid rgba(255,255,255,.16);border-radius:14px;padding:13px 14px;background:rgba(8,20,30,.14);color:inherit;font:inherit;line-height:1.8;outline-offset:3px}
+#stillnessLetterInput::placeholder{color:var(--muted);opacity:.72}
+.stillness-letter-actions{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:10px}
+#stillnessLetterCount{font-size:10px;color:var(--muted);font-variant-numeric:tabular-nums}
+.stillness-letter-actions button{min-width:112px}
+.stillness-revisit{margin-top:18px;text-align:center}
+.stillness-revisit-trigger{border:0;background:transparent;color:var(--muted);font:inherit;font-family:"Yu Mincho","Hiragino Mincho ProN",serif;font-size:12px;letter-spacing:.08em;padding:8px 12px;cursor:pointer}
+.stillness-revisit-trigger:disabled{opacity:.4;cursor:default}
+#stillnessLetterMemory{margin:12px 0 0;padding:16px 12px;border-left:0;border-top:1px solid rgba(255,255,255,.14);font-family:"Yu Mincho","Hiragino Mincho ProN",serif;font-size:14px;line-height:2;white-space:pre-wrap;color:var(--text);text-align:center}
+.stillness-letter-archive{margin-top:20px;border-top:1px solid rgba(255,255,255,.1);padding-top:13px}
+.stillness-letter-archive>summary{cursor:pointer;color:var(--muted);font-size:11px;letter-spacing:.08em}
+.stillness-letter-archive ul{list-style:none;margin:12px 0 0;padding:0;display:grid;gap:10px}
+.stillness-letter-item{padding:12px;border-radius:12px;background:rgba(0,0,0,.08);display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px 12px}
+.stillness-letter-date{font-size:10px;color:var(--muted)}
+.stillness-letter-text{grid-column:1/-1;font-family:"Yu Mincho","Hiragino Mincho ProN",serif;font-size:12px;line-height:1.9;white-space:pre-wrap;overflow-wrap:anywhere}
+.stillness-letter-delete{grid-column:2;grid-row:1;border:0;background:transparent;color:var(--muted);font-size:16px;padding:0 5px;cursor:pointer}
+.stillness-letter-empty{padding:14px;text-align:center;color:var(--muted);font-family:"Yu Mincho","Hiragino Mincho ProN",serif;font-size:12px}

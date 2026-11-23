@@ -24,10 +24,11 @@ import { createAppearanceController } from "../src/features/appearance-controlle
 import { createRecoveryController } from "../src/features/recovery-controller.js";
 import { createBackupImportController, MAX_BACKUP_BYTES } from "../src/features/backup-import-controller.js";
 import { mountHourglass } from "../src/features/hourglass.js";
+import { normalizeStillnessNotes } from "../src/data/schema.js";
 
 const read = (path) => readFile(new URL(path, import.meta.url), "utf8");
 
-const cssFiles = ["foundation.css", "study-room.css", "app-components.css", "device-layout.css", "study-room-visuals.css", "accessibility.css", "cyber-metal.css", "quiet-sanctuary.css", "stillness.css"];
+const cssFiles = ["foundation.css", "study-room.css", "app-components.css", "device-layout.css", "study-room-visuals.css", "accessibility.css", "cyber-metal.css", "quiet-sanctuary.css", "stillness.css", "stillness-letters.css"];
 
 const readStyles = async () => (await Promise.all([
   read("../src/styles/foundation.css"),
@@ -38,6 +39,7 @@ const readStyles = async () => (await Promise.all([
   read("../src/styles/accessibility.css"),
   read("../src/styles/cyber-metal.css"),
   read("../src/styles/quiet-sanctuary.css"),
+  read("../src/styles/stillness-letters.css"),
 ])).join("\n");
 
 test("main document has a valid Japanese HTML shell", async () => {
@@ -172,7 +174,7 @@ test("hourglass CSS uses real rule separators and production cache is versioned"
   assert.ok(css.includes(".hourglass-grain{fill:var(--accent)"));
   assert.ok(css.includes(".hourglass-art.is-running .hourglass-grain{animation:sand-grain-fall"));
   const sw = await read("../public/sw.js");
-  assert.ok(sw.includes("focus-pwa-v52"));
+  assert.ok(sw.includes("focus-pwa-v53"));
   assert.ok(sw.includes("icon-cyber-clock.svg"));
 });
 
@@ -303,7 +305,7 @@ test("Study Room animations pause while another page is selected", async () => {
 test("production service worker caches only successful responses and waits for cache writes", async () => {
   const sw = await read("../public/sw.js");
   const cacheName = sw.match(/const CACHE='([^']+)'/)?.[1];
-  assert.equal(cacheName, "focus-pwa-v52");
+  assert.equal(cacheName, "focus-pwa-v53");
   for (const asset of [
     "./index.html", "./manifest.webmanifest", "./icon.svg", "./icon-192.png", "./icon-512.png", "./icons/icon-cyber-clock.svg", "./icons/icon-planet.png", "./icons/icon-hourglass.png", "./icons/icon-window.png", "./icons/icon-comet.png"
   ]) {
@@ -368,7 +370,7 @@ test("Study Room sky progression is based on lifetime study time and never regre
 
 test("production Service Worker only manages production-owned caches", async () => {
   const sw = await read("../public/sw.js");
-  assert.ok(sw.includes("const CACHE='focus-pwa-v52';"));
+  assert.ok(sw.includes("const CACHE='focus-pwa-v53';"));
   assert.ok(sw.includes("const CACHE_PREFIX='focus-pwa-';"));
   assert.ok(sw.includes("key.startsWith(CACHE_PREFIX) && key!==CACHE"));
 });
@@ -2439,7 +2441,7 @@ test("Home Screen icon restores the planet design and follows the selected theme
   assert.ok(controller.includes("function renderHomeIcon(name)"));
   assert.ok(controller.includes('canvas.toDataURL("image/png")'));
   assert.ok(controller.includes('appleIcon.href = themedIcon'));
-  assert.ok(sw.includes("focus-pwa-v52"));
+  assert.ok(sw.includes("focus-pwa-v53"));
 });
 
 test("timer settings expose and persist automatic continuation", async () => {
@@ -2526,7 +2528,7 @@ test("cyber-metal theme and landscape system status are wired without requiring 
   assert.ok(main.includes("BATTERY · N/A"));
   assert.ok(main.includes("updateLandscapeStatus()"));
   assert.ok(views.includes("Math.max(120, Math.ceil(Math.max(0, ...data.map(day => day.minutes)) / 60) * 60)"));
-  assert.ok(sw.includes("focus-pwa-v52"));
+  assert.ok(sw.includes("focus-pwa-v53"));
 });
 
 test("weekly chart uses a two-hour minimum scale and rounds larger maxima to full hours", () => {
@@ -2603,7 +2605,7 @@ test("Chill mode is accessible, user-controllable, and auto-applies during break
   assert.ok(css.includes(".study-room-view.chill-mode::after"));
   assert.ok(css.includes("prefers-reduced-motion:reduce"));
   assert.ok(sound.includes("function setVolume(volume, transitionSeconds = 0.08)"));
-  assert.ok(sw.includes("focus-pwa-v52"));
+  assert.ok(sw.includes("focus-pwa-v53"));
 });
 
 test("cumulative sky progress uses lifetime minutes rather than today's history", async () => {
@@ -2631,7 +2633,7 @@ test("landscape status polling is minute-based rather than waking the page every
 
 test("battery optimization increments the service-worker cache version", async () => {
   const sw = await read("../public/sw.js");
-  assert.ok(sw.includes("focus-pwa-v52"));
+  assert.ok(sw.includes("focus-pwa-v53"));
 });
 
 
@@ -2651,4 +2653,49 @@ test("quiet-time destination is independent from study records and uses local ti
   assert.ok(css.includes('.stillness-world[data-phase="dusk"]'));
   assert.ok(css.includes("prefers-reduced-motion:reduce"));
   assert.ok(!scene.includes("storage.set") && !scene.includes("addSession"));
+});
+
+
+test("stillness world includes occasional low-frequency natural visitors and pauses when hidden", async () => {
+  const scene = await read("../src/features/stillness-scene.js");
+  const html = await read("../index.html");
+  const css = await read("../src/styles/stillness.css");
+  assert.ok(html.includes('id="stillnessVisitorLayer"'));
+  assert.ok(html.includes('id="stillnessBird"'));
+  assert.ok(scene.includes("scheduleVisitor()"));
+  assert.ok(scene.includes("28_000 + Math.random() * 34_000"));
+  assert.ok(scene.includes("reducedMotion?.matches"));
+  assert.ok(scene.includes("stopVisitors()"));
+  assert.ok(css.includes("@keyframes stillness-bird-cross"));
+  assert.ok(css.includes("@keyframes stillness-mote-drift"));
+});
+
+test("stillness letters are local, bounded, safely normalized and included in transfer backups", async () => {
+  const html = await read("../index.html");
+  const main = await read("../src/main.js");
+  const css = await read("../src/styles/stillness-letters.css");
+  const normalized = normalizeStillnessNotes([
+    { id: "a", timestamp: 1795219200000, text: "  風の音  " },
+    { id: "a", timestamp: 1795219200001, text: "duplicate" },
+    { id: "b", timestamp: 1795219200002, text: "x".repeat(700) },
+    { id: "c", timestamp: 1795219200003, text: "   " },
+    null
+  ]);
+  assert.deepEqual(normalized.map(item => item.text), ["風の音", "x".repeat(500)]);
+  assert.ok(html.includes('id="stillnessLetterInput"'));
+  assert.ok(html.includes('id="stillnessLetterList"'));
+  assert.ok(main.includes("mountStillnessNotes"));
+  assert.ok(main.includes("stillnessNotes:storage.getJSON('focus-stillness-notes',[])"));
+  assert.ok(main.includes("storage.setJSON('focus-stillness-notes',obj.stillnessNotes)"));
+  assert.ok(css.includes(".stillness-letter-item"));
+});
+
+test("older backups remain valid when they do not contain stillness letters", () => {
+  const result = validateBackupPayload({
+    app: "FOCUS",
+    version: CURRENT_BACKUP_VERSION,
+    stats: { records: [] }
+  });
+  assert.equal(result.valid, true);
+  assert.equal(result.data.stillnessNotes, null);
 });

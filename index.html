@@ -54,6 +54,9 @@
   <div class="stillness-stars" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
   <div class="stillness-cloud stillness-cloud-a" aria-hidden="true"></div>
   <div class="stillness-cloud stillness-cloud-b" aria-hidden="true"></div>
+  <div class="stillness-visitor-layer" id="stillnessVisitorLayer" aria-hidden="true">
+   <svg class="stillness-bird" id="stillnessBird" viewBox="0 0 64 24" focusable="false"><path d="M2 16Q11 3 21 13Q30 1 41 12Q51 5 62 10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+  </div>
   <svg class="stillness-landscape" viewBox="0 0 760 470" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
    <path class="stillness-distant" d="M0 282 Q92 220 174 255 T342 247 T520 251 T760 222 V470 H0Z"/>
    <path class="stillness-island-shadow" d="M82 326 Q190 284 310 304 Q426 276 558 312 Q652 322 694 357 Q605 383 488 371 Q337 399 220 371 Q130 364 82 326Z"/>
@@ -68,6 +71,14 @@
   <div class="stillness-clock" id="stillnessClock" aria-label="現在時刻">--:--</div>
  </section>
  <p class="stillness-note">急がなくていい。ここでは、ただ時間が流れている。</p>
+ <section class="stillness-letters" aria-labelledby="stillnessLettersTitle">
+  <div class="stillness-letters-heading"><span class="stillness-letters-kicker">WORDS THAT CAN REST HERE</span><h2 id="stillnessLettersTitle">小さな書簡</h2><p>まとまっていなくても、短くても。ふと浮かんだ言葉を、ここに置いておこう。</p></div>
+  <label class="visually-hidden" for="stillnessLetterInput">残しておきたい言葉</label>
+  <textarea id="stillnessLetterInput" maxlength="500" rows="3" placeholder="まだ名前のない気持ちや、忘れたくない景色……"></textarea>
+  <div class="stillness-letter-actions"><span id="stillnessLetterCount">0 / 500</span><button class="secondary" id="saveStillnessLetter" type="button">言葉を置く</button></div>
+  <div class="stillness-revisit"><button class="stillness-revisit-trigger" id="revisitStillnessLetter" type="button" disabled>過去の言葉をひとつ読む</button><blockquote id="stillnessLetterMemory" aria-live="polite" hidden></blockquote></div>
+  <details class="stillness-letter-archive"><summary>置いてきた言葉 <span id="stillnessLetterTotal">0</span></summary><ul id="stillnessLetterList" aria-live="polite"></ul></details>
+ </section>
 </div>
 <div class="mini-timer" id="miniTimer" hidden><div><span class="mini-timer-caption" id="miniTimerMode">集中する時間</span><strong class="mini-timer-clock" id="miniTimerClock">25:00</strong></div><button class="secondary" id="miniTimerToggle" type="button" aria-label="タイマーを一時停止">Ⅱ 一時停止</button></div>
 

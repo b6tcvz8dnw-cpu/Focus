@@ -14,6 +14,7 @@ import { createAppearanceController } from './features/appearance-controller.js'
 import { createRecoveryController } from './features/recovery-controller.js';
 import { createBackupImportController } from './features/backup-import-controller.js';
 import { mountStillnessScene } from './features/stillness-scene.js';
+import { mountStillnessNotes } from './features/stillness-notes.js';
 const $=id=>document.getElementById(id);
 const studyViews=createStudyViews();
 let durations={focus:25,short:5,long:15},mode='focus',remaining=1500,total=1500,running=false,deadline=0,completed=0,minutes=0,finished=false,history={},legacyHistory={},records=[],selectedCalendarDate=dateKey(new Date()),dailyGoal=60,weeklyGoal=300,statsStore=null,calendarCursor=new Date(new Date().getFullYear(),new Date().getMonth(),1),appReady=false,timerController=null,ambientSound=null;
@@ -154,6 +155,7 @@ document.querySelectorAll('[data-mode]').forEach(b=>b.onclick=()=>{if(running&&!
 $('apply').onclick=()=>{if((running||remaining!==total)&&!confirm('タイマーの設定を変更すると、現在のセッションは最初からになるよ。変更してもいい？'))return;let vals={focus:+$('focusDuration').value,short:+$('shortDuration').value,long:+$('longDuration').value,cycle:+$('cycleDuration').value};if(vals.focus<1||vals.focus>120||vals.short<1||vals.short>60||vals.long<1||vals.long>90||vals.cycle<2||vals.cycle>8||Object.values(vals).some(v=>!Number.isInteger(v))){$('toast').textContent='設定値を範囲内の整数で入力してね。';return}if(!storage.setJSON('focus-timer-settings',vals)){$('toast').textContent='タイマー設定を保存できなかったよ。端末の空き容量やブラウザの状態を確認してね。';return}timerController.setDurations({focus:vals.focus,short:vals.short,long:vals.long});$('toast').textContent='タイマー設定を保存したよ。'};
 
 const stillnessScene=mountStillnessScene($('stillnessPage'));
+const stillnessNotes=mountStillnessNotes({root:$('stillnessPage'),storage,onMessage:message=>{$('toast').textContent=message}});
 document.querySelectorAll('[data-page]').forEach(b=>b.onclick=()=>{if(b.dataset.page==='settingsPage'){stillnessScene.onLeave();document.querySelectorAll('.page').forEach(p=>p.hidden=p.id!==b.dataset.page);document.querySelectorAll('.tab[data-page]').forEach(t=>t.removeAttribute('aria-current'));updateMiniTimer();return}if(b.dataset.page!=='stillnessPage')stillnessScene.onLeave();setStudyRoomMode(b.dataset.page==='studyRoomPage');document.querySelectorAll('.page').forEach(p=>p.hidden=p.id!==b.dataset.page);document.querySelectorAll('.tab[data-page]').forEach(t=>{const active=t===b;t.classList.toggle('active',active);if(active)t.setAttribute('aria-current','page');else t.removeAttribute('aria-current')});if(b.dataset.page==='overviewPage')renderAllRecords();if(b.dataset.page==='calendarPage')renderCalendar();if(b.dataset.page==='analyticsPage')renderAnalytics();if(b.dataset.page==='stillnessPage')stillnessScene.onEnter();if(b.dataset.page==='studyRoomPage'){studyRoom.onEnter();studyRoom.loadWeather()}updateMiniTimer()});
 const hourglass = mountHourglass({ getRemainingSeconds });
 const studyRoom = mountStudyRoom({ updateSky: updateStudySky, storage });
@@ -311,7 +313,7 @@ document.querySelectorAll('[data-sound]').forEach(b=>b.onclick=()=>ambientSound.
 document.querySelectorAll('[data-sound-preset]').forEach(b=>b.onclick=()=>ambientSound.setPreset(b.dataset.soundPreset));
 $('soundVolume').oninput=()=>ambientSound.setVolume(Number($('soundVolume').value)/100*($('studyRoomView').classList.contains('chill-mode')?0.72:1),1.8);
 for(const kind of Object.keys(soundLevelDefaults)){$('soundVolume-'+kind).oninput=()=>{soundLevels[kind]=Number($('soundVolume-'+kind).value);ambientSound.setLayerVolume(kind,soundLevels[kind]/100);if(!storage.setJSON('focus-sound-levels',soundLevels))$('toast').textContent='音量設定を保存できなかったよ。'}}
-function buildBackupPayload(){return {app:'FOCUS',version:CURRENT_BACKUP_VERSION,exportedAt:new Date().toISOString(),stats:statsStore.exportStats(),timerSettings:normalizeTimerSettings(storage.getJSON('focus-timer-settings',null)),appearance:storage.getJSON('focus-appearance',null),mark:storage.getText('focus-mark')||'dot',homeIcon:storage.getText('focus-home-icon')||'planet',notificationsEnabled,quietText:storage.getText('focus-room-quiet-text')==='true'}}
+function buildBackupPayload(){return {app:'FOCUS',version:CURRENT_BACKUP_VERSION,exportedAt:new Date().toISOString(),stats:statsStore.exportStats(),timerSettings:normalizeTimerSettings(storage.getJSON('focus-timer-settings',null)),appearance:storage.getJSON('focus-appearance',null),mark:storage.getText('focus-mark')||'dot',homeIcon:storage.getText('focus-home-icon')||'planet',notificationsEnabled,quietText:storage.getText('focus-room-quiet-text')==='true',stillnessNotes:storage.getJSON('focus-stillness-notes',[])}}
 function downloadBackup(payload,filename){const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=filename;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)}
 function createTransferFile(){
  const filename='FOCUS-移行データ-'+dateKey(new Date())+'.json';
@@ -338,7 +340,7 @@ $('transferImport').addEventListener('click',()=>$('importData').click());
 const importController=createBackupImportController({
  input:$('importData'),storage,statsStore,validate:validateBackupPayload,
  buildCurrentBackup:()=>buildBackupPayload(),
- captureSettings:()=>Object.fromEntries(['focus-timer-settings','focus-appearance','focus-mark','focus-home-icon','focus-notifications','focus-room-quiet-text'].map(key=>[key,storage.getText(key,null)])),
+ captureSettings:()=>Object.fromEntries(['focus-timer-settings','focus-appearance','focus-mark','focus-home-icon','focus-notifications','focus-room-quiet-text','focus-stillness-notes'].map(key=>[key,storage.getText(key,null)])),
  confirmAction:message=>confirm(message),
  applySettings:obj=>{
   const writes=[];
@@ -348,6 +350,7 @@ const importController=createBackupImportController({
    if(obj.homeIcon)writes.push(storage.setText('focus-home-icon',obj.homeIcon));
   if(typeof obj.notificationsEnabled==='boolean')writes.push(storage.setText('focus-notifications',String(obj.notificationsEnabled)));
   if(typeof obj.quietText==='boolean')writes.push(storage.setText('focus-room-quiet-text',String(obj.quietText)));
+  if(Array.isArray(obj.stillnessNotes))writes.push(storage.setJSON('focus-stillness-notes',obj.stillnessNotes));
   if(writes.some(ok=>!ok))return false;
   if(obj.appearance&&obj.appearance.theme)appearanceController.setTheme(obj.appearance.theme,{persist:false});
   if(obj.mark)appearanceController.setMark(obj.mark,{persist:false});
@@ -373,7 +376,7 @@ const importController=createBackupImportController({
   $('roomTextToggle').setAttribute('aria-pressed',String(quiet));
   return ok;
  },
- onRefresh:()=>{$('dailyGoal').value=dailyGoal;$('weeklyGoal').value=weeklyGoal;renderAllRecords();recoveryController.render()},
+ onRefresh:()=>{$('dailyGoal').value=dailyGoal;$('weeklyGoal').value=weeklyGoal;stillnessNotes.refresh();renderAllRecords();recoveryController.render()},
  onMessage:message=>{$('toast').textContent=message}
 });
 
