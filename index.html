@@ -7,8 +7,8 @@
 <meta name="description" content="集中と休憩を切り替える学習用ポモドーロタイマー">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' https://api.open-meteo.com; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
 <link rel="manifest" href="./manifest.webmanifest">
-<link id="appFavicon" rel="icon" href="./icons/icon-planet.png" type="image/png">
-<link id="appleTouchIcon" rel="apple-touch-icon" href="./icons/icon-planet.png">
+<link id="appFavicon" rel="icon" href="./icons/icon-cyber-clock.svg" type="image/svg+xml">
+<link id="appleTouchIcon" rel="apple-touch-icon" href="./icons/icon-cyber-clock.svg">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="FOCUS">
@@ -64,8 +64,10 @@
   <p class="muted" style="margin:10px 0 0">日付を選ぶと、その日の学習時間とセッションを確認・編集できるよ。</p>
  </section>
  <section class="panel calendar-day-panel" id="calendarDayPanel">
-  <h2 id="calendarDayTitle">日付を選択</h2>
-  <div id="calendarDayDetails"><p class="muted">カレンダーの日付をタップしてね。</p></div>
+  <details class="calendar-day-disclosure" id="calendarDayDisclosure" open>
+   <summary><span id="calendarDayTitle">日付を選択</span><span class="disclosure-hint">表示を切り替え</span></summary>
+   <div class="calendar-day-content" id="calendarDayDetails"><p class="muted">カレンダーの日付をタップしてね。</p></div>
+  </details>
  </section>
 </div>
 <div class="page" id="analyticsPage" hidden><section class="panel" id="analyticsPanel"><h2>学習分析</h2><div class="muted" style="margin:-4px 0 10px">日・週・月ごとの記録を、静かに振り返るための集計。</div><div class="analytics-switch"><button class="secondary selected" type="button" data-analytics-range="day" aria-pressed="true">日</button><button class="secondary" type="button" data-analytics-range="week" aria-pressed="false">週</button><button class="secondary" type="button" data-analytics-range="month" aria-pressed="false">月</button></div><div id="analyticsContent"></div></section></div>
@@ -201,8 +203,8 @@
    <button class="theme-choice" data-theme="rose" aria-pressed="false"><i style="background:#e6a0ad"></i>ローズ</button>
   </div>
   <div class="home-icon-preview">
-   <img id="homeIconPreview" src="./icons/icon-planet.png" alt="テーマカラーに合わせたホーム画面アイコンのプレビュー">
-   <div><strong>ホーム画面アイコン</strong><p class="muted">惑星のデザインに戻し、色はテーマカラーに連動するよ。iPhoneに登録済みのアイコンへ反映するには、ホーム画面への再追加が必要だよ。</p></div>
+   <img id="homeIconPreview" src="./icons/icon-cyber-clock.svg" alt="テーマカラーに合わせたサイバークロックのホーム画面アイコン">
+   <div><strong>ホーム画面アイコン</strong><p class="muted">メタリックな時計のデザイン。色はテーマカラーに合わせて変化するよ。iPhoneに登録済みのアイコンへ反映するには、ホーム画面への再追加が必要だよ。</p></div>
   </div>
   <div class="muted" style="margin:16px 0 10px">アプリ内マーク</div>
   <div class="mark-grid" role="group" aria-label="アプリ内マーク">

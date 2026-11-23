@@ -157,7 +157,8 @@ test("hourglass CSS uses real rule separators and production cache is versioned"
   assert.ok(css.includes(".hourglass-grain{fill:var(--accent)"));
   assert.ok(css.includes(".hourglass-art.is-running .hourglass-grain{animation:sand-grain-fall"));
   const sw = await read("../public/sw.js");
-  assert.ok(sw.includes("focus-pwa-v42"));
+  assert.ok(sw.includes("focus-pwa-v43"));
+  assert.ok(sw.includes("icon-cyber-clock.svg"));
 });
 
 test("calendar and analytics panels are mounted in their matching tabs", async () => {
@@ -2379,10 +2380,11 @@ test("Home Screen icon restores the planet design and follows the selected theme
   const controller = await read("../src/features/appearance-controller.js");
   const manifest = await read("../public/manifest.webmanifest");
   const sw = await read("../public/sw.js");
-  assert.ok(html.includes('id="appleTouchIcon" rel="apple-touch-icon" href="./icons/icon-planet.png"'));
-  assert.ok(html.includes('id="appFavicon" rel="icon" href="./icons/icon-planet.png"'));
+  assert.ok(html.includes('id="appleTouchIcon" rel="apple-touch-icon" href="./icons/icon-cyber-clock.svg"'));
+  assert.ok(html.includes('id="appFavicon" rel="icon" href="./icons/icon-cyber-clock.svg"'));
   assert.ok(html.includes('id="homeIconPreview"'));
   assert.ok(html.includes("ホーム画面アイコン"));
+  assert.ok(manifest.includes('"src":"icons/icon-cyber-clock.svg"'));
   assert.ok(manifest.includes('"src":"icons/icon-planet.png"'));
   assert.ok(controller.includes("function renderHomeIcon(name)"));
   assert.ok(controller.includes('canvas.toDataURL("image/png")'));
@@ -2505,4 +2507,25 @@ test("cyberpunk visual layer adds scanlines, circuit accents and accessible disc
   assert.ok(css.includes("linear-gradient(90deg,transparent 0 9.8%"));
   assert.ok(css.includes(".overview-disclosure>summary::after"));
   assert.ok(css.includes("prefers-reduced-motion:reduce"));
+});
+
+
+test("calendar day detail section is independently collapsible", async () => {
+  const html = await read("../index.html");
+  const styles = await read("../src/styles/cyber-metal.css");
+  assert.match(html, /<details class="calendar-day-disclosure" id="calendarDayDisclosure" open>/);
+  assert.ok(html.includes('id="calendarDayTitle"'));
+  assert.ok(html.includes('class="calendar-day-content" id="calendarDayDetails"'));
+  assert.ok(styles.includes(".calendar-day-disclosure[open]>summary::after"));
+});
+
+test("cyber clock is the default home icon and is included in the app shell", async () => {
+  const html = await read("../index.html");
+  const manifest = await read("../public/manifest.webmanifest");
+  const appearance = await read("../src/features/appearance-controller.js");
+  const sw = await read("../public/sw.js");
+  assert.ok(html.includes("icons/icon-cyber-clock.svg"));
+  assert.ok(manifest.includes("icons/icon-cyber-clock.svg"));
+  assert.ok(appearance.includes('const HOME_ICON_SOURCE = "./icons/icon-cyber-clock.svg"'));
+  assert.ok(sw.includes("'./icons/icon-cyber-clock.svg'"));
 });
