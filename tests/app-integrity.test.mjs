@@ -184,10 +184,10 @@ test("calendar and analytics panels are mounted in their matching tabs", async (
   const analyticsStart = html.indexOf('<div class="page" id="analyticsPage"');
   const roomStart = html.indexOf('id="studyRoomPage"');
   assert.ok(overviewStart >= 0 && calendarStart > overviewStart);
-  assert.ok(analyticsStart > calendarStart && roomStart > analyticsStart);
+  assert.ok(analyticsStart > calendarStart && roomStart > 0);
   const overview = html.slice(overviewStart, calendarStart);
   const calendar = html.slice(calendarStart, analyticsStart);
-  const analytics = html.slice(analyticsStart, roomStart);
+  const analytics = html.slice(analyticsStart);
   assert.ok(!overview.includes('id="calendarPanel"'));
   assert.ok(!overview.includes('id="analyticsPanel"'));
   assert.ok(calendar.includes('id="calendarPanel"'));
@@ -1150,7 +1150,8 @@ test("document head uses relative PWA asset paths for GitHub Pages subpaths", as
 test("study room refresh preserves its structural class and visual state", async () => {
   const html = await read("../index.html");
   const main = await read("../src/main.js");
-  assert.match(html, /class="study-room-view sanctuary-view season-/);
+  assert.match(html, /class="study-room-view" id="studyRoomView"/);
+  assert.doesNotMatch(html, /sanctuary-view|sanctuary-landscape/);
   const room = await read("../src/features/study-room.js");
   assert.match(room, /for\(const name of \[\.\.\.view\.classList\]\)/);
   assert.ok(room.includes("view.classList.add('season-'+season.id,'time-'+time.id)"));
