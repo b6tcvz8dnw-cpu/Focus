@@ -2410,7 +2410,8 @@ test("compact timer is outside page containers and updates on Settings navigatio
   const script = await read("../src/main.js");
   assert.match(html, /<\/div>\s*<div class="mini-timer" id="miniTimer"/);
   assert.ok(html.indexOf('id="miniTimer"') < html.indexOf('id="overviewPage"'));
-  assert.ok(script.includes("stillnessScene.onLeave();updateMiniTimer();return}"));
+  assert.ok(script.includes("if(b.dataset.page==='settingsPage'){stillnessScene.onLeave();"));
+  assert.ok(script.includes("updateMiniTimer();return}"));
 });
 
 test("subject selection and filtering are removed while legacy record data remains untouched", async () => {
