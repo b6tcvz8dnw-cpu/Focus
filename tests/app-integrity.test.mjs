@@ -1799,7 +1799,7 @@ test("study views render calendar dates and escape reflection text in history", 
   });
   const html = h.elements.get("historyList").innerHTML;
   assert.match(html, /&lt;script&gt;/);
-  assert.match(html, /&lt;img src=x onerror=alert\\(3\\)&gt;/);
+  assert.ok(html.includes("&lt;img src=x onerror=alert(3)&gt;"));
   assert.match(html, /&lt;img src=x onerror=alert\(1\)&gt;/);
   assert.match(html, /&lt;img src=x onerror=&quot;alert\(2\)&quot;&gt;/);
   assert.doesNotMatch(html, /<script>|<img/);
