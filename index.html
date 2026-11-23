@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#26372f">
+<meta name="theme-color" content="#142433">
 <meta name="description" content="集中と休憩を切り替える学習用ポモドーロタイマー">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' https://api.open-meteo.com; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
 <link rel="manifest" href="./manifest.webmanifest">
@@ -28,9 +28,9 @@
  <div class="controls"><button class="secondary" id="reset">↺ リセット</button><button class="primary" id="start">▶ スタート</button><button class="secondary" id="skip">次へ →</button><button class="secondary" id="largeToggle" aria-pressed="false">⛶ 大画面</button></div>
  <p class="hint" id="hint">25分間、ひとつのことに集中しよう。</p>
 </section>
-<section class="panel antique-hourglass-panel" aria-labelledby="antiqueHourglassTitle">
- <div class="antique-hourglass-copy"><span class="antique-eyebrow">A MOMENT TO PAUSE</span><h2 id="antiqueHourglassTitle">小さな休息</h2><p>急がなくていい時間を、ここに。</p></div>
- <div class="antique-hourglass-stage"><button class="desk-hourglass antique-hourglass-control" id="hourglassStart" type="button" aria-label="5分間の休憩を始める" aria-describedby="hourglassInstructions" aria-keyshortcuts="R">
+<section class="panel timer-hourglass-panel" aria-labelledby="timerHourglassTitle">
+ <div class="timer-hourglass-copy"><span class="antique-eyebrow">A MOMENT TO RESET</span><h2 id="timerHourglassTitle">小さな休息</h2><p>急がなくていい時間を、ここに。</p></div>
+ <div class="timer-hourglass-stage"><button class="desk-hourglass timer-hourglass-control" id="hourglassStart" type="button" aria-label="5分間の休憩を始める" aria-describedby="hourglassInstructions" aria-keyshortcuts="R">
     <svg class="hourglass-art" id="hourglassArt" viewBox="0 0 100 120" role="img" aria-label="砂が落ちる砂時計"><path class="hourglass-frame" d="M27 7H73 M27 113H73 M31 9C31 35 48 43 50 60C52 77 69 85 69 111 M69 9C69 35 52 43 50 60C48 77 31 85 31 111"/><path class="hourglass-glass" d="M32 12C32 34 47 43 50 58C53 43 68 34 68 12Z M50 62C47 78 32 87 32 108H68C68 87 53 78 50 62Z"/><path class="hourglass-sand-top" id="hourglassSandTop" d="M35 15H65C64 31 57 39 50 48C43 39 36 31 35 15Z"/><path class="hourglass-sand-bottom" id="hourglassSandBottom" d="M35 105C37 89 43 82 50 74C57 82 63 89 65 105Z"/><path class="hourglass-stream" d="M50 48V74"/><circle class="hourglass-grain grain-a" cx="48.5" cy="50" r="1.5"/><circle class="hourglass-grain grain-b" cx="51.5" cy="50" r="1.5"/><circle class="hourglass-grain grain-c" cx="50" cy="50" r="1.6"/></svg>
     <span class="desk-hourglass-time" id="hourglassTime">05:00</span><span class="desk-hourglass-label" id="hourglassState">タップで休憩 · 長押しでリセット</span>
    </button><span class="visually-hidden" id="hourglassInstructions">タップで開始または一時停止。長押し、またはこのボタンにフォーカスしてRキーを押すと5分にリセット。</span></div>
@@ -152,7 +152,7 @@
 
 
 </nav>
-<div class="foot"><span>FOCUS · A QUIET STUDY COMPANION</span></div><div id="toast" role="status" aria-live="polite"></div>
+<div class="foot"><span>FOCUS · STUDY TIMER</span></div><div id="toast" role="status" aria-live="polite"></div>
 </main>
 <div class="landscape-system-status" id="landscapeSystemStatus" hidden aria-label="現在時刻とバッテリー情報">
  <span class="landscape-system-clock" id="landscapeClock">--:--</span>
