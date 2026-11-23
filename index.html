@@ -75,63 +75,76 @@
 
 <div class="page" id="studyRoomPage" hidden>
  <section class="study-room-panel">
-  <div class="study-room-view little-planet-view season-autumn time-day" id="studyRoomView">
+  <div class="study-room-view sanctuary-view season-autumn time-day" id="studyRoomView">
    <div class="study-room-top">
     <div><div class="study-room-kicker">A QUIET PLACE IN THE UNIVERSE</div><div class="study-room-title">星を眺める場所</div><div class="study-room-return" id="studyRoomReturn">ここは、いつでも戻ってこられる場所。</div></div>
     <div class="study-room-top-actions"><div class="study-room-season" id="studyRoomSeason">秋 · 昼</div><button class="room-chill-toggle" id="chillModeToggle" type="button" aria-pressed="false" aria-label="チルモードを開始する">☾ チル</button><button class="room-text-toggle" id="roomTextToggle" type="button" aria-label="文字情報を隠す" aria-pressed="false" title="文字情報の表示切替">Aa</button><button class="study-room-weather" id="studyRoomWeather" type="button" aria-label="名古屋市の今日の天気を再取得">名古屋市 · 天気</button><button class="room-exit" id="roomExit" type="button" aria-label="書斎を閉じる" title="書斎を閉じる">×</button></div>
    </div>
-   <div class="study-window little-planet-scene" aria-hidden="true">
-    <svg class="room-landscape planet-landscape" viewBox="0 0 1000 700" preserveAspectRatio="xMidYMid slice" role="presentation">
-     <defs>
-      <linearGradient id="planetSpace" x1="0" y1="0" x2=".2" y2="1"><stop stop-color="#101b3d"/><stop offset=".48" stop-color="#27365e"/><stop offset="1" stop-color="#796b83"/></linearGradient>
-      <radialGradient id="planetNebula"><stop stop-color="#e5b9c0" stop-opacity=".35"/><stop offset=".55" stop-color="#8d9bc5" stop-opacity=".12"/><stop offset="1" stop-color="#7b8db5" stop-opacity="0"/></radialGradient>
-      <radialGradient id="planetGlow"><stop stop-color="#fff4d7" stop-opacity=".95"/><stop offset=".22" stop-color="#f5d9b5" stop-opacity=".35"/><stop offset="1" stop-color="#f5d9b5" stop-opacity="0"/></radialGradient>
-      <linearGradient id="littleWorld" x1=".15" y1="0" x2=".8" y2="1"><stop stop-color="#e6c9a4"/><stop offset=".45" stop-color="#bd9b91"/><stop offset="1" stop-color="#725f78"/></linearGradient>
-      <linearGradient id="worldNight" x1="0" y1="0" x2="1" y2=".2"><stop stop-color="#354568" stop-opacity="0"/><stop offset="1" stop-color="#1c274b" stop-opacity=".88"/></linearGradient>
-      <linearGradient id="planetRing" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f5dfc0" stop-opacity=".08"/><stop offset=".48" stop-color="#f4d8b4" stop-opacity=".78"/><stop offset=".6" stop-color="#a9a3c3" stop-opacity=".35"/><stop offset="1" stop-color="#f8e4c7" stop-opacity=".08"/></linearGradient>
-      <clipPath id="worldClip"><circle cx="555" cy="620" r="315"/></clipPath>
-     </defs>
-     <rect width="1000" height="700" fill="url(#planetSpace)"/>
-     <ellipse cx="260" cy="230" rx="360" ry="260" fill="url(#planetNebula)" class="nebula-cloud nebula-one"/>
-     <ellipse cx="820" cy="330" rx="330" ry="250" fill="url(#planetNebula)" class="nebula-cloud nebula-two"/>
-     <g class="starfield" fill="#fff3d9">
-      <circle cx="70" cy="92" r="2.4"/><circle cx="142" cy="182" r="1.7"/><circle cx="230" cy="72" r="2"/><circle cx="320" cy="155" r="1.5"/><circle cx="405" cy="60" r="2.2"/><circle cx="510" cy="125" r="1.5"/><circle cx="620" cy="70" r="2.5"/><circle cx="730" cy="150" r="1.7"/><circle cx="840" cy="72" r="2.1"/><circle cx="930" cy="188" r="1.6"/>
-      <circle cx="85" cy="330" r="1.5"/><circle cx="190" cy="285" r="2.3"/><circle cx="285" cy="370" r="1.4"/><circle cx="390" cy="280" r="2"/><circle cx="710" cy="280" r="1.8"/><circle cx="830" cy="360" r="2.4"/><circle cx="945" cy="430" r="1.6"/><circle cx="130" cy="470" r="2"/>
-     </g>
-     <g class="star-crosses" stroke="#fff0d0" stroke-linecap="round" opacity=".8"><path d="M170 105v14m-7-7h14 M770 90v18m-9-9h18 M905 280v12m-6-6h12 M350 225v10m-5-5h10" stroke-width="1.5"/></g>
-     <circle class="far-planet far-planet-one" cx="170" cy="365" r="43" fill="#c5a7b2"/>
-     <path d="M132 355q38-27 75-2" fill="none" stroke="#f2d8c7" stroke-opacity=".55" stroke-width="5"/>
-     <circle class="far-planet far-planet-two" cx="820" cy="235" r="23" fill="#d7c5a9"/>
-     <ellipse cx="820" cy="235" rx="42" ry="10" fill="none" stroke="#d9c5bb" stroke-width="4" opacity=".65" transform="rotate(-18 820 235)"/>
-     <circle cx="690" cy="120" r="82" fill="url(#planetGlow)" class="distant-sun-glow"/>
-     <circle cx="690" cy="120" r="15" fill="#fff0d2" class="distant-sun"/>
-     <g class="comet-trail"><path d="M930 105q-58 16-95 66" fill="none" stroke="#f5dfcf" stroke-opacity=".65" stroke-width="2"/><circle cx="930" cy="105" r="4" fill="#fff5dc"/></g>
-     <ellipse class="world-ring-back" cx="555" cy="610" rx="380" ry="88" fill="none" stroke="url(#planetRing)" stroke-width="24" transform="rotate(-12 555 610)"/>
-     <circle cx="555" cy="620" r="315" fill="url(#littleWorld)"/>
-     <g clip-path="url(#worldClip)">
-      <path d="M220 490q90-95 190-34t180-5q95-42 280 55v280H220Z" fill="#d6b99c" opacity=".56"/>
-      <path d="M220 560q130-92 250-30t220-14q85-22 190 28v230H220Z" fill="#9e9a91"/>
-      <path d="M220 625q120-74 235-18t240-24q100-24 190 24v180H220Z" fill="#6e7e7e"/>
-      <path d="M260 690q130-54 230-6t220-28q90-20 170 12v120H260Z" fill="#485f69"/>
-      <path d="M290 515q115-42 185 2t145-5" fill="none" stroke="#f3dfc0" stroke-opacity=".52" stroke-width="7"/>
-      <path d="M310 595q95-36 170 0t165-12" fill="none" stroke="#e8c9aa" stroke-opacity=".4" stroke-width="5"/>
-      <g class="little-world-home">
-       <path d="M440 492l34-32 38 32v43h-72z" fill="#806b72"/><path d="M432 493l42-39 45 39" fill="none" stroke="#f1d9bb" stroke-width="6" stroke-linejoin="round"/><rect x="466" y="507" width="15" height="28" rx="7" fill="#f6dcae"/><rect x="490" y="503" width="11" height="12" rx="2" fill="#f7e5c5"/>
-       <path d="M510 531q30-25 58-8" fill="none" stroke="#dfc8ad" stroke-width="3" opacity=".65"/>
-      </g>
-      <g class="solitary-tree">
-       <path d="M650 490q-5-45 2-92" fill="none" stroke="#564d50" stroke-width="9" stroke-linecap="round"/>
-       <path d="M652 440l-27-27m27 12l28-34m-28 53l-20-9" fill="none" stroke="#564d50" stroke-width="5" stroke-linecap="round"/>
-       <g fill="#788b79" stroke="#b5b99c" stroke-width="2"><ellipse cx="621" cy="402" rx="20" ry="10" transform="rotate(24 621 402)"/><ellipse cx="682" cy="407" rx="23" ry="11" transform="rotate(-32 682 407)"/><ellipse cx="649" cy="382" rx="21" ry="12" transform="rotate(-8 649 382)"/></g>
-      </g>
-      <g class="tiny-flower"><path d="M745 535v-30" stroke="#526454" stroke-width="3"/><g fill="#e9c5c8"><ellipse cx="745" cy="498" rx="8" ry="13"/><ellipse cx="733" cy="507" rx="8" ry="12" transform="rotate(-55 733 507)"/><ellipse cx="757" cy="507" rx="8" ry="12" transform="rotate(55 757 507)"/></g><circle cx="745" cy="506" r="5" fill="#f6e1ad"/></g>
-      <path d="M240 540q80-30 120-5m-95 30q60-18 105-2m310 70q90-24 140-4" fill="none" stroke="#f4d8b9" stroke-opacity=".32" stroke-width="4"/>
-      <g class="world-fireflies" fill="#fff0c8"><circle cx="380" cy="560" r="3"/><circle cx="590" cy="535" r="2.5"/><circle cx="710" cy="600" r="3"/></g>
-      <rect x="240" y="310" width="630" height="520" fill="url(#worldNight)"/>
-     </g>
-     <ellipse class="world-ring-front" cx="555" cy="610" rx="380" ry="88" fill="none" stroke="url(#planetRing)" stroke-width="24" transform="rotate(-12 555 610)"/>
-     <g class="orbiting-dust" fill="#f8e9cf"><circle cx="245" cy="250" r="3"/><circle cx="275" cy="265" r="1.8"/><circle cx="755" cy="420" r="2.2"/><circle cx="790" cy="445" r="1.5"/></g>
-    </svg>
+   <div class="study-window sanctuary-window" aria-hidden="true">
+    <svg class="room-landscape sanctuary-landscape" viewBox="0 0 1200 820" preserveAspectRatio="xMidYMid slice" role="presentation">
+ <defs>
+  <linearGradient id="sanctuarySky" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#172d4b"/><stop offset=".48" stop-color="#536d82"/><stop offset="1" stop-color="#d0aeb0"/></linearGradient>
+  <radialGradient id="sanctuaryMoon"><stop stop-color="#fff6df"/><stop offset=".38" stop-color="#f8e6d0" stop-opacity=".82"/><stop offset="1" stop-color="#f7d9cf" stop-opacity="0"/></radialGradient>
+  <linearGradient id="sanctuaryWater" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#829aa6"/><stop offset=".45" stop-color="#425f73"/><stop offset="1" stop-color="#23394f"/></linearGradient>
+  <linearGradient id="sanctuaryHill" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#7e9a91"/><stop offset="1" stop-color="#334d54"/></linearGradient>
+  <linearGradient id="sanctuaryGlass" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#e5e8d8" stop-opacity=".72"/><stop offset=".5" stop-color="#9fc5c4" stop-opacity=".2"/><stop offset="1" stop-color="#f4d8c2" stop-opacity=".52"/></linearGradient>
+  <radialGradient id="sanctuaryAurora"><stop stop-color="#a9d5d0" stop-opacity=".34"/><stop offset="1" stop-color="#a9d5d0" stop-opacity="0"/></radialGradient>
+  <linearGradient id="sanctuaryMist" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#d9d9d2" stop-opacity="0"/><stop offset=".5" stop-color="#e7d7d0" stop-opacity=".52"/><stop offset="1" stop-color="#d9d9d2" stop-opacity="0"/></linearGradient>
+  <clipPath id="sanctuaryWaterClip"><path d="M0 525 Q230 490 420 530 T820 520 T1200 530 V820 H0Z"/></clipPath>
+  <filter id="sanctuaryBlur"><feGaussianBlur stdDeviation="22"/></filter>
+ </defs>
+ <rect width="1200" height="820" fill="url(#sanctuarySky)"/>
+ <ellipse class="sanctuary-aurora aurora-one" cx="300" cy="160" rx="430" ry="170" fill="url(#sanctuaryAurora)" filter="url(#sanctuaryBlur)"/>
+ <ellipse class="sanctuary-aurora aurora-two" cx="980" cy="230" rx="360" ry="150" fill="url(#sanctuaryAurora)" filter="url(#sanctuaryBlur)"/>
+ <g class="sanctuary-stars" fill="#fff4dc">
+  <circle cx="76" cy="102" r="2"/><circle cx="145" cy="198" r="1.4"/><circle cx="230" cy="76" r="1.8"/><circle cx="315" cy="148" r="1.3"/><circle cx="390" cy="65" r="2.1"/><circle cx="490" cy="120" r="1.2"/><circle cx="590" cy="62" r="1.8"/><circle cx="735" cy="105" r="1.4"/><circle cx="860" cy="76" r="2"/><circle cx="1010" cy="152" r="1.4"/><circle cx="1120" cy="92" r="2"/>
+  <circle cx="104" cy="320" r="1.3"/><circle cx="260" cy="275" r="1.7"/><circle cx="470" cy="250" r="1.3"/><circle cx="690" cy="210" r="1.5"/><circle cx="920" cy="300" r="1.6"/><circle cx="1100" cy="350" r="1.2"/>
+ </g>
+ <g class="sanctuary-constellation" fill="none" stroke="#f4e5d4" stroke-opacity=".34" stroke-width="1.2"><path d="M145 198L230 76 315 148 390 65 M735 105L860 76 1010 152 1120 92"/><circle cx="230" cy="76" r="4"/><circle cx="860" cy="76" r="4"/></g>
+ <circle class="sanctuary-moon-halo" cx="830" cy="190" r="150" fill="url(#sanctuaryMoon)"/>
+ <circle class="sanctuary-moon" cx="830" cy="190" r="48" fill="#f5e8d4"/>
+ <path d="M810 160q-24 28-3 58q21 28 53 10q-35 15-53-12q-17-28 3-56Z" fill="#d4d0c7" opacity=".42"/>
+ <g class="sanctuary-clouds cloud-layer-far" fill="#d7d5d0" opacity=".28">
+  <path d="M-80 390q70-45 150-10q50-75 140-25q70-65 150-8q75-28 135 40q-80 40-180 30H-80Z"/>
+  <path d="M720 375q70-55 145-15q55-72 130-25q75-55 140 5q70-5 115 48H720Z"/>
+ </g>
+ <g class="sanctuary-ridges">
+  <path d="M-40 500L130 380l100 75 150-180 145 190 115-105 130 125 140-170 180 185 150-105 100 80v250H-40Z" fill="#536c78" opacity=".48"/>
+  <path d="M-40 535L150 430l120 72 150-135 150 152 145-90 140 110 150-135 170 118 110-75v240H-40Z" fill="#3d5b67" opacity=".68"/>
+ </g>
+ <path class="sanctuary-cloudbank cloudbank-back" d="M-80 515q110-75 220-20q95-100 205-18q105-75 210-10q115-95 235-8q100-75 210-8q120-80 260 10v160H-80Z" fill="#d6d4d0" opacity=".48"/>
+ <path class="sanctuary-cloudbank cloudbank-front" d="M-80 560q100-75 200-8q95-65 190-5q110-90 230-10q115-75 220-2q100-65 200 0q115-70 220 0v125H-80Z" fill="#e6d8d0" opacity=".42"/>
+ <g class="sanctuary-island">
+  <path d="M255 490q145-100 280-35q145-90 275-15q100-58 180 25q-35 100-145 145q-150 70-330 38q-180-25-260-158Z" fill="#314b51"/>
+  <path d="M280 477q135-85 255-24q130-85 252-13q95-50 170 24q-95 40-175 22q-150-38-255 10q-130 55-247-19Z" fill="url(#sanctuaryHill)"/>
+  <path d="M350 480q95-48 178-10t190-5q80-20 145 8" fill="none" stroke="#b8c6ae" stroke-opacity=".48" stroke-width="7" stroke-linecap="round"/>
+  <g class="sanctuary-glasshouse">
+   <path d="M490 440q0-92 85-125q85 33 85 125Z" fill="url(#sanctuaryGlass)" stroke="#d7dfd0" stroke-opacity=".78" stroke-width="4"/>
+   <path d="M575 316v124M510 394h130M529 350q46 38 92 0M525 421h100" fill="none" stroke="#d9e4d9" stroke-opacity=".58" stroke-width="3"/>
+   <path d="M575 440v-88" stroke="#e9e4d1" stroke-opacity=".48" stroke-width="2"/>
+   <circle cx="575" cy="380" r="9" fill="#f5d8a8" opacity=".8"/>
+  </g>
+  <g class="sanctuary-tree tree-left" fill="#344f4b" stroke="#8fa58e" stroke-opacity=".4" stroke-width="2">
+   <path d="M390 470q8-82 4-125" fill="none" stroke="#4b5147" stroke-width="9"/><path d="M394 380l-42-38m43 20l40-42m-40 73l-32-12" fill="none" stroke="#4b5147" stroke-width="5"/>
+   <ellipse cx="349" cy="333" rx="34" ry="18" transform="rotate(25 349 333)"/><ellipse cx="439" cy="342" rx="37" ry="19" transform="rotate(-28 439 342)"/><ellipse cx="397" cy="310" rx="38" ry="22"/>
+  </g>
+  <g class="sanctuary-tree tree-right" fill="#3c5c50" stroke="#9eae91" stroke-opacity=".38" stroke-width="2">
+   <path d="M735 470q-3-76 8-124" fill="none" stroke="#4b5147" stroke-width="8"/><ellipse cx="704" cy="346" rx="34" ry="18" transform="rotate(25 704 346)"/><ellipse cx="764" cy="337" rx="39" ry="21" transform="rotate(-22 764 337)"/><ellipse cx="744" cy="310" rx="36" ry="20"/>
+  </g>
+  <g class="sanctuary-lanterns"><circle cx="470" cy="455" r="5" fill="#f7dcae"/><circle cx="690" cy="447" r="4" fill="#f7dcae"/><circle cx="805" cy="470" r="3" fill="#f7dcae"/></g>
+  <path d="M310 510q110 28 210 0t230 0q95 22 160-3" fill="none" stroke="#e4d8bf" stroke-opacity=".3" stroke-width="3"/>
+ </g>
+ <path class="sanctuary-water" d="M0 525Q230 490 420 530T820 520T1200 530V820H0Z" fill="url(#sanctuaryWater)"/>
+ <g clip-path="url(#sanctuaryWaterClip)" class="sanctuary-reflections">
+  <path d="M480 540q100 12 190 0t180 5" fill="none" stroke="#f3d9bb" stroke-opacity=".35" stroke-width="10"/>
+  <path d="M510 590q90 10 170 0t170 4M430 650q130 12 250 0t220 3M300 710q120 9 220 0t210 3" fill="none" stroke="#d4d9d1" stroke-opacity=".22" stroke-width="4"/>
+  <path d="M0 555q150 12 290 0t260 0" fill="none" stroke="#b9d3d4" stroke-opacity=".18" stroke-width="3"/>
+  <g class="sanctuary-water-glints" fill="#f5e7d0"><ellipse cx="750" cy="580" rx="20" ry="2"/><ellipse cx="830" cy="635" rx="13" ry="1.5"/><ellipse cx="610" cy="690" rx="18" ry="2"/><ellipse cx="950" cy="730" rx="22" ry="1.5"/></g>
+ </g>
+ <path class="sanctuary-mist" d="M-50 555q190-35 360 0t360 0t360 0t250 0" fill="none" stroke="url(#sanctuaryMist)" stroke-width="32" stroke-linecap="round"/>
+ <g class="sanctuary-fireflies" fill="#fff0c8"><circle cx="280" cy="440" r="3"/><circle cx="445" cy="390" r="2.4"/><circle cx="690" cy="410" r="2.8"/><circle cx="855" cy="455" r="2"/><circle cx="930" cy="370" r="2.3"/></g>
+ <g class="sanctuary-birds" fill="none" stroke="#f0e7d9" stroke-width="2" stroke-linecap="round" opacity=".56"><path d="M170 350q12-13 24 0q12-13 24 0"/><path d="M250 315q9-10 18 0q9-10 18 0"/><path d="M1010 410q10-11 20 0q10-11 20 0"/></g>
+</svg>
    </div>
    <svg class="cosmic-motion" viewBox="0 0 1000 700" preserveAspectRatio="none" aria-hidden="true">
     <defs>
