@@ -1,0 +1,109 @@
+/* Quiet Sanctuary — a complete, slower visual language for the Study Room preview. */
+.study-room-panel{padding:5px 7px 12px;background:transparent;border:0}
+.sanctuary-view{
+ --sky1:#172d4b;--sky2:#d0aeb0;
+ position:relative;isolation:isolate;min-height:clamp(520px,76svh,760px);
+ overflow:hidden;border-radius:26px;padding:calc(env(safe-area-inset-top,0px) + 18px) 17px 18px;
+ color:#f5eee4;
+ background:
+  radial-gradient(ellipse at 52% 78%,rgba(152,179,173,.13),transparent 44%),
+  radial-gradient(ellipse at 50% 0%,rgba(202,190,190,.12),transparent 55%),
+  linear-gradient(160deg,#152941 0%,#344e66 42%,#7f8790 72%,#b18f91 100%);
+ border:1px solid rgba(238,224,207,.3);
+ box-shadow:inset 0 0 0 1px rgba(255,255,255,.06),inset 0 -40px 90px rgba(12,28,42,.28),0 24px 60px rgba(0,0,0,.38);
+}
+.sanctuary-view:before{content:"";position:absolute;inset:0;z-index:0;pointer-events:none;background:radial-gradient(ellipse at 50% 44%,transparent 20%,rgba(9,24,40,.08) 68%,rgba(7,17,31,.38) 100%),linear-gradient(180deg,rgba(9,24,42,.2),transparent 28% 72%,rgba(10,25,39,.24))}
+.sanctuary-view:after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;opacity:.18;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.18'/%3E%3C/svg%3E");mix-blend-mode:soft-light}
+.sanctuary-view .study-room-top,.sanctuary-view .study-room-bottom{z-index:12;position:relative}
+.sanctuary-view .study-room-kicker{font-size:9px;letter-spacing:.24em;color:rgba(247,238,223,.7)}
+.sanctuary-view .study-room-title{font-size:clamp(19px,5vw,25px);font-weight:400;letter-spacing:.14em;text-shadow:0 3px 18px rgba(12,25,40,.42)}
+.sanctuary-view .study-room-return{font-size:10px;color:rgba(247,238,223,.68);letter-spacing:.04em}
+.sanctuary-view .study-room-season,.sanctuary-view .study-room-foot{color:rgba(247,238,223,.68);font-size:9px;letter-spacing:.13em}
+.sanctuary-view .study-room-clock{font-weight:300;font-size:clamp(27px,7vw,39px);letter-spacing:.07em;text-shadow:0 2px 24px rgba(255,231,210,.22)}
+.sanctuary-view .study-room-date{color:rgba(247,238,223,.7)}
+.sanctuary-window{
+ position:absolute!important;inset:15% 3% 25%!important;z-index:2;overflow:hidden;
+ border:1px solid rgba(239,229,211,.3)!important;border-radius:47% 47% 18px 18px/13% 13% 18px 18px!important;
+ background:linear-gradient(180deg,#172d4b,#c0a1a5)!important;
+ box-shadow:0 0 0 5px rgba(223,205,177,.09),0 0 0 10px rgba(24,42,58,.24),inset 0 0 40px rgba(255,232,211,.13),0 22px 45px rgba(0,0,0,.3)!important;
+}
+.sanctuary-window:before{content:"";position:absolute;inset:0;z-index:3;pointer-events:none;background:linear-gradient(110deg,rgba(255,255,255,.12),transparent 24% 76%,rgba(255,255,255,.06));border-radius:inherit}
+.sanctuary-window:after{content:"";position:absolute;inset:0;z-index:4;pointer-events:none;border-radius:inherit;box-shadow:inset 0 0 35px rgba(18,34,50,.18)}
+.sanctuary-landscape{position:absolute;inset:0;width:100%;height:100%;z-index:1;filter:saturate(.82) contrast(.96)}
+.sanctuary-aurora{transform-box:fill-box;transform-origin:center;animation:sanctuary-aurora 38s ease-in-out infinite alternate}
+.aurora-two{animation-delay:-19s;animation-duration:46s}
+.sanctuary-moon-halo{transform-box:fill-box;transform-origin:center;animation:sanctuary-moon-glow 15s ease-in-out infinite alternate}
+.sanctuary-clouds{transform-box:fill-box;will-change:transform}
+.cloud-layer-far{animation:sanctuary-cloud-drift 74s ease-in-out infinite alternate}
+.sanctuary-cloudbank{transform-box:fill-box;will-change:transform}
+.cloudbank-back{animation:sanctuary-cloud-drift 56s ease-in-out infinite alternate-reverse}
+.cloudbank-front{animation:sanctuary-cloud-drift 82s ease-in-out infinite alternate}
+.sanctuary-island{transform-box:fill-box;transform-origin:center;animation:sanctuary-island-float 18s ease-in-out infinite alternate}
+.sanctuary-tree{transform-box:fill-box;transform-origin:bottom;animation:sanctuary-tree-breath 13s ease-in-out infinite alternate}
+.tree-right{animation-delay:-6s;animation-duration:16s}
+.sanctuary-glasshouse{transform-box:fill-box;transform-origin:center;animation:sanctuary-glass-breathe 12s ease-in-out infinite alternate}
+.sanctuary-water{opacity:.95}
+.sanctuary-reflections{transform-box:fill-box;animation:sanctuary-water 13s ease-in-out infinite alternate}
+.sanctuary-mist{animation:sanctuary-mist 34s ease-in-out infinite alternate}
+.sanctuary-water-glints ellipse{animation:sanctuary-glint 9s ease-in-out infinite alternate}
+.sanctuary-water-glints ellipse:nth-child(2n){animation-delay:-4s;animation-duration:12s}
+.sanctuary-fireflies circle{transform-box:fill-box;transform-origin:center;animation:sanctuary-firefly 8s ease-in-out infinite alternate}
+.sanctuary-fireflies circle:nth-child(2n){animation-delay:-3s;animation-duration:11s}
+.sanctuary-fireflies circle:nth-child(3n){animation-delay:-6s;animation-duration:9s}
+.sanctuary-birds{transform-box:fill-box;animation:sanctuary-bird 38s ease-in-out infinite alternate}
+.sanctuary-lanterns circle{filter:drop-shadow(0 0 8px rgba(255,225,169,.75));animation:sanctuary-lantern 6s ease-in-out infinite alternate}
+.sanctuary-lanterns circle:nth-child(2){animation-delay:-2s}.sanctuary-lanterns circle:nth-child(3){animation-delay:-4s}
+.sanctuary-view .room-chill-toggle,.sanctuary-view .room-text-toggle,.sanctuary-view .room-exit,.sanctuary-view .study-room-weather{border:1px solid rgba(245,231,210,.25);background:rgba(20,35,51,.28);color:#f7eee2;backdrop-filter:blur(12px);box-shadow:inset 0 1px rgba(255,255,255,.08)}
+.sanctuary-view .room-chill-toggle[aria-pressed="true"]{background:rgba(196,177,196,.25);border-color:rgba(241,223,231,.48)}
+.sanctuary-view .study-room-bottom{margin-top:auto}
+.sanctuary-view .study-room-note{position:relative;z-index:12;max-width:92%;margin:8px auto 0;padding:8px 13px;border:1px solid rgba(244,230,210,.12);border-radius:999px;background:rgba(18,34,49,.28);backdrop-filter:blur(10px);color:rgba(249,239,224,.78);font-size:10px;letter-spacing:.04em}
+.sanctuary-view .room-window-shelf{z-index:13;left:auto;right:7%;bottom:15%;width:64px;height:8px;background:linear-gradient(180deg,#c7b18e,#6b6258);box-shadow:0 4px 16px rgba(0,0,0,.3)}
+.sanctuary-view .room-hourglass-shelf{right:0!important;top:-84px!important;transform:scale(.66)!important}
+.sanctuary-view.chill-mode{filter:saturate(.84)}
+.sanctuary-view.chill-mode .sanctuary-cloudbank{animation-duration:110s}
+.sanctuary-view.chill-mode .cloud-layer-far{animation-duration:100s}
+.sanctuary-view.chill-mode .sanctuary-island{animation-duration:28s}
+.sanctuary-view.chill-mode .sanctuary-aurora{animation-duration:70s}
+.sanctuary-view.chill-mode .sanctuary-fireflies circle{animation-duration:16s}
+.sanctuary-view.chill-mode .sanctuary-mist{animation-duration:65s}
+.sanctuary-view.chill-mode .sanctuary-water-glints ellipse{animation-duration:18s}
+.sanctuary-view.chill-mode .sanctuary-birds{animation-duration:60s}
+.sanctuary-view.chill-mode:before{background:radial-gradient(ellipse at 50% 44%,transparent 18%,rgba(10,24,40,.12) 72%,rgba(7,17,31,.42) 100%),linear-gradient(180deg,rgba(9,24,42,.32),transparent 28% 72%,rgba(10,25,39,.3))}
+.sanctuary-view.chill-mode .chill-mode-note{background:rgba(15,29,45,.48);border-color:rgba(231,220,220,.2);box-shadow:0 6px 30px rgba(9,19,31,.18)}
+.sanctuary-view.weather-rain .sanctuary-landscape{filter:saturate(.58) brightness(.82)}
+.sanctuary-view.weather-fog .sanctuary-landscape{filter:saturate(.48) brightness(1.08)}
+.sanctuary-view.weather-snow .sanctuary-landscape{filter:saturate(.52) brightness(1.14)}
+.sanctuary-view.weather-night .sanctuary-moon{opacity:1}
+.sanctuary-view.weather-storm .sanctuary-landscape{filter:saturate(.48) brightness(.72)}
+.sanctuary-view.room-quiet-text .study-room-return,.sanctuary-view.room-quiet-text .study-room-title{display:none}
+@keyframes sanctuary-aurora{from{translate:-12px 4px;scale:.96;opacity:.65}to{translate:20px -7px;scale:1.06;opacity:1}}
+@keyframes sanctuary-moon-glow{from{opacity:.68;scale:.96}to{opacity:1;scale:1.04}}
+@keyframes sanctuary-cloud-drift{from{translate:-12px 3px}to{translate:22px -5px}}
+@keyframes sanctuary-island-float{from{translate:0 2px}to{translate:0 -7px}}
+@keyframes sanctuary-tree-breath{from{rotate:-1deg}to{rotate:1deg}}
+@keyframes sanctuary-glass-breathe{from{opacity:.78;filter:brightness(.94)}to{opacity:1;filter:brightness(1.12)}}
+@keyframes sanctuary-water{from{translate:-4px 0;opacity:.78}to{translate:6px -2px;opacity:1}}
+@keyframes sanctuary-mist{from{translate:-18px 0;opacity:.4}to{translate:24px -5px;opacity:.8}}
+@keyframes sanctuary-glint{from{opacity:.2;scale:.8}to{opacity:.85;scale:1.1}}
+@keyframes sanctuary-firefly{from{opacity:.22;scale:.65;translate:-3px 2px}to{opacity:1;scale:1.15;translate:5px -9px}}
+@keyframes sanctuary-bird{from{translate:-7px 3px}to{translate:14px -5px}}
+@keyframes sanctuary-lantern{from{opacity:.42}to{opacity:.95}}
+@media(max-width:520px){
+ .study-room-panel{padding:3px 4px 10px}
+ .sanctuary-view{min-height:clamp(510px,74svh,690px);padding:calc(env(safe-area-inset-top,0px) + 15px) 12px 15px;border-radius:21px}
+ .sanctuary-window{inset:17% 1.5% 27%!important;border-radius:47% 47% 14px 14px/12% 12% 14px 14px!important}
+ .sanctuary-view .study-room-top{gap:6px}
+ .sanctuary-view .study-room-top-actions{gap:4px}
+ .sanctuary-view .study-room-return{max-width:48vw;font-size:9px}
+ .sanctuary-view .study-room-season{font-size:8px}
+ .sanctuary-view .room-window-shelf{right:5%;bottom:15%}
+ .sanctuary-view .study-room-note{font-size:9px;padding:7px 10px}
+}
+@media(orientation:landscape){
+ body.study-room-fullscreen .sanctuary-view{min-height:100dvh;padding:clamp(12px,2.2vw,26px)}
+ body.study-room-fullscreen .sanctuary-window{inset:11% 13% 21%!important}
+ body.study-room-fullscreen .sanctuary-view .room-window-shelf{right:13%;bottom:12%}
+}
+@media(prefers-reduced-motion:reduce){
+ .sanctuary-aurora,.sanctuary-moon-halo,.sanctuary-clouds,.sanctuary-cloudbank,.sanctuary-island,.sanctuary-tree,.sanctuary-glasshouse,.sanctuary-reflections,.sanctuary-mist,.sanctuary-water-glints ellipse,.sanctuary-fireflies circle,.sanctuary-birds,.sanctuary-lanterns circle{animation:none!important;transition:none!important}
+}
