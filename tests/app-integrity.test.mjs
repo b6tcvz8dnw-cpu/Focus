@@ -2699,3 +2699,31 @@ test("older backups remain valid when they do not contain stillness letters", ()
   assert.equal(result.valid, true);
   assert.equal(result.data.stillnessNotes, null);
 });
+
+
+test("quiet-time phases add a locally generated water layer and a true silence preset", async () => {
+  const html = await read("../index.html");
+  const sound = await read("../src/features/ambient-sound.js");
+  const script = await read("../src/main.js");
+  assert.ok(html.includes('data-sound-preset="shore"'));
+  assert.ok(html.includes('data-sound-preset="off">静寂'));
+  assert.ok(html.includes('data-sound="water"'));
+  assert.ok(sound.includes("shore: ['water', 'wind']"));
+  assert.ok(sound.includes("kind === 'water'"));
+  assert.ok(script.includes("focus-sound-master-volume"));
+  assert.ok(script.includes("water:18"));
+});
+
+test("quiet interface and reflective history preserve existing editing controls", async () => {
+  const html = await read("../index.html");
+  const views = await read("../src/views/study-views.js");
+  const css = await read("../src/styles/quiet-interface.css");
+  const mainCss = await read("../src/styles/main.css");
+  assert.ok(html.includes("過ごした時間の断片"));
+  assert.ok(html.includes("成果の点数ではなく"));
+  assert.ok(mainCss.includes("quiet-interface.css"));
+  assert.ok(css.includes(".history-reflection"));
+  assert.ok(views.includes('class="history-reflection"'));
+  assert.ok(views.includes('data-record-edit='));
+  assert.ok(views.includes('data-record-delete='));
+});

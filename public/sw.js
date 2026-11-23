@@ -1,4 +1,4 @@
-const CACHE='focus-pwa-v53';
+const CACHE='focus-pwa-v54';
 const CACHE_PREFIX='focus-pwa-';
 const BUILD_ASSETS = [];
 const FILES=['./','./index.html','./manifest.webmanifest','./icon.svg','./icon-192.png','./icon-512.png','./icons/icon-cyber-clock.svg','./icons/icon-planet.png','./icons/icon-hourglass.png','./icons/icon-window.png','./icons/icon-comet.png',...BUILD_ASSETS];

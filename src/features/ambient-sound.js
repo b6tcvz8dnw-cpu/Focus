@@ -18,6 +18,7 @@ export function createAmbientSoundController({
   const presets = {
     rainy: ['rain', 'noise'],
     breeze: ['wind'],
+    shore: ['water', 'wind'],
     quiet: ['noise'],
     off: []
   };
@@ -55,7 +56,7 @@ export function createAmbientSoundController({
     updatePresetButtons();
   }
   function setLayer(kind, enabled) {
-    if (!['rain', 'wind', 'noise'].includes(kind)) return false;
+    if (!['rain', 'wind', 'water', 'noise'].includes(kind)) return false;
     if (enabled && layers.has(kind)) return true;
     if (!enabled && layers.has(kind)) {
       safeFadeAndStop(layers.get(kind));
@@ -87,14 +88,18 @@ export function createAmbientSoundController({
           last = 0.985 * last + 0.015 * white;
           data[i] = last * 3;
         } else if (kind === 'rain') data[i] = white * 0.34;
-        else data[i] = white * 0.16;
+        else if (kind === 'water') {
+          // Soft, slowly changing filtered noise suggests distant water without sharp transients.
+          last = 0.94 * last + 0.06 * white;
+          data[i] = last * 2.4;
+        } else data[i] = white * 0.16;
       }
       const source = context.createBufferSource();
       source.buffer = buffer;
       source.loop = true;
       const filter = context.createBiquadFilter();
-      filter.type = kind === 'rain' ? 'lowpass' : kind === 'wind' ? 'lowpass' : 'bandpass';
-      filter.frequency.value = kind === 'rain' ? 1100 : kind === 'wind' ? 380 : 520;
+      filter.type = kind === 'rain' || kind === 'water' || kind === 'wind' ? 'lowpass' : 'bandpass';
+      filter.frequency.value = kind === 'rain' ? 1100 : kind === 'wind' ? 380 : kind === 'water' ? 760 : 520;
       const gain = context.createGain();
       gain.gain.value = volumeFor(kind);
       source.connect(filter);
@@ -130,7 +135,7 @@ export function createAmbientSoundController({
     }
   }
   function setLayerVolume(kind, volume) {
-    if (!['rain', 'wind', 'noise'].includes(kind)) return false;
+    if (!['rain', 'wind', 'water', 'noise'].includes(kind)) return false;
     layerVolumes[kind] = clampVolume(volume);
     const layer = layers.get(kind);
     if (layer && context) {
