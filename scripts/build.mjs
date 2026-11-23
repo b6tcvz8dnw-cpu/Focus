@@ -31,6 +31,7 @@ const staticPwaAssets = [
   "./icon.svg",
   "./icon-192.png",
   "./icon-512.png",
+  "./icons/icon-cyber-clock.svg",
   "./icons/icon-planet.png",
   "./icons/icon-hourglass.png",
   "./icons/icon-window.png",
@@ -50,10 +51,10 @@ const html = await readFile(join(dist, "index.html"), "utf8");
 if (!/src=["']\.\/assets\/[^"']+\.js["']/.test(html)) {
   throw new Error("Built application entry module was not found in dist/index.html.");
 }
-for (const url of ["./manifest.webmanifest", "./icons/icon-planet.png"]) {
+for (const url of ["./manifest.webmanifest"]) {
   if (!html.includes(url)) throw new Error(`Built HTML is missing relative PWA URL ${url}.`);
 }
-if (!/rel=["']apple-touch-icon["'] href=["']\.\/[^"']+["']/.test(html)) {
+if (!html.includes("icon-cyber-clock") || !/rel=["']apple-touch-icon["'] href=["']\.\/[^"']+["']/.test(html)) {
   throw new Error("Built HTML is missing a relative Apple touch icon URL.");
 }
 if (/\b(?:src|href)=["']\/(?:manifest|icon)/.test(html)) {

@@ -277,7 +277,7 @@ test("production service worker caches only successful responses and waits for c
   const cacheName = sw.match(/const CACHE='([^']+)'/)?.[1];
   assert.equal(cacheName, "focus-pwa-v43");
   for (const asset of [
-    "./index.html", "./manifest.webmanifest", "./icon.svg", "./icon-192.png", "./icon-512.png", "./icons/icon-planet.png", "./icons/icon-hourglass.png", "./icons/icon-window.png", "./icons/icon-comet.png"
+    "./index.html", "./manifest.webmanifest", "./icon.svg", "./icon-192.png", "./icon-512.png", "./icons/icon-cyber-clock.svg", "./icons/icon-planet.png", "./icons/icon-hourglass.png", "./icons/icon-window.png", "./icons/icon-comet.png"
   ]) {
     assert.ok(sw.includes(asset), "service worker should cache " + asset);
   }
