@@ -2594,3 +2594,25 @@ test("cumulative sky progress uses lifetime minutes rather than today's history"
   assert.ok(main.includes("const level=getStudySkyLevel(minutes)"));
   assert.ok(!main.includes("getStudySkyLevel(todayMinutes)"));
 });
+
+
+test("sanctuary defaults to a small set of slow ambient animations", async () => {
+  const css = await read("../src/styles/quiet-sanctuary.css");
+  assert.ok(css.includes(".sanctuary-view:after{display:none}"));
+  assert.ok(css.includes(".sanctuary-view .sanctuary-fireflies circle{animation:none!important"));
+  assert.ok(css.includes(".sanctuary-view .sanctuary-aurora{animation-duration:96s}"));
+  assert.ok(css.includes(".sanctuary-view .cloudbank-front{animation-duration:132s}"));
+  assert.ok(css.includes("body.app-document-hidden .sanctuary-view *{animation-play-state:paused!important"));
+  assert.ok(css.includes("backdrop-filter:none"));
+});
+
+test("landscape status polling is minute-based rather than waking the page every second", async () => {
+  const script = await read("../src/main.js");
+  assert.ok(script.includes("setInterval(updateLandscapeStatus,60000)"));
+  assert.ok(!script.includes("setInterval(updateLandscapeStatus,1000)"));
+});
+
+test("battery optimization increments the service-worker cache version", async () => {
+  const sw = await read("../public/sw.js");
+  assert.ok(sw.includes("focus-pwa-v47"));
+});
