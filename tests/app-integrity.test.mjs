@@ -27,7 +27,7 @@ import { mountHourglass } from "../src/features/hourglass.js";
 
 const read = (path) => readFile(new URL(path, import.meta.url), "utf8");
 
-const cssFiles = ["foundation.css", "study-room.css", "app-components.css", "device-layout.css", "study-room-visuals.css", "accessibility.css", "cyber-metal.css", "quiet-sanctuary.css"];
+const cssFiles = ["foundation.css", "study-room.css", "app-components.css", "device-layout.css", "study-room-visuals.css", "accessibility.css", "cyber-metal.css", "quiet-sanctuary.css", "antique-atelier.css"];
 
 const readStyles = async () => (await Promise.all([
   read("../src/styles/foundation.css"),
@@ -37,7 +37,8 @@ const readStyles = async () => (await Promise.all([
   read("../src/styles/study-room-visuals.css"),
   read("../src/styles/accessibility.css"),
   read("../src/styles/cyber-metal.css"),
-  read("../src/styles/quiet-sanctuary.css")
+  read("../src/styles/quiet-sanctuary.css"),
+  read("../src/styles/antique-atelier.css")
 ])).join("\n");
 
 test("main document has a valid Japanese HTML shell", async () => {
