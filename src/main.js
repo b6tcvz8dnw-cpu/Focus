@@ -63,6 +63,42 @@ function updateMiniTimer(){
  $('miniTimerToggle').textContent=running?'Ⅱ 一時停止':'▶ 再開';
  $('miniTimerToggle').setAttribute('aria-label',running?'タイマーを一時停止':'タイマーを再開');
 }
+
+let batteryInfo=null;
+function updateLandscapeBattery(){
+ const target=$('landscapeBattery');
+ if(!target)return;
+ if(!batteryInfo){
+  target.textContent='BATTERY · N/A';
+  target.title='このブラウザでは充電情報を取得できません';
+  target.dataset.charging='unknown';
+  return;
+ }
+ const level=Math.max(0,Math.min(100,Math.round(batteryInfo.level*100)));
+ target.textContent=(batteryInfo.charging?'⚡ ':'')+'BATTERY · '+level+'%';
+ target.title=batteryInfo.charging?'充電中':'バッテリー残量';
+ target.dataset.charging=String(batteryInfo.charging);
+}
+function updateLandscapeStatus(){
+ const panel=$('landscapeSystemStatus');
+ if(!panel)return;
+ const landscape=window.matchMedia?window.matchMedia('(orientation: landscape)').matches:window.innerWidth>window.innerHeight;
+ const visible=document.body.classList.contains('timer-large-mode')&&landscape;
+ panel.hidden=!visible;
+ if(visible){
+  $('landscapeClock').textContent=new Intl.DateTimeFormat('ja-JP',{hour:'2-digit',minute:'2-digit',hour12:false}).format(new Date());
+ }
+}
+if(typeof navigator.getBattery==='function'){
+ navigator.getBattery().then(battery=>{
+  batteryInfo=battery;
+  ['chargingchange','levelchange'].forEach(eventName=>battery.addEventListener(eventName,updateLandscapeBattery));
+  updateLandscapeBattery();
+ }).catch(updateLandscapeBattery);
+}else updateLandscapeBattery();
+const landscapeClockInterval=window.setInterval(updateLandscapeStatus,1000);
+window.addEventListener('resize',updateLandscapeStatus);
+window.addEventListener('orientationchange',updateLandscapeStatus);
 let notificationsEnabled=false;
 const notificationController=createNotificationController({
  root:document,
@@ -80,6 +116,7 @@ function setLargeMode(enabled){
  document.body.classList.toggle('timer-large-mode',enabled);
  $('largeToggle').setAttribute('aria-pressed',String(enabled));
  $('largeToggle').textContent=enabled?'⤢ 通常表示':'⛶ 大画面';
+ updateLandscapeStatus();
  // Lock landscape where the browser supports it; iOS Safari may require manual rotation.
  const orientation=window.screen?.orientation;
  if(enabled&&orientation&&typeof orientation.lock==='function')orientation.lock('landscape').catch(()=>{});
@@ -300,6 +337,10 @@ window.addEventListener('pagehide',event=>{
  // Keep controllers alive when Safari stores this document in the BFCache.
  if(event.persisted||appDisposed)return;
  appDisposed=true;
+ window.clearInterval(landscapeClockInterval);
+ window.removeEventListener('resize',updateLandscapeStatus);
+ window.removeEventListener('orientationchange',updateLandscapeStatus);
+ if(batteryInfo){['chargingchange','levelchange'].forEach(eventName=>batteryInfo.removeEventListener(eventName,updateLandscapeBattery));}
  timerController.destroy();
  hourglass.destroy();
  studyRoom.destroy();
