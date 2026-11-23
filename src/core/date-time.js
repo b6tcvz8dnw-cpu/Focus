@@ -38,12 +38,12 @@ export function buildWeekData(history, now = new Date()) {
   return data;
 }
 
-/** Map today's accumulated focus minutes to the Study Room sky stage. */
+/** Map lifetime accumulated focus minutes to a permanent Study Room sky stage. */
 export function getStudySkyLevel(minutes) {
   const value = Math.max(0, Number(minutes) || 0);
-  if (value >= 180) return 4;
-  if (value >= 120) return 3;
-  if (value >= 60) return 2;
-  if (value >= 30) return 1;
+  if (value >= 3000) return 4;
+  if (value >= 1500) return 3;
+  if (value >= 600) return 2;
+  if (value >= 180) return 1;
   return 0;
 }

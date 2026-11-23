@@ -78,7 +78,7 @@
   <div class="study-room-view little-planet-view season-autumn time-day" id="studyRoomView">
    <div class="study-room-top">
     <div><div class="study-room-kicker">A QUIET PLACE IN THE UNIVERSE</div><div class="study-room-title">星を眺める場所</div><div class="study-room-return" id="studyRoomReturn">ここは、いつでも戻ってこられる場所。</div></div>
-    <div class="study-room-top-actions"><div class="study-room-season" id="studyRoomSeason">秋 · 昼</div><button class="room-text-toggle" id="roomTextToggle" type="button" aria-label="文字情報を隠す" aria-pressed="false" title="文字情報の表示切替">Aa</button><button class="study-room-weather" id="studyRoomWeather" type="button" aria-label="名古屋市の今日の天気を再取得">名古屋市 · 天気</button><button class="room-exit" id="roomExit" type="button" aria-label="書斎を閉じる" title="書斎を閉じる">×</button></div>
+    <div class="study-room-top-actions"><div class="study-room-season" id="studyRoomSeason">秋 · 昼</div><button class="room-chill-toggle" id="chillModeToggle" type="button" aria-pressed="false" aria-label="チルモードを開始する">☾ チル</button><button class="room-text-toggle" id="roomTextToggle" type="button" aria-label="文字情報を隠す" aria-pressed="false" title="文字情報の表示切替">Aa</button><button class="study-room-weather" id="studyRoomWeather" type="button" aria-label="名古屋市の今日の天気を再取得">名古屋市 · 天気</button><button class="room-exit" id="roomExit" type="button" aria-label="書斎を閉じる" title="書斎を閉じる">×</button></div>
    </div>
    <div class="study-window little-planet-scene" aria-hidden="true">
     <svg class="room-landscape planet-landscape" viewBox="0 0 1000 700" preserveAspectRatio="xMidYMid slice" role="presentation">
@@ -168,7 +168,7 @@
      <path d="M0 0 L-55 22" stroke="#fff4dc" stroke-width="1.7"/>
     </g>
    </svg>
-   <div class="sky-progress-label" id="skyProgressLabel" aria-live="polite">今夜の星空</div>
+   <div class="sky-progress-label" id="skyProgressLabel" aria-live="polite">今夜の星空</div><p class="chill-mode-note" id="chillModeNote" hidden>ここでは、何も急がなくていい。少し休もう。</p>
    <div class="room-window-shelf planet-hourglass"><button class="desk-hourglass room-hourglass-shelf" id="hourglassStart" type="button" aria-label="5分間の休憩を始める" aria-describedby="hourglassInstructions" aria-keyshortcuts="R">
     <svg class="hourglass-art" id="hourglassArt" viewBox="0 0 100 120" role="img" aria-label="砂が落ちる砂時計"><path class="hourglass-frame" d="M27 7H73 M27 113H73 M31 9C31 35 48 43 50 60C52 77 69 85 69 111 M69 9C69 35 52 43 50 60C48 77 31 85 31 111"/><path class="hourglass-glass" d="M32 12C32 34 47 43 50 58C53 43 68 34 68 12Z M50 62C47 78 32 87 32 108H68C68 87 53 78 50 62Z"/><path class="hourglass-sand-top" id="hourglassSandTop" d="M35 15H65C64 31 57 39 50 48C43 39 36 31 35 15Z"/><path class="hourglass-sand-bottom" id="hourglassSandBottom" d="M35 105C37 89 43 82 50 74C57 82 63 89 65 105Z"/><path class="hourglass-stream" d="M50 48V74"/><circle class="hourglass-grain grain-a" cx="48.5" cy="50" r="1.5"/><circle class="hourglass-grain grain-b" cx="51.5" cy="50" r="1.5"/><circle class="hourglass-grain grain-c" cx="50" cy="50" r="1.6"/></svg>
     <span class="desk-hourglass-time" id="hourglassTime">05:00</span><span class="desk-hourglass-label" id="hourglassState">タップで休憩 · 長押しでリセット</span>
@@ -180,7 +180,8 @@
 </div>
 <div class="page" id="settingsPage" hidden>
  <section class="panel"><h2 style="margin:0 0 6px">設定</h2><p class="muted" style="margin:0 0 12px">タイマーや書斎の環境を、自分の使いやすい形に整えられるよ。</p><button class="secondary wide" type="button" data-page="timerPage">← タイマーへ戻る</button></section>
- <details class="panel"><summary>書斎の時計</summary><label class="muted" for="roomClockFormat">時刻の表示</label><select id="roomClockFormat"><option value="24">24時間表示</option><option value="12">12時間表示（午前・午後）</option></select><label class="muted" style="display:flex;align-items:center;gap:8px;margin-top:12px"><input id="roomShowDate" type="checkbox" style="width:auto;margin:0" checked>書斎に日付を表示する</label></details>
+ <details class="panel"><summary>チルモード</summary><label class="muted" style="display:flex;align-items:center;gap:8px;margin-top:12px"><input id="chillAuto" type="checkbox" style="width:auto;margin:0" checked>集中セッション終了後、休憩中は自動でチルモードにする</label><p class="muted" style="margin:8px 0 0">景色と光を穏やかにし、再生中の環境音はゆっくり小さくするよ。音は自分で再生したときだけ流れるよ。</p></details>
+  <details class="panel"><summary>書斎の時計</summary><label class="muted" for="roomClockFormat">時刻の表示</label><select id="roomClockFormat"><option value="24">24時間表示</option><option value="12">12時間表示（午前・午後）</option></select><label class="muted" style="display:flex;align-items:center;gap:8px;margin-top:12px"><input id="roomShowDate" type="checkbox" style="width:auto;margin:0" checked>書斎に日付を表示する</label></details>
  <details class="panel"><summary>タイマー設定</summary>
   <div class="settings">
    <label>集中時間（分）<input id="focusDuration" type="number" min="1" max="120" value="25"></label>
