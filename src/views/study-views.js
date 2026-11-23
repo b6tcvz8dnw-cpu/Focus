@@ -148,7 +148,7 @@ export function createStudyViews({ root = document } = {}) {
     const list = [...records].sort((a, b) => b.timestamp - a.timestamp)
       .filter(record => (!reflectionOnly || String(record.note || "").trim())
         && (!cutoff || Number(record.timestamp) >= cutoff)
-        && (!normalizedQuery || [record.note, record.intention].some(value => String(value || "").toLowerCase().includes(normalizedQuery))))
+        && (!normalizedQuery || [record.note, record.intention, ...(Array.isArray(record.distractions) ? record.distractions : [])].some(value => String(value || "").toLowerCase().includes(normalizedQuery))))
       .slice(0, 60);
     $("historyList").innerHTML = list.length
       ? list.map(record => '<div class="history-item"><div class="history-top"><span>' +
@@ -156,6 +156,7 @@ export function createStudyViews({ root = document } = {}) {
         "</span><b>" + record.minutes + "分</b></div>" +
         (record.intention ? "<small>開始前の意図：" + escapeHTML(record.intention) + "</small>" : "") +
         (record.note ? "<small>振り返り：" + escapeHTML(record.note) + "</small>" : "") +
+        (Array.isArray(record.distractions) && record.distractions.length ? '<small>一時置きメモ：' + record.distractions.map(escapeHTML).join(' ／ ') + '</small>' : '') +
         '<div class="history-actions"><button data-record-edit="' + escapeHTML(record.id) + '">分数を修正</button><button data-record-delete="' + escapeHTML(record.id) + '">削除</button></div></div>'
       ).join("")
       : '<p class="muted">条件に合う記録がありません。検索語や期間を変えてみてね。</p>';

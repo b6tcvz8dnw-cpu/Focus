@@ -13,10 +13,22 @@ import { createCompletionSoundController } from './features/completion-sound.js'
 import { createAppearanceController } from './features/appearance-controller.js';
 import { createRecoveryController } from './features/recovery-controller.js';
 import { createBackupImportController } from './features/backup-import-controller.js';
+import { getFocusTownState } from './features/focus-town.js';
 const $=id=>document.getElementById(id);
 const studyViews=createStudyViews();
 let durations={focus:25,short:5,long:15},mode='focus',remaining=1500,total=1500,running=false,deadline=0,completed=0,minutes=0,finished=false,history={},legacyHistory={},records=[],selectedCalendarDate=dateKey(new Date()),dailyGoal=60,weeklyGoal=300,statsStore=null,calendarCursor=new Date(new Date().getFullYear(),new Date().getMonth(),1),appReady=false,timerController=null,ambientSound=null;
 const labels={focus:'集中する時間',short:'短い休憩',long:'長い休憩'},hints={focus:'ひとつのことに集中しよう。',short:'少し頭を休めよう。',long:'ゆっくり休んで次のセットに備えよう。'},circ=2*Math.PI*88;
+const FOCUS_INBOX_KEY='focus-session-inbox';
+let focusInbox=readFocusInbox();
+function readFocusInbox(){const value=storage.getJSON(FOCUS_INBOX_KEY,[]);return Array.isArray(value)?value.filter(item=>item&&typeof item.text==='string').slice(0,8).map(item=>({id:String(item.id||''),text:item.text.slice(0,120),addedAt:Number(item.addedAt)||Date.now()})):[]}
+function renderFocusInbox(){const list=$('focusThoughtList');if(!list)return;list.replaceChildren();focusInbox.forEach(item=>{const li=document.createElement('li'),text=document.createElement('span'),remove=document.createElement('button');li.className='focus-thought-item';text.textContent=item.text;remove.type='button';remove.className='focus-thought-remove';remove.dataset.thoughtRemove=item.id;remove.setAttribute('aria-label','メモを削除');remove.textContent='×';li.append(text,remove);list.append(li)});$('focusThoughtCount').textContent=focusInbox.length+' / 8';$('addFocusThought').disabled=focusInbox.length>=8}
+function persistFocusInbox(next){if(!storage.setJSON(FOCUS_INBOX_KEY,next))return false;focusInbox=next;renderFocusInbox();return true}
+function addFocusThought(){const input=$('focusThoughtInput'),text=input.value.trim();if(!text)return;if(focusInbox.length>=8){$('toast').textContent='一時置きメモは8件までだよ。';return}const next=[...focusInbox,{id:String(Date.now())+'-'+Math.random().toString(36).slice(2,7),text,addedAt:Date.now()}];if(!persistFocusInbox(next)){$('toast').textContent='メモを保存できなかったよ。';return}input.value='';$('toast').textContent='メモを一時置きしたよ。'}
+function updateFocusTown(){const state=getFocusTownState(minutes),skyline=$('focusTownSkyline');if(!skyline)return;$('focusTownTotal').textContent=minutes.toLocaleString('ja-JP')+'分';$('focusTownMessage').textContent=state.unlockedCount===0?'最初の灯りを待っているよ。自分のペースで大丈夫。':state.unlockedCount===state.landmarks.length?'街の灯りがそろったよ。ここまでの積み重ねだね。':state.unlockedCount+'つの灯りがともったよ。';skyline.replaceChildren();state.landmarks.forEach(place=>{const building=document.createElement('div');building.className='focus-town-building'+(place.unlocked?' is-lit':'');building.dataset.place=place.id;building.setAttribute('aria-label',place.name+(place.unlocked?'・灯りがともっている':'・これから灯る'));['town-roof','town-body','town-windows'].forEach(name=>{const part=document.createElement('i');part.className=name;building.append(part)});skyline.append(building)});$('focusTownProgressLabel').textContent=state.next?'次の灯りまであと'+state.remaining+'分':'すべての灯りがともったよ';$('focusTownNext').textContent=state.next?.name||'完成';$('focusTownProgress').style.width=state.progress+'%'}
+$('addFocusThought').addEventListener('click',addFocusThought);
+$('focusThoughtInput').addEventListener('keydown',event=>{if(event.key==='Enter'){event.preventDefault();addFocusThought()}});
+$('focusThoughtList').addEventListener('click',event=>{const button=event.target.closest('[data-thought-remove]');if(!button)return;const next=focusInbox.filter(item=>item.id!==button.dataset.thoughtRemove);if(!persistFocusInbox(next))$('toast').textContent='メモを削除できなかったよ。'});
+renderFocusInbox();
 function cycle(){return Math.max(2,Math.min(8,+$('cycleDuration').value||4))}
 function updateAutoBackupStatus(){
  const latest=storage.getJSON('focus-auto-backup',null),previous=storage.getJSON('focus-auto-backup-previous',null);
@@ -26,7 +38,7 @@ function updateAutoBackupStatus(){
  if(latestButton)latestButton.disabled=!latest?.stats;
  if(previousButton)previousButton.disabled=!previous?.stats;
 }
-function syncStatsState(state){completed=state.completed;minutes=state.minutes;history=state.history;legacyHistory=state.legacyHistory;records=state.records;dailyGoal=state.dailyGoal;weeklyGoal=state.weeklyGoal;updateAutoBackupStatus()}
+function syncStatsState(state){completed=state.completed;minutes=state.minutes;history=state.history;legacyHistory=state.legacyHistory;records=state.records;dailyGoal=state.dailyGoal;weeklyGoal=state.weeklyGoal;updateAutoBackupStatus();updateFocusTown()}
 function updateStudySky(){
  // Use lifetime study minutes so the room's progress remains after a new day begins.
  const level=getStudySkyLevel(minutes);
@@ -171,7 +183,7 @@ try{const ts=normalizeTimerSettings(storage.getJSON('focus-timer-settings',null)
 const autoContinueEnabled=storage.getText('focus-auto-continue','false')==='true';
 $('autoContinue').checked=autoContinueEnabled;
 function syncTimerState(state){durations=state.durations;mode=state.mode;remaining=state.remaining;total=state.total;running=state.running;deadline=state.deadline;finished=state.finished;update()}
-timerController=createTimerController({durations,autoContinue:autoContinueEnabled,getCycleLength:cycle,getCompletedSessions:()=>completed,store:storage,onChange:syncTimerState,onFocusComplete({actualSeconds=durations.focus*60}={}){const actualMinutes=Math.floor(Math.max(0,Number(actualSeconds)||0)/60);const record=actualMinutes>=1?{id:String(Date.now())+'-'+Math.random().toString(36).slice(2,7),timestamp:Date.now(),date:dateKey(new Date()),minutes:Math.min(120,actualMinutes),note:'',intention:$('sessionIntention').value.trim()}:null;const saved=record?statsStore.addSession(record):true;if(saved&&record)updateChart();if($('chillAuto').checked)setChillMode(true);notify('集中セッション完了！休憩を始めよう。');if(!saved)$('toast').textContent='集中記録を保存できなかったよ。端末の空き容量を確認してね。';playCompletionSound();if(appReady){$('reflection').value='';$('sessionIntention').value='';$('reflectionPrompt').textContent='今のセッションで気づいたことを残してみよう。';renderAllRecords();$('reflectionPanel').open=true;$('reflectionPanel').scrollIntoView({behavior:'smooth',block:'nearest'})}},onBreakComplete(){setChillMode(false);notify('休憩終了！お疲れさま。');playCompletionSound()}});
+timerController=createTimerController({durations,autoContinue:autoContinueEnabled,getCycleLength:cycle,getCompletedSessions:()=>completed,store:storage,onChange:syncTimerState,onFocusComplete({actualSeconds=durations.focus*60}={}){const actualMinutes=Math.floor(Math.max(0,Number(actualSeconds)||0)/60);const record=actualMinutes>=1?{id:String(Date.now())+'-'+Math.random().toString(36).slice(2,7),timestamp:Date.now(),date:dateKey(new Date()),minutes:Math.min(120,actualMinutes),note:'',intention:$('sessionIntention').value.trim(),distractions:focusInbox.map(item=>item.text)}:null;const saved=record?statsStore.addSession(record):true;if(saved&&record){if(focusInbox.length)persistFocusInbox([]);updateChart();}if($('chillAuto').checked)setChillMode(true);notify('集中セッション完了！休憩を始めよう。');if(!saved)$('toast').textContent='集中記録を保存できなかったよ。端末の空き容量を確認してね。';playCompletionSound();if(appReady){$('reflection').value='';$('sessionIntention').value='';$('reflectionPrompt').textContent='今のセッションで気づいたことを残してみよう。';renderAllRecords();$('reflectionPanel').open=true;$('reflectionPanel').scrollIntoView({behavior:'smooth',block:'nearest'})}},onBreakComplete(){setChillMode(false);notify('休憩終了！お疲れさま。');playCompletionSound()}});
 ({durations,mode,remaining,total,running,deadline,finished}=timerController.getState());
 $('autoContinue').addEventListener('change',()=>{
  const enabled=$('autoContinue').checked;
@@ -367,7 +379,7 @@ const importController=createBackupImportController({
 
 if('serviceWorker'in navigator){let refreshing=false;navigator.serviceWorker.addEventListener('controllerchange',()=>{if(!refreshing){refreshing=true;window.location.reload();}});window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').then(reg=>reg.update()).catch(()=>{}));}
 $('calendarPage').appendChild($('calendarPanel'));$('analyticsPage').appendChild($('analyticsPanel'));
-update();updateChart();appReady=true;recoveryController.render();
+update();updateChart();updateFocusTown();appReady=true;recoveryController.render();
 let appDisposed=false;
 window.addEventListener('pagehide',event=>{
  timerController.persistCurrent();
