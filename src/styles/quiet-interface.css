@@ -48,3 +48,7 @@ button,.tab,summary{transition:background-color .25s ease,border-color .25s ease
 @media(prefers-reduced-motion:reduce){
  button,.tab,summary{transition:none}
 }
+
+/* The large timer view stays focused on the clock and its controls. */
+body.timer-large-mode .session-intention-control,
+body.timer-large-mode .focus-inbox{display:none!important}
