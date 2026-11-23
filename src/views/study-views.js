@@ -151,15 +151,21 @@ export function createStudyViews({ root = document } = {}) {
         && (!normalizedQuery || [record.note, record.intention, ...(Array.isArray(record.distractions) ? record.distractions : [])].some(value => String(value || "").toLowerCase().includes(normalizedQuery))))
       .slice(0, 60);
     $("historyList").innerHTML = list.length
-      ? list.map(record => '<div class="history-item"><div class="history-top"><span>' +
-        new Date(record.timestamp).toLocaleString("ja-JP", { month: "numeric", day: "numeric", hour: "2-digit", minute: "2-digit" }) +
-        "</span><b>" + record.minutes + "分</b></div>" +
-        (record.intention ? "<small>開始前の意図：" + escapeHTML(record.intention) + "</small>" : "") +
-        (record.note ? "<small>振り返り：" + escapeHTML(record.note) + "</small>" : "") +
-        (Array.isArray(record.distractions) && record.distractions.length ? '<small>一時置きメモ：' + record.distractions.map(escapeHTML).join(' ／ ') + '</small>' : '') +
-        '<div class="history-actions"><button data-record-edit="' + escapeHTML(record.id) + '">分数を修正</button><button data-record-delete="' + escapeHTML(record.id) + '">削除</button></div></div>'
-      ).join("")
-      : '<p class="muted">条件に合う記録がありません。検索語や期間を変えてみてね。</p>';
+      ? list.map(record => {
+        const date = new Date(Number(record.timestamp));
+        const validDate = Number.isFinite(date.getTime()) ? date : new Date(0);
+        const dateLabel = validDate.toLocaleString("ja-JP", { year: "numeric", month: "long", day: "numeric", weekday: "short" });
+        const timeLabel = validDate.toLocaleTimeString("ja-JP", { hour: "2-digit", minute: "2-digit" });
+        const iso = validDate.toISOString();
+        return '<article class="history-item"><div class="history-top"><time datetime="' + iso + '">' +
+          escapeHTML(dateLabel + " · " + timeLabel) + '</time><span class="history-duration">そのときの時間 · ' +
+          escapeHTML(record.minutes) + '分</span></div>' +
+          (record.intention ? '<p class="history-intention"><span>始める前に思っていたこと</span>' + escapeHTML(record.intention) + '</p>' : '') +
+          (record.note ? '<blockquote class="history-reflection">' + escapeHTML(record.note) + '</blockquote>' : '') +
+          (Array.isArray(record.distractions) && record.distractions.length ? '<p class="history-distractions"><span>途中で浮かんだこと</span>' + record.distractions.map(escapeHTML).join(' ／ ') + '</p>' : '') +
+          '<div class="history-actions"><button data-record-edit="' + escapeHTML(record.id) + '">時間を修正</button><button data-record-delete="' + escapeHTML(record.id) + '">この記録を削除</button></div></article>';
+      }).join("")
+      : '<p class="history-empty">まだ、ここに置かれた記録はないよ。何も残らなかった時間も、失われたわけではないからね。</p>';
   }
 
   function renderAnalytics({ history, range, now = new Date() }) {

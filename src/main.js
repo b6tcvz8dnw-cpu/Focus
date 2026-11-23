@@ -297,9 +297,11 @@ $('saveReflection').onclick=saveReflection;
 $('clear').onclick=()=>{if(!confirm('今日の詳細な学習記録を消去する？累計の集中時間と達成状況は残るよ。'))return;if(!statsStore.clearDayRecords(dateKey(new Date()))) {$('toast').textContent='今日の記録を消去できなかったよ。';return}timerController.reset();$('toast').textContent='今日の詳細な記録を消去したよ。累計時間は保持されているよ。';renderAllRecords();};
 
 
-const soundLevelDefaults={rain:38,wind:24,noise:12};
+const soundLevelDefaults={rain:38,wind:24,water:18,noise:12};
 const soundLevels={...soundLevelDefaults,...(storage.getJSON('focus-sound-levels',{})||{})};
 for(const kind of Object.keys(soundLevelDefaults)){const value=Number(soundLevels[kind]);soundLevels[kind]=Number.isFinite(value)?Math.max(0,Math.min(100,Math.round(value))):soundLevelDefaults[kind];$('soundVolume-'+kind).value=soundLevels[kind]}
+const savedSoundMaster=storage.getText('focus-sound-master-volume',null);
+if(savedSoundMaster!==null){const value=Number(savedSoundMaster);if(Number.isFinite(value))$('soundVolume').value=Math.max(0,Math.min(30,Math.round(value)))}
 ambientSound = createAmbientSoundController({
  root: document,
  getAudioContextConstructor: () => window.AudioContext || window.webkitAudioContext,
@@ -311,7 +313,7 @@ ambientSound = createAmbientSoundController({
 });
 document.querySelectorAll('[data-sound]').forEach(b=>b.onclick=()=>ambientSound.toggle(b.dataset.sound));
 document.querySelectorAll('[data-sound-preset]').forEach(b=>b.onclick=()=>ambientSound.setPreset(b.dataset.soundPreset));
-$('soundVolume').oninput=()=>ambientSound.setVolume(Number($('soundVolume').value)/100*($('studyRoomView').classList.contains('chill-mode')?0.72:1),1.8);
+$('soundVolume').oninput=()=>{const value=Number($('soundVolume').value);ambientSound.setVolume(value/100*($('studyRoomView').classList.contains('chill-mode')?0.72:1),1.8);if(!storage.setText('focus-sound-master-volume',String(value)))$('toast').textContent='全体の音量を保存できなかったよ。'};
 for(const kind of Object.keys(soundLevelDefaults)){$('soundVolume-'+kind).oninput=()=>{soundLevels[kind]=Number($('soundVolume-'+kind).value);ambientSound.setLayerVolume(kind,soundLevels[kind]/100);if(!storage.setJSON('focus-sound-levels',soundLevels))$('toast').textContent='音量設定を保存できなかったよ。'}}
 function buildBackupPayload(){return {app:'FOCUS',version:CURRENT_BACKUP_VERSION,exportedAt:new Date().toISOString(),stats:statsStore.exportStats(),timerSettings:normalizeTimerSettings(storage.getJSON('focus-timer-settings',null)),appearance:storage.getJSON('focus-appearance',null),mark:storage.getText('focus-mark')||'dot',homeIcon:storage.getText('focus-home-icon')||'planet',notificationsEnabled,quietText:storage.getText('focus-room-quiet-text')==='true',stillnessNotes:storage.getJSON('focus-stillness-notes',[])}}
 function downloadBackup(payload,filename){const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=filename;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)}

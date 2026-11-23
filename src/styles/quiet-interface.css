@@ -1,0 +1,50 @@
+/* Phase 6 — a quieter editorial rhythm across the existing FOCUS interface. */
+:root{
+ --bg:#111a18;
+ --panel:#192522;
+ --surface-deep:#141f1c;
+ --line:#344540;
+ --text:#e7ede7;
+ --muted:#a8b4aa;
+ --accent:#b3c9b4;
+ --accent2:#30443b;
+ --tab-bg:rgba(17,26,24,.94);
+}
+body{font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;letter-spacing:.012em}
+main{max-width:560px;gap:18px}
+header{padding:2px 3px 7px}
+.brand{font-size:21px;font-weight:650;letter-spacing:.18em}
+.panel{border-color:color-mix(in srgb,var(--line) 82%,transparent);border-radius:23px;background:linear-gradient(145deg,color-mix(in srgb,var(--panel) 96%,white 4%),var(--panel));box-shadow:0 10px 30px rgba(0,0,0,.10);padding:19px}
+.page{gap:14px}
+h2{font-weight:600;letter-spacing:.035em}
+.muted{line-height:1.75}
+button,.tab,summary{transition:background-color .25s ease,border-color .25s ease,color .25s ease}
+.mode,.secondary,.primary{border-radius:14px}
+.mode.active,.tab.active{background:color-mix(in srgb,var(--accent2) 82%,transparent);border-color:color-mix(in srgb,var(--accent) 65%,var(--line))}
+.tabbar{border-top-color:color-mix(in srgb,var(--line) 72%,transparent);box-shadow:0 -8px 28px rgba(0,0,0,.12)}
+.history-intro{margin:12px 0 14px;color:var(--muted);font-size:12px;line-height:1.9}
+.history-item{padding:15px 14px;border-radius:16px;background:linear-gradient(145deg,color-mix(in srgb,var(--surface-deep) 90%,white 3%),var(--surface-deep))}
+.history-top{align-items:flex-start;flex-wrap:wrap;color:var(--muted);font-size:11px;line-height:1.6}
+.history-top time{font-variant-numeric:tabular-nums}
+.history-duration{font-size:10px;color:color-mix(in srgb,var(--muted) 84%,var(--accent))}
+.history-intention,.history-distractions{margin:12px 0 0;color:var(--text);font-size:12px;line-height:1.8;overflow-wrap:anywhere}
+.history-intention span,.history-distractions span{display:block;margin-bottom:3px;color:var(--muted);font-size:10px;letter-spacing:.04em}
+.history-reflection{margin:13px 0 0;padding:10px 13px;border-left:1px solid var(--accent);color:var(--text);font-size:13px;line-height:1.9;white-space:pre-wrap;overflow-wrap:anywhere;background:color-mix(in srgb,var(--accent) 5%,transparent);border-radius:0 10px 10px 0}
+.history-actions{padding-top:8px;border-top:1px solid color-mix(in srgb,var(--line) 60%,transparent)}
+.history-empty{margin:0;padding:22px 12px;text-align:center;color:var(--muted);font-size:12px;line-height:2}
+.sound-intro{margin:12px 0 16px;line-height:1.9}
+.sound-section-label{margin:15px 0 8px;letter-spacing:.04em}
+.sound-panel .sound-controls{gap:7px}
+.sound-panel .sound-controls button{font-size:12px;min-height:42px}
+.sound-panel .sound-mixer{grid-template-columns:repeat(2,minmax(0,1fr));gap:13px 16px;padding:14px;border-radius:16px}
+.sound-panel .sound-mixer label{gap:7px}
+.sound-master-label{display:block;margin-top:15px}
+.sound-footnote{margin:7px 0 0;color:var(--muted);font-size:10px;line-height:1.8}
+@media(max-width:390px){
+ main{padding-left:14px;padding-right:14px}
+ .panel{padding:16px;border-radius:20px}
+ .sound-panel .sound-mixer{gap:11px}
+}
+@media(prefers-reduced-motion:reduce){
+ button,.tab,summary{transition:none}
+}
