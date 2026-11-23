@@ -141,3 +141,33 @@ details summary{min-height:26px;display:flex;align-items:center}
 .timer-hourglass-control .desk-hourglass-time{font-size:14px;color:var(--text);letter-spacing:.04em;text-shadow:none}
 .timer-hourglass-control .desk-hourglass-label{font-size:8px;color:var(--muted);white-space:normal;text-align:center;text-shadow:none}
 @media(max-width:390px){.timer-hourglass-panel{padding:12px}.timer-hourglass-stage{min-width:96px}.timer-hourglass-control{width:94px!important}}
+
+/* Focus inbox: park a passing thought without leaving the timer. */
+.focus-inbox{margin:14px 0 2px;padding:12px;border:1px solid var(--line);border-radius:15px;background:var(--surface-deep)}
+.focus-inbox-heading{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.focus-inbox-heading h2{margin:0;font-size:12px}
+.focus-inbox-heading span{font-size:10px;color:var(--muted);font-variant-numeric:tabular-nums}
+.focus-inbox>p{margin:6px 0 9px;font-size:10px}
+.focus-inbox-entry{display:flex;gap:7px}
+.focus-inbox-entry input{flex:1;min-width:0;min-height:42px;padding:8px 10px;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--text);font:inherit;font-size:12px}
+.focus-inbox-entry button{min-height:42px;padding:8px 12px;font-size:11px;white-space:nowrap}
+.focus-inbox-entry button:disabled{opacity:.45}
+.focus-thought-list{display:grid;gap:5px;margin:8px 0 0;padding:0;list-style:none}
+.focus-thought-item{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 8px;border-radius:9px;background:color-mix(in srgb,var(--accent) 8%,transparent);font-size:11px;overflow-wrap:anywhere}
+.focus-thought-remove{flex:0 0 28px;width:28px;height:28px;border:0;border-radius:8px;background:transparent;color:var(--muted);font-size:18px}
+.focus-town-panel .week-summary{align-items:center}
+.focus-town-total{font-size:12px;color:var(--accent);font-variant-numeric:tabular-nums}
+.focus-town-panel>p{font-size:11px}
+.focus-town-skyline{height:116px;display:flex;align-items:end;justify-content:center;gap:clamp(8px,4vw,22px);padding:12px 10px 0;border-bottom:1px solid var(--metal-edge);background:linear-gradient(180deg,rgba(31,69,94,.08),transparent)}
+.focus-town-building{position:relative;display:flex;align-items:end;justify-content:center;width:clamp(36px,11vw,58px);height:var(--building-height,70px);opacity:.5}
+.focus-town-building:nth-child(1){--building-height:44px}.focus-town-building:nth-child(2){--building-height:62px}.focus-town-building:nth-child(3){--building-height:53px}.focus-town-building:nth-child(4){--building-height:78px}.focus-town-building:nth-child(5){--building-height:91px}
+.town-body{position:absolute;bottom:0;width:100%;height:calc(100% - 7px);border:1px solid var(--metal-edge);border-bottom:0;border-radius:5px 5px 0 0;background:linear-gradient(145deg,rgba(73,105,129,.85),rgba(14,27,42,.96));box-shadow:inset 0 1px rgba(255,255,255,.08)}
+.town-roof{position:absolute;z-index:1;top:0;width:100%;height:9px;border:1px solid var(--metal-edge);border-radius:3px;background:linear-gradient(90deg,var(--accent2),var(--surface))}
+.town-windows{position:absolute;z-index:2;bottom:9px;width:64%;height:38%;background:repeating-linear-gradient(90deg,transparent 0 6px,color-mix(in srgb,var(--accent) 18%,transparent) 6px 9px),repeating-linear-gradient(0deg,transparent 0 7px,rgba(0,0,0,.12) 7px 10px)}
+.focus-town-building.is-lit{opacity:1}
+.focus-town-building.is-lit .town-windows{background:repeating-linear-gradient(90deg,transparent 0 6px,color-mix(in srgb,var(--accent) 85%,#fff) 6px 9px),repeating-linear-gradient(0deg,transparent 0 7px,rgba(0,0,0,.12) 7px 10px);filter:drop-shadow(0 0 5px color-mix(in srgb,var(--accent) 42%,transparent))}
+.focus-town-progress{display:flex;justify-content:space-between;gap:10px;margin-top:10px;color:var(--muted);font-size:10px}
+.focus-town-progress span:last-child{color:var(--accent)}
+.focus-town-track{height:5px;margin-top:6px;overflow:hidden;border-radius:9px;background:var(--surface-deep)}
+.focus-town-track i{display:block;width:0;height:100%;border-radius:inherit;background:linear-gradient(90deg,var(--accent2),var(--accent))}
+.focus-town-footnote{margin:9px 0 0}
