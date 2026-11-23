@@ -359,3 +359,19 @@
 /* A gentle sign of continuity when returning to the Study Room */
 .study-room-return{margin-top:5px;color:rgba(255,244,223,.72);font-size:clamp(10px,1.15vw,13px);letter-spacing:.04em;text-shadow:0 1px 8px rgba(0,0,0,.25)}
 @media(max-width:520px){.study-room-return{max-width:45vw;line-height:1.35}}
+
+
+/* Chill mode: a softer, slower room for breaks. */
+.room-chill-toggle{border:1px solid rgba(205,225,255,.32);border-radius:999px;padding:7px 11px;background:linear-gradient(145deg,rgba(31,48,72,.82),rgba(13,20,39,.9));color:#e7e9ff;font-size:11px;letter-spacing:.04em;box-shadow:inset 0 1px rgba(255,255,255,.12),0 0 16px rgba(141,157,255,.12)}
+.room-chill-toggle[aria-pressed="true"]{border-color:rgba(192,178,255,.8);background:linear-gradient(145deg,rgba(81,67,119,.9),rgba(28,35,66,.95));box-shadow:0 0 18px rgba(167,145,255,.26),inset 0 1px rgba(255,255,255,.2)}
+.study-room-view.chill-mode::after{content:"";position:absolute;inset:0;z-index:2;pointer-events:none;background:linear-gradient(180deg,rgba(9,15,34,.12),rgba(11,18,42,.25));backdrop-filter:saturate(.82) brightness(.86);transition:background 1.8s ease,backdrop-filter 1.8s ease}
+.study-room-view.chill-mode .nebula-one,.study-room-view.chill-mode .nebula-two{animation-duration:48s}
+.study-room-view.chill-mode .orbiting-dust{animation-duration:54s}
+.study-room-view.chill-mode .wind-ribbons,.study-room-view.chill-mode .wind-dust{animation-duration:32s}
+.study-room-view.chill-mode .shooting-star-one,.study-room-view.chill-mode .shooting-star-two{animation-duration:32s}
+.chill-mode-note{position:absolute;z-index:9;left:50%;bottom:18%;transform:translateX(-50%);width:max-content;max-width:82%;margin:0;padding:9px 15px;border:1px solid rgba(221,222,255,.2);border-radius:999px;background:rgba(12,18,39,.42);color:rgba(247,242,255,.86);font-size:11px;letter-spacing:.08em;text-align:center;backdrop-filter:blur(10px);pointer-events:none;animation:chill-note-in 1.2s ease both}
+@keyframes chill-note-in{from{opacity:0;transform:translate(-50%,7px)}to{opacity:1;transform:translate(-50%,0)}}
+.study-room-view.room-quiet-text .chill-mode-note{display:none}
+.study-room-view.chill-mode .sky-progress-label{opacity:.7}
+@media(max-width:520px){.room-chill-toggle{padding:6px 8px;font-size:10px}.chill-mode-note{bottom:21%;font-size:10px}}
+@media(prefers-reduced-motion:reduce){.study-room-view.chill-mode::after,.chill-mode-note{transition:none;animation:none}}

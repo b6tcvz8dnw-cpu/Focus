@@ -28,8 +28,8 @@ function updateAutoBackupStatus(){
 }
 function syncStatsState(state){completed=state.completed;minutes=state.minutes;history=state.history;legacyHistory=state.legacyHistory;records=state.records;dailyGoal=state.dailyGoal;weeklyGoal=state.weeklyGoal;updateAutoBackupStatus()}
 function updateStudySky(){
- const todayMinutes=Math.max(0,Number(history[dateKey(new Date())]||0));
- const level=getStudySkyLevel(todayMinutes);
+ // Use lifetime study minutes so the room's progress remains after a new day begins.
+ const level=getStudySkyLevel(minutes);
  const view=$('studyRoomView');
  if(!view)return;
  view.classList.remove('sky-level-0','sky-level-1','sky-level-2','sky-level-3','sky-level-4');
@@ -38,6 +38,18 @@ function updateStudySky(){
  const label=$('skyProgressLabel');if(label)label.textContent=labels[level];
 }
 function updateChart(){updateStudySky();studyViews.renderWeekly({history})}
+function setChillMode(enabled){
+ const active=!!enabled,view=$('studyRoomView'),button=$('chillModeToggle'),note=$('chillModeNote');
+ view.classList.toggle('chill-mode',active);
+ button.setAttribute('aria-pressed',String(active));
+ button.textContent=active?'☾ チル中':'☾ チル';
+ button.setAttribute('aria-label',active?'チルモードを終了する':'チルモードを開始する');
+ if(note)note.hidden=!active;
+ // Never start audio automatically. If the user already enabled ambience, soften it smoothly.
+ const master=Number($('soundVolume').value)/100;
+ ambientSound.setVolume(master*(active?0.72:1),1.8);
+}
+
 function update(){
  $('clock').textContent=fmt(remaining);$('modeLabel').textContent=labels[mode];$('hint').textContent=hints[mode];
  $('status').textContent=running?'● FOCUSING':finished?'● COMPLETED':'● READY';
@@ -133,6 +145,9 @@ $('apply').onclick=()=>{if((running||remaining!==total)&&!confirm('タイマー�
 document.querySelectorAll('[data-page]').forEach(b=>b.onclick=()=>{if(b.dataset.page==='settingsPage'){document.querySelectorAll('.page').forEach(p=>p.hidden=p.id!==b.dataset.page);document.querySelectorAll('.tab[data-page]').forEach(t=>t.removeAttribute('aria-current'));updateMiniTimer();return}setStudyRoomMode(b.dataset.page==='studyRoomPage');document.querySelectorAll('.page').forEach(p=>p.hidden=p.id!==b.dataset.page);document.querySelectorAll('.tab[data-page]').forEach(t=>{const active=t===b;t.classList.toggle('active',active);if(active)t.setAttribute('aria-current','page');else t.removeAttribute('aria-current')});if(b.dataset.page==='overviewPage')renderAllRecords();if(b.dataset.page==='calendarPage')renderCalendar();if(b.dataset.page==='analyticsPage')renderAnalytics();if(b.dataset.page==='studyRoomPage'){studyRoom.onEnter();studyRoom.loadWeather()}updateMiniTimer()});
 const hourglass = mountHourglass({ getRemainingSeconds });
 const studyRoom = mountStudyRoom({ updateSky: updateStudySky, storage });
+ $('chillModeToggle').addEventListener('click',()=>setChillMode(!$('studyRoomView').classList.contains('chill-mode')));
+ $('chillAuto').checked=storage.getText('focus-chill-auto','true')!=='false';
+ $('chillAuto').addEventListener('change',()=>{if(!storage.setText('focus-chill-auto',String($('chillAuto').checked))){$('chillAuto').checked=!$('chillAuto').checked;$('toast').textContent='チルモードの設定を保存できなかったよ。';return}$('toast').textContent=$('chillAuto').checked?'休憩開始時にチルモードへ切り替えるよ。':'自動切り替えをオフにしたよ。'});
 $('roomClockFormat').value=storage.getText('focus-room-clock-format','24');
 $('roomShowDate').checked=storage.getText('focus-room-show-date','true')!=='false';
 $('roomClockFormat').addEventListener('change',()=>{if(!studyRoom.setClockFormat($('roomClockFormat').value))$('toast').textContent='時計の設定を保存できなかったよ。'});
@@ -156,7 +171,7 @@ try{const ts=normalizeTimerSettings(storage.getJSON('focus-timer-settings',null)
 const autoContinueEnabled=storage.getText('focus-auto-continue','false')==='true';
 $('autoContinue').checked=autoContinueEnabled;
 function syncTimerState(state){durations=state.durations;mode=state.mode;remaining=state.remaining;total=state.total;running=state.running;deadline=state.deadline;finished=state.finished;update()}
-timerController=createTimerController({durations,autoContinue:autoContinueEnabled,getCycleLength:cycle,getCompletedSessions:()=>completed,store:storage,onChange:syncTimerState,onFocusComplete({actualSeconds=durations.focus*60}={}){const actualMinutes=Math.floor(Math.max(0,Number(actualSeconds)||0)/60);const record=actualMinutes>=1?{id:String(Date.now())+'-'+Math.random().toString(36).slice(2,7),timestamp:Date.now(),date:dateKey(new Date()),minutes:Math.min(120,actualMinutes),note:'',intention:$('sessionIntention').value.trim()}:null;const saved=record?statsStore.addSession(record):true;if(saved&&record)updateChart();notify('集中セッション完了！休憩を始めよう。');if(!saved)$('toast').textContent='集中記録を保存できなかったよ。端末の空き容量を確認してね。';playCompletionSound();if(appReady){$('reflection').value='';$('sessionIntention').value='';$('reflectionPrompt').textContent='今のセッションで気づいたことを残してみよう。';renderAllRecords();$('reflectionPanel').open=true;$('reflectionPanel').scrollIntoView({behavior:'smooth',block:'nearest'})}},onBreakComplete(){notify('休憩終了！お疲れさま。');playCompletionSound()}});
+timerController=createTimerController({durations,autoContinue:autoContinueEnabled,getCycleLength:cycle,getCompletedSessions:()=>completed,store:storage,onChange:syncTimerState,onFocusComplete({actualSeconds=durations.focus*60}={}){const actualMinutes=Math.floor(Math.max(0,Number(actualSeconds)||0)/60);const record=actualMinutes>=1?{id:String(Date.now())+'-'+Math.random().toString(36).slice(2,7),timestamp:Date.now(),date:dateKey(new Date()),minutes:Math.min(120,actualMinutes),note:'',intention:$('sessionIntention').value.trim()}:null;const saved=record?statsStore.addSession(record):true;if(saved&&record)updateChart();if($('chillAuto').checked)setChillMode(true);notify('集中セッション完了！休憩を始めよう。');if(!saved)$('toast').textContent='集中記録を保存できなかったよ。端末の空き容量を確認してね。';playCompletionSound();if(appReady){$('reflection').value='';$('sessionIntention').value='';$('reflectionPrompt').textContent='今のセッションで気づいたことを残してみよう。';renderAllRecords();$('reflectionPanel').open=true;$('reflectionPanel').scrollIntoView({behavior:'smooth',block:'nearest'})}},onBreakComplete(){setChillMode(false);notify('休憩終了！お疲れさま。');playCompletionSound()}});
 ({durations,mode,remaining,total,running,deadline,finished}=timerController.getState());
 $('autoContinue').addEventListener('change',()=>{
  const enabled=$('autoContinue').checked;
@@ -282,7 +297,7 @@ const ambientSound = createAmbientSoundController({
 });
 document.querySelectorAll('[data-sound]').forEach(b=>b.onclick=()=>ambientSound.toggle(b.dataset.sound));
 document.querySelectorAll('[data-sound-preset]').forEach(b=>b.onclick=()=>ambientSound.setPreset(b.dataset.soundPreset));
-$('soundVolume').oninput=()=>ambientSound.setVolume(Number($('soundVolume').value)/100);
+$('soundVolume').oninput=()=>ambientSound.setVolume(Number($('soundVolume').value)/100*($('studyRoomView').classList.contains('chill-mode')?0.72:1),1.8);
 for(const kind of Object.keys(soundLevelDefaults)){$('soundVolume-'+kind).oninput=()=>{soundLevels[kind]=Number($('soundVolume-'+kind).value);ambientSound.setLayerVolume(kind,soundLevels[kind]/100);if(!storage.setJSON('focus-sound-levels',soundLevels))$('toast').textContent='音量設定を保存できなかったよ。'}}
 function buildBackupPayload(){return {app:'FOCUS',version:CURRENT_BACKUP_VERSION,exportedAt:new Date().toISOString(),stats:statsStore.exportStats(),timerSettings:normalizeTimerSettings(storage.getJSON('focus-timer-settings',null)),appearance:storage.getJSON('focus-appearance',null),mark:storage.getText('focus-mark')||'dot',homeIcon:storage.getText('focus-home-icon')||'planet',notificationsEnabled,quietText:storage.getText('focus-room-quiet-text')==='true'}}
 function downloadBackup(payload,filename){const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=filename;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)}

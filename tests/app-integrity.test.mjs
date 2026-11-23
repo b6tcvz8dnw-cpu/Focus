@@ -157,7 +157,7 @@ test("hourglass CSS uses real rule separators and production cache is versioned"
   assert.ok(css.includes(".hourglass-grain{fill:var(--accent)"));
   assert.ok(css.includes(".hourglass-art.is-running .hourglass-grain{animation:sand-grain-fall"));
   const sw = await read("../public/sw.js");
-  assert.ok(sw.includes("focus-pwa-v43"));
+  assert.ok(sw.includes("focus-pwa-v44"));
   assert.ok(sw.includes("icon-cyber-clock.svg"));
 });
 
@@ -275,7 +275,7 @@ test("Study Room animations pause while another page is selected", async () => {
 test("production service worker caches only successful responses and waits for cache writes", async () => {
   const sw = await read("../public/sw.js");
   const cacheName = sw.match(/const CACHE='([^']+)'/)?.[1];
-  assert.equal(cacheName, "focus-pwa-v43");
+  assert.equal(cacheName, "focus-pwa-v44");
   for (const asset of [
     "./index.html", "./manifest.webmanifest", "./icon.svg", "./icon-192.png", "./icon-512.png", "./icons/icon-cyber-clock.svg", "./icons/icon-planet.png", "./icons/icon-hourglass.png", "./icons/icon-window.png", "./icons/icon-comet.png"
   ]) {
@@ -325,21 +325,22 @@ test("buildWeekData normalizes invalid or negative stored minutes", () => {
   assert.equal(week[6].minutes, 0);
 });
 
-test("Study Room sky progression preserves all existing thresholds", () => {
+test("Study Room sky progression is based on lifetime study time and never regresses", () => {
   assert.equal(getStudySkyLevel(0), 0);
-  assert.equal(getStudySkyLevel(29), 0);
-  assert.equal(getStudySkyLevel(30), 1);
-  assert.equal(getStudySkyLevel(59), 1);
-  assert.equal(getStudySkyLevel(60), 2);
-  assert.equal(getStudySkyLevel(119), 2);
-  assert.equal(getStudySkyLevel(120), 3);
-  assert.equal(getStudySkyLevel(179), 3);
-  assert.equal(getStudySkyLevel(180), 4);
+  assert.equal(getStudySkyLevel(179), 0);
+  assert.equal(getStudySkyLevel(180), 1);
+  assert.equal(getStudySkyLevel(599), 1);
+  assert.equal(getStudySkyLevel(600), 2);
+  assert.equal(getStudySkyLevel(1499), 2);
+  assert.equal(getStudySkyLevel(1500), 3);
+  assert.equal(getStudySkyLevel(2999), 3);
+  assert.equal(getStudySkyLevel(3000), 4);
+  assert.equal(getStudySkyLevel(10000), 4);
 });
 
 test("production Service Worker only manages production-owned caches", async () => {
   const sw = await read("../public/sw.js");
-  assert.ok(sw.includes("const CACHE='focus-pwa-v43';"));
+  assert.ok(sw.includes("const CACHE='focus-pwa-v44';"));
   assert.ok(sw.includes("const CACHE_PREFIX='focus-pwa-';"));
   assert.ok(sw.includes("key.startsWith(CACHE_PREFIX) && key!==CACHE"));
 });
@@ -2389,7 +2390,7 @@ test("Home Screen icon restores the planet design and follows the selected theme
   assert.ok(controller.includes("function renderHomeIcon(name)"));
   assert.ok(controller.includes('canvas.toDataURL("image/png")'));
   assert.ok(controller.includes('appleIcon.href = themedIcon'));
-  assert.ok(sw.includes("focus-pwa-v43"));
+  assert.ok(sw.includes("focus-pwa-v44"));
 });
 
 test("timer settings expose and persist automatic continuation", async () => {
@@ -2476,7 +2477,7 @@ test("cyber-metal theme and landscape system status are wired without requiring 
   assert.ok(main.includes("BATTERY · N/A"));
   assert.ok(main.includes("updateLandscapeStatus()"));
   assert.ok(views.includes("Math.max(120, Math.ceil(Math.max(0, ...data.map(day => day.minutes)) / 60) * 60)"));
-  assert.ok(sw.includes("focus-pwa-v43"));
+  assert.ok(sw.includes("focus-pwa-v44"));
 });
 
 test("weekly chart uses a two-hour minimum scale and rounds larger maxima to full hours", () => {
@@ -2534,4 +2535,30 @@ test("cyber clock is the default home icon and is included in the app shell", as
 test("selecting a calendar day expands its foldable detail panel", async () => {
   const script = await read("../src/main.js");
   assert.ok(script.includes("$('calendarDayDisclosure').open=true"));
+});
+
+
+test("Chill mode is accessible, user-controllable, and auto-applies during breaks", async () => {
+  const html = await read("../index.html");
+  const main = await read("../src/main.js");
+  const css = await read("../src/styles/study-room-visuals.css");
+  const sound = await read("../src/features/ambient-sound.js");
+  const sw = await read("../public/sw.js");
+  assert.ok(html.includes('id="chillModeToggle"'));
+  assert.ok(html.includes('id="chillModeNote"'));
+  assert.ok(html.includes('id="chillAuto"'));
+  assert.ok(main.includes("function setChillMode(enabled)"));
+  assert.ok(main.includes("if($('chillAuto').checked)setChillMode(true)"));
+  assert.ok(main.includes("onBreakComplete(){setChillMode(false)"));
+  assert.ok(main.includes("ambientSound.setVolume(master*(active?0.72:1),1.8)"));
+  assert.ok(css.includes(".study-room-view.chill-mode::after"));
+  assert.ok(css.includes("prefers-reduced-motion:reduce"));
+  assert.ok(sound.includes("function setVolume(volume, transitionSeconds = 0.08)"));
+  assert.ok(sw.includes("focus-pwa-v44"));
+});
+
+test("cumulative sky progress uses lifetime minutes rather than today's history", async () => {
+  const main = await read("../src/main.js");
+  assert.ok(main.includes("const level=getStudySkyLevel(minutes)"));
+  assert.ok(!main.includes("getStudySkyLevel(todayMinutes)"));
 });

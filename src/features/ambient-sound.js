@@ -122,10 +122,11 @@ export function createAmbientSoundController({
     for (const kind of presets[name] || []) setLayer(kind, true);
     updatePresetButtons(Object.hasOwn(presets, name) ? name : null);
   }
-  function setVolume(volume) {
+  function setVolume(volume, transitionSeconds = 0.08) {
     masterVolume = clampVolume(volume);
+    const transition = Math.max(0.01, Math.min(5, Number(transitionSeconds) || 0.08));
     for (const [kind, layer] of layers) {
-      try { layer.gain.gain.setTargetAtTime(volumeFor(kind), context.currentTime, 0.08); } catch {}
+      try { layer.gain.gain.setTargetAtTime(volumeFor(kind), context.currentTime, transition); } catch {}
     }
   }
   function setLayerVolume(kind, volume) {
