@@ -175,7 +175,7 @@ test("hourglass CSS uses real rule separators and production cache is versioned"
   assert.ok(css.includes(".hourglass-grain{fill:var(--accent)"));
   assert.ok(css.includes(".hourglass-art.is-running .hourglass-grain{animation:sand-grain-fall"));
   const sw = await read("../public/sw.js");
-  assert.ok(sw.includes("focus-pwa-v54"));
+  assert.ok(sw.includes("focus-pwa-v55"));
   assert.ok(sw.includes("icon-cyber-clock.svg"));
 });
 
@@ -306,7 +306,7 @@ test("Study Room animations pause while another page is selected", async () => {
 test("production service worker caches only successful responses and waits for cache writes", async () => {
   const sw = await read("../public/sw.js");
   const cacheName = sw.match(/const CACHE='([^']+)'/)?.[1];
-  assert.equal(cacheName, "focus-pwa-v54");
+  assert.equal(cacheName, "focus-pwa-v55");
   for (const asset of [
     "./index.html", "./manifest.webmanifest", "./icon.svg", "./icon-192.png", "./icon-512.png", "./icons/icon-cyber-clock.svg", "./icons/icon-planet.png", "./icons/icon-hourglass.png", "./icons/icon-window.png", "./icons/icon-comet.png"
   ]) {
@@ -371,7 +371,7 @@ test("Study Room sky progression is based on lifetime study time and never regre
 
 test("production Service Worker only manages production-owned caches", async () => {
   const sw = await read("../public/sw.js");
-  assert.ok(sw.includes("const CACHE='focus-pwa-v54';"));
+  assert.ok(sw.includes("const CACHE='focus-pwa-v55';"));
   assert.ok(sw.includes("const CACHE_PREFIX='focus-pwa-';"));
   assert.ok(sw.includes("key.startsWith(CACHE_PREFIX) && key!==CACHE"));
 });
@@ -2442,7 +2442,7 @@ test("Home Screen icon restores the planet design and follows the selected theme
   assert.ok(controller.includes("function renderHomeIcon(name)"));
   assert.ok(controller.includes('canvas.toDataURL("image/png")'));
   assert.ok(controller.includes('appleIcon.href = themedIcon'));
-  assert.ok(sw.includes("focus-pwa-v54"));
+  assert.ok(sw.includes("focus-pwa-v55"));
 });
 
 test("timer settings expose and persist automatic continuation", async () => {
@@ -2529,7 +2529,7 @@ test("cyber-metal theme and landscape system status are wired without requiring 
   assert.ok(main.includes("BATTERY · N/A"));
   assert.ok(main.includes("updateLandscapeStatus()"));
   assert.ok(views.includes("Math.max(120, Math.ceil(Math.max(0, ...data.map(day => day.minutes)) / 60) * 60)"));
-  assert.ok(sw.includes("focus-pwa-v54"));
+  assert.ok(sw.includes("focus-pwa-v55"));
 });
 
 test("weekly chart uses a two-hour minimum scale and rounds larger maxima to full hours", () => {
@@ -2590,6 +2590,13 @@ test("selecting a calendar day expands its foldable detail panel", async () => {
 });
 
 
+test("large timer view hides the optional intention and thought inbox without removing normal-view features", async () => {
+  const css = await read("../src/styles/quiet-interface.css");
+  assert.ok(css.includes("body.timer-large-mode .session-intention-control"));
+  assert.ok(css.includes("body.timer-large-mode .focus-inbox"));
+  assert.ok(css.includes("display:none!important"));
+});
+
 test("Chill mode is accessible, user-controllable, and auto-applies during breaks", async () => {
   const html = await read("../index.html");
   const main = await read("../src/main.js");
@@ -2606,7 +2613,7 @@ test("Chill mode is accessible, user-controllable, and auto-applies during break
   assert.ok(css.includes(".study-room-view.chill-mode::after"));
   assert.ok(css.includes("prefers-reduced-motion:reduce"));
   assert.ok(sound.includes("function setVolume(volume, transitionSeconds = 0.08)"));
-  assert.ok(sw.includes("focus-pwa-v54"));
+  assert.ok(sw.includes("focus-pwa-v55"));
 });
 
 test("cumulative sky progress uses lifetime minutes rather than today's history", async () => {
@@ -2634,7 +2641,7 @@ test("landscape status polling is minute-based rather than waking the page every
 
 test("battery optimization increments the service-worker cache version", async () => {
   const sw = await read("../public/sw.js");
-  assert.ok(sw.includes("focus-pwa-v54"));
+  assert.ok(sw.includes("focus-pwa-v55"));
 });
 
 
