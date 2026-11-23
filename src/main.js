@@ -108,7 +108,7 @@ if(typeof navigator.getBattery==='function'){
   updateLandscapeBattery();
  }).catch(updateLandscapeBattery);
 }else updateLandscapeBattery();
-const landscapeClockInterval=window.setInterval(updateLandscapeStatus,1000);
+const landscapeClockInterval=window.setInterval(updateLandscapeStatus,60000);
 window.addEventListener('resize',updateLandscapeStatus);
 window.addEventListener('orientationchange',updateLandscapeStatus);
 let notificationsEnabled=false;
