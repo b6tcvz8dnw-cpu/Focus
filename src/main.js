@@ -15,7 +15,7 @@ import { createRecoveryController } from './features/recovery-controller.js';
 import { createBackupImportController } from './features/backup-import-controller.js';
 const $=id=>document.getElementById(id);
 const studyViews=createStudyViews();
-let durations={focus:25,short:5,long:15},mode='focus',remaining=1500,total=1500,running=false,deadline=0,completed=0,minutes=0,finished=false,history={},legacyHistory={},records=[],selectedCalendarDate=dateKey(new Date()),dailyGoal=60,weeklyGoal=300,statsStore=null,calendarCursor=new Date(new Date().getFullYear(),new Date().getMonth(),1),appReady=false,timerController=null;
+let durations={focus:25,short:5,long:15},mode='focus',remaining=1500,total=1500,running=false,deadline=0,completed=0,minutes=0,finished=false,history={},legacyHistory={},records=[],selectedCalendarDate=dateKey(new Date()),dailyGoal=60,weeklyGoal=300,statsStore=null,calendarCursor=new Date(new Date().getFullYear(),new Date().getMonth(),1),appReady=false,timerController=null,ambientSoundController=null;
 const labels={focus:'集中する時間',short:'短い休憩',long:'長い休憩'},hints={focus:'ひとつのことに集中しよう。',short:'少し頭を休めよう。',long:'ゆっくり休んで次のセットに備えよう。'},circ=2*Math.PI*88;
 function cycle(){return Math.max(2,Math.min(8,+$('cycleDuration').value||4))}
 function updateAutoBackupStatus(){
@@ -47,7 +47,7 @@ function setChillMode(enabled){
  if(note)note.hidden=!active;
  // Never start audio automatically. If the user already enabled ambience, soften it smoothly.
  const master=Number($('soundVolume').value)/100;
- ambientSound.setVolume(master*(active?0.72:1),1.8);
+ if(ambientSoundController)ambientSoundController.setVolume(master*(active?0.72:1),1.8);
 }
 
 function update(){
@@ -286,7 +286,7 @@ $('clear').onclick=()=>{if(!confirm('今日の詳細な学習記録を消去す�
 const soundLevelDefaults={rain:38,wind:24,noise:12};
 const soundLevels={...soundLevelDefaults,...(storage.getJSON('focus-sound-levels',{})||{})};
 for(const kind of Object.keys(soundLevelDefaults)){const value=Number(soundLevels[kind]);soundLevels[kind]=Number.isFinite(value)?Math.max(0,Math.min(100,Math.round(value))):soundLevelDefaults[kind];$('soundVolume-'+kind).value=soundLevels[kind]}
-const ambientSound = createAmbientSoundController({
+ambientSoundController = createAmbientSoundController({
  root: document,
  getAudioContextConstructor: () => window.AudioContext || window.webkitAudioContext,
  getVolume: () => Number($('soundVolume').value) / 100,
@@ -295,10 +295,10 @@ const ambientSound = createAmbientSoundController({
  onContextCreated: context => { audioContext = context; },
  onUnsupported: () => { $('toast').textContent='このブラウザでは環境音を再生できないようだよ。'; }
 });
-document.querySelectorAll('[data-sound]').forEach(b=>b.onclick=()=>ambientSound.toggle(b.dataset.sound));
-document.querySelectorAll('[data-sound-preset]').forEach(b=>b.onclick=()=>ambientSound.setPreset(b.dataset.soundPreset));
-$('soundVolume').oninput=()=>ambientSound.setVolume(Number($('soundVolume').value)/100*($('studyRoomView').classList.contains('chill-mode')?0.72:1),1.8);
-for(const kind of Object.keys(soundLevelDefaults)){$('soundVolume-'+kind).oninput=()=>{soundLevels[kind]=Number($('soundVolume-'+kind).value);ambientSound.setLayerVolume(kind,soundLevels[kind]/100);if(!storage.setJSON('focus-sound-levels',soundLevels))$('toast').textContent='音量設定を保存できなかったよ。'}}
+document.querySelectorAll('[data-sound]').forEach(b=>b.onclick=()=>ambientSoundController.toggle(b.dataset.sound));
+document.querySelectorAll('[data-sound-preset]').forEach(b=>b.onclick=()=>ambientSoundController.setPreset(b.dataset.soundPreset));
+$('soundVolume').oninput=()=>ambientSoundController.setVolume(Number($('soundVolume').value)/100*($('studyRoomView').classList.contains('chill-mode')?0.72:1),1.8);
+for(const kind of Object.keys(soundLevelDefaults)){$('soundVolume-'+kind).oninput=()=>{soundLevels[kind]=Number($('soundVolume-'+kind).value);ambientSoundController.setLayerVolume(kind,soundLevels[kind]/100);if(!storage.setJSON('focus-sound-levels',soundLevels))$('toast').textContent='音量設定を保存できなかったよ。'}}
 function buildBackupPayload(){return {app:'FOCUS',version:CURRENT_BACKUP_VERSION,exportedAt:new Date().toISOString(),stats:statsStore.exportStats(),timerSettings:normalizeTimerSettings(storage.getJSON('focus-timer-settings',null)),appearance:storage.getJSON('focus-appearance',null),mark:storage.getText('focus-mark')||'dot',homeIcon:storage.getText('focus-home-icon')||'planet',notificationsEnabled,quietText:storage.getText('focus-room-quiet-text')==='true'}}
 function downloadBackup(payload,filename){const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=filename;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)}
 $('exportData').onclick=()=>{downloadBackup(buildBackupPayload(),'focus-backup-'+dateKey(new Date())+'.json');$('toast').textContent='バックアップを書き出したよ。'};
@@ -360,7 +360,7 @@ window.addEventListener('pagehide',event=>{
  timerController.destroy();
  hourglass.destroy();
  studyRoom.destroy();
- ambientSound.destroy();
+ ambientSoundController.destroy();
  notificationController.destroy();
  appearanceController.destroy();
  recoveryController.destroy();
