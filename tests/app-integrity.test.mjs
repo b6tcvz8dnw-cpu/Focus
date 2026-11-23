@@ -2489,20 +2489,20 @@ test("overview goal progress and study history can be independently collapsed", 
   const html = await read("../index.html");
   assert.match(html, /<details class="panel overview-disclosure" id="goalProgressPanel" open>/);
   assert.match(html, /<details class="panel overview-disclosure" id="historyPanel" open>/);
-  assert.match(html, /<div id="goalProgress"><\\/div>/);
-  assert.match(html, /<div class="history-list" id="historyList"><\\/div>/);
+  assert.ok(html.includes('<div id="goalProgress"></div>'));
+  assert.ok(html.includes('<div class="history-list" id="historyList"></div>'));
 });
 
 test("completion chime default gain is raised while remaining capped", async () => {
   const source = await read("../src/features/completion-sound.js");
-  assert.match(source, /volume = 0\\.16/);
-  assert.match(source, /Math\\.min\\(0\\.2, volume\\)/);
+  assert.ok(source.includes("volume = 0.16"));
+  assert.ok(source.includes("Math.min(0.2, volume)"));
 });
 
 test("cyberpunk visual layer adds scanlines, circuit accents and accessible disclosure controls", async () => {
   const css = await read("../src/styles/cyber-metal.css");
-  assert.match(css, /repeating-linear-gradient\\(0deg/);
-  assert.match(css, /linear-gradient\\(90deg,transparent 0 9\\.8%/);
-  assert.match(css, /\\.overview-disclosure>summary::after/);
-  assert.match(css, /prefers-reduced-motion:reduce/);
+  assert.ok(css.includes("repeating-linear-gradient(0deg"));
+  assert.ok(css.includes("linear-gradient(90deg,transparent 0 9.8%"));
+  assert.ok(css.includes(".overview-disclosure>summary::after"));
+  assert.ok(css.includes("prefers-reduced-motion:reduce"));
 });
