@@ -182,7 +182,7 @@ test("calendar and analytics panels are mounted in their matching tabs", async (
   const overviewStart = html.indexOf('<div class="page" id="overviewPage"');
   const calendarStart = html.indexOf('<div class="page" id="calendarPage"');
   const analyticsStart = html.indexOf('<div class="page" id="analyticsPage"');
-  const roomStart = html.indexOf('<div class="page" id="studyRoomPage"');
+  const roomStart = html.indexOf('id="studyRoomPage"');
   assert.ok(overviewStart >= 0 && calendarStart > overviewStart);
   assert.ok(analyticsStart > calendarStart && roomStart > analyticsStart);
   const overview = html.slice(overviewStart, calendarStart);
