@@ -138,3 +138,47 @@ body.timer-large-mode #timerPanel{
 @media(prefers-reduced-motion:reduce){
  .panel::before{opacity:.12}
 }
+
+
+/* Expanded cyberpunk interface: layered alloy, circuit traces and restrained neon. */
+:root{--cyber-cyan:#63e9ff;--cyber-violet:#a98aff;--cyber-line:rgba(99,233,255,.22);--cyber-glow:color-mix(in srgb,var(--accent) 42%,transparent)}
+body{
+ background:radial-gradient(ellipse at 8% 18%,rgba(0,211,255,.12),transparent 34%),radial-gradient(ellipse at 92% 12%,rgba(150,75,255,.14),transparent 32%),radial-gradient(ellipse at 50% 100%,rgba(0,140,180,.12),transparent 45%),linear-gradient(135deg,#050a12 0%,#101b2a 42%,#080d17 100%);
+ background-attachment:fixed;
+}
+body::before,body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:-1}
+body::before{opacity:.16;background:repeating-linear-gradient(0deg,transparent 0 3px,rgba(151,221,245,.09) 3px 4px)}
+body::after{opacity:.22;background:linear-gradient(90deg,transparent 0 9.8%,rgba(73,206,236,.12) 10%,transparent 10.15% 89.8%,rgba(73,206,236,.1) 90%,transparent 90.15%),linear-gradient(0deg,transparent 0 19.8%,rgba(73,206,236,.08) 20%,transparent 20.15% 79.8%,rgba(73,206,236,.08) 80%,transparent 80.15%);mask-image:linear-gradient(180deg,black,transparent 85%)}
+header{position:relative;padding:12px 14px;border:1px solid rgba(121,212,240,.24);border-radius:14px;background:linear-gradient(115deg,rgba(28,47,65,.94),rgba(8,17,29,.96) 72%);box-shadow:inset 0 1px rgba(255,255,255,.13),0 8px 26px rgba(0,0,0,.28),0 0 24px rgba(0,191,225,.08)}
+header::after{content:"";position:absolute;left:12px;right:12px;bottom:-1px;height:1px;background:linear-gradient(90deg,transparent,var(--cyber-cyan),var(--cyber-violet),transparent);opacity:.8}
+header .brand{letter-spacing:.22em;font-weight:850;text-shadow:0 0 8px rgba(91,226,255,.5),0 0 24px var(--cyber-glow)}
+.panel{overflow:hidden;border-color:rgba(134,195,224,.3);background:linear-gradient(128deg,rgba(52,72,91,.92),rgba(20,33,49,.97) 36%,rgba(8,17,29,.98) 100%);box-shadow:inset 0 1px 0 rgba(245,252,255,.17),inset 0 -1px 0 rgba(0,0,0,.62),0 14px 34px rgba(0,0,0,.4),0 0 0 1px rgba(84,189,220,.07),0 0 28px rgba(0,166,207,.055)}
+.panel::before{opacity:.34;background:repeating-linear-gradient(125deg,transparent 0 7px,rgba(225,245,255,.035) 7px 8px,transparent 8px 16px),linear-gradient(115deg,rgba(255,255,255,.1),transparent 22%,transparent 78%,rgba(88,211,242,.08))}
+.panel::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:linear-gradient(90deg,var(--cyber-line),transparent 18%) top left/42px 1px no-repeat,linear-gradient(180deg,var(--cyber-line),transparent 18%) top left/1px 42px no-repeat,linear-gradient(270deg,rgba(169,138,255,.28),transparent 18%) bottom right/42px 1px no-repeat,linear-gradient(0deg,rgba(169,138,255,.28),transparent 18%) bottom right/1px 42px no-repeat}
+.panel h2{color:#e9f7ff;letter-spacing:.045em;text-shadow:0 0 14px rgba(80,208,242,.18)}
+button,.theme-choice,.mark-choice,.day-record,.history-item,.stat,.achievement{border-color:rgba(133,203,231,.32)}
+button{transition:transform .16s ease,filter .16s ease,box-shadow .16s ease,border-color .16s ease}
+button:not(:disabled):hover{filter:brightness(1.13);border-color:rgba(105,232,255,.62);box-shadow:inset 0 1px rgba(255,255,255,.18),0 0 16px rgba(52,211,241,.13),0 5px 16px rgba(0,0,0,.28)}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,summary:focus-visible{outline:2px solid var(--cyber-cyan);outline-offset:3px;box-shadow:0 0 0 4px rgba(99,233,255,.15)}
+.primary{background:linear-gradient(145deg,#d4fbff 0%,var(--accent) 28%,#1789a9 72%,#12394d 100%);box-shadow:inset 0 1px 0 rgba(255,255,255,.55),0 0 18px var(--cyber-glow),0 0 34px rgba(40,193,225,.16),0 7px 18px rgba(0,0,0,.4)}
+.timer .ring{filter:drop-shadow(0 0 15px rgba(64,221,255,.28)) drop-shadow(0 0 32px var(--cyber-glow))}
+.timer .progress{filter:drop-shadow(0 0 7px var(--cyber-cyan)) drop-shadow(0 0 18px var(--cyber-glow))}
+.clock{text-shadow:0 0 9px rgba(108,235,255,.42),0 0 26px var(--cyber-glow),0 3px 4px rgba(0,0,0,.7)}
+.stat,.achievement,.day-record,.day-add-record,.history-item{border:1px solid rgba(125,199,228,.23);background:linear-gradient(145deg,rgba(48,70,91,.84),rgba(8,18,31,.97))}
+.stat strong,.week-total,.analytics-total strong{color:#effbff;text-shadow:0 0 10px rgba(77,220,255,.36),0 0 22px var(--cyber-glow)}
+.tabbar{border-top-color:rgba(97,217,245,.34);background:linear-gradient(180deg,rgba(21,39,57,.96),rgba(4,10,19,.99));box-shadow:0 -8px 30px rgba(0,0,0,.45),0 -1px 16px rgba(0,190,224,.08),inset 0 1px rgba(255,255,255,.09)}
+.tab.active{color:#effcff;text-shadow:0 0 9px var(--cyber-cyan);box-shadow:inset 0 0 0 1px rgba(99,233,255,.4),0 0 18px rgba(50,211,245,.16)}
+.overview-disclosure{padding:0}
+.overview-disclosure>summary{position:relative;display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:54px;padding:15px 18px;list-style:none;cursor:pointer;color:#eaf8ff;font-weight:750;letter-spacing:.035em}
+.overview-disclosure>summary::-webkit-details-marker{display:none}
+.overview-disclosure>summary::before{content:"";width:3px;height:20px;position:absolute;left:0;top:17px;background:linear-gradient(180deg,var(--cyber-cyan),var(--cyber-violet));box-shadow:0 0 10px var(--cyber-glow)}
+.overview-disclosure>summary::after{content:"+";display:grid;place-items:center;width:25px;height:25px;flex:0 0 25px;border:1px solid rgba(112,222,246,.4);border-radius:7px;color:var(--cyber-cyan);background:linear-gradient(145deg,rgba(47,84,105,.7),rgba(8,19,32,.9));box-shadow:inset 0 1px rgba(255,255,255,.12),0 0 12px rgba(0,194,225,.1);font:700 18px/1 ui-monospace,monospace}
+.overview-disclosure[open]>summary::after{content:"−"}
+.disclosure-hint{margin-left:auto;color:rgba(185,220,237,.58);font-size:10px;font-weight:500;letter-spacing:.08em}
+.disclosure-content{position:relative;padding:0 16px 16px;border-top:1px solid rgba(121,204,231,.13)}
+.overview-disclosure[open]>summary{border-bottom:1px solid rgba(121,204,231,.14)}
+.overview-disclosure:not([open]){box-shadow:inset 0 1px rgba(255,255,255,.1),0 8px 22px rgba(0,0,0,.3)}
+@keyframes cyber-signal{0%,100%{box-shadow:0 0 8px rgba(73,216,246,.14),inset 0 1px rgba(255,255,255,.13)}50%{box-shadow:0 0 18px rgba(73,216,246,.26),inset 0 1px rgba(255,255,255,.18)}}
+.mode.active,.tab.active{animation:cyber-signal 4s ease-in-out infinite}
+@media(hover:none){button:not(:disabled):hover{filter:none}}
+@media(prefers-reduced-motion:reduce){button,.mode.active,.tab.active{transition:none;animation:none}body::before,body::after{display:none}}

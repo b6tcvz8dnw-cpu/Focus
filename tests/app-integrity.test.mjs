@@ -2483,3 +2483,26 @@ test("weekly chart uses a two-hour minimum scale and rounds larger maxima to ful
   h.views.renderWeekly({ history: { "2026-11-21": 75 }, now });
   assert.match(h.elements.get("weekChart").innerHTML, /height:62\.5%/);
 });
+
+
+test("overview goal progress and study history can be independently collapsed", async () => {
+  const html = await read("../index.html");
+  assert.match(html, /<details class="panel overview-disclosure" id="goalProgressPanel" open>/);
+  assert.match(html, /<details class="panel overview-disclosure" id="historyPanel" open>/);
+  assert.match(html, /<div id="goalProgress"><\\/div>/);
+  assert.match(html, /<div class="history-list" id="historyList"><\\/div>/);
+});
+
+test("completion chime default gain is raised while remaining capped", async () => {
+  const source = await read("../src/features/completion-sound.js");
+  assert.match(source, /volume = 0\\.16/);
+  assert.match(source, /Math\\.min\\(0\\.2, volume\\)/);
+});
+
+test("cyberpunk visual layer adds scanlines, circuit accents and accessible disclosure controls", async () => {
+  const css = await read("../src/styles/cyber-metal.css");
+  assert.match(css, /repeating-linear-gradient\\(0deg/);
+  assert.match(css, /linear-gradient\\(90deg,transparent 0 9\\.8%/);
+  assert.match(css, /\\.overview-disclosure>summary::after/);
+  assert.match(css, /prefers-reduced-motion:reduce/);
+});

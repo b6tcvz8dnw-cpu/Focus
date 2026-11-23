@@ -2,7 +2,7 @@
 export function createCompletionSoundController({
   getAudioContext = () => globalThis.AudioContext || globalThis.webkitAudioContext,
   target = globalThis.document,
-  volume = 0.075
+  volume = 0.16
 } = {}) {
   let context = null;
   let destroyed = false;
@@ -59,7 +59,7 @@ export function createCompletionSoundController({
       const startAt = audio.currentTime + 0.015;
       // Three soft, ascending notes; generated locally without downloading audio.
       [659.25, 783.99, 987.77].forEach((frequency, index) => {
-        playTone(audio, frequency, startAt + index * 0.13, 0.34, Math.max(0.001, Math.min(0.12, volume)));
+        playTone(audio, frequency, startAt + index * 0.13, 0.34, Math.max(0.001, Math.min(0.2, volume)));
       });
       return true;
     };

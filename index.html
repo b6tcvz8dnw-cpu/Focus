@@ -46,9 +46,9 @@
  <div class="muted" style="margin-top:10px">集中セッションを完了すると、その日の棒グラフに反映されるよ。</div>
 </section>
 <details class="panel"><summary>アチーブメント</summary><p class="muted" style="margin:12px 0 12px">累計の集中時間に応じて記録される達成バッジ。</p><div class="achievement-list" id="achievementList"></div><div class="achievement-next" id="achievementNext"></div></details>
-<section class="panel"><h2>目標の進み具合</h2><div id="goalProgress"></div><p class="muted" style="margin:10px 0 0">目標は設定画面から変更できるよ。達成できない日があっても、また次の日から始めれば大丈夫。</p></section>
+<details class="panel overview-disclosure" id="goalProgressPanel" open><summary><span>目標の進み具合</span><span class="disclosure-hint">表示を切り替え</span></summary><div class="disclosure-content"><div id="goalProgress"></div><p class="muted" style="margin:10px 0 0">目標は設定画面から変更できるよ。達成できない日があっても、また次の日から始めれば大丈夫。</p></div></details>
 
-<section class="panel" id="historyPanel"><h2>学習履歴</h2><div class="muted" style="margin:-4px 0 10px">最近の集中セッション。記録の削除や修正もできるよ。</div><input id="historySearch" type="search" placeholder="メモや意図を検索" aria-label="履歴を検索"><div class="history-filters"><label>期間<select id="historyPeriod"><option value="all">すべて</option><option value="7">直近7日</option><option value="30">直近30日</option><option value="90">直近90日</option></select></label></div><label class="muted" style="display:flex;align-items:center;gap:8px;margin:0 0 10px"><input id="reflectionOnly" type="checkbox" style="width:auto;margin:0">振り返りがある記録だけ表示</label><div class="history-list" id="historyList"></div></section>
+<details class="panel overview-disclosure" id="historyPanel" open><summary><span>学習履歴</span><span class="disclosure-hint">表示を切り替え</span></summary><div class="disclosure-content"><div class="muted" style="margin:0 0 10px">最近の集中セッション。記録の削除や修正もできるよ。</div><input id="historySearch" type="search" placeholder="メモや意図を検索" aria-label="履歴を検索"><div class="history-filters"><label>期間<select id="historyPeriod"><option value="all">すべて</option><option value="7">直近7日</option><option value="30">直近30日</option><option value="90">直近90日</option></select></label></div><label class="muted" style="display:flex;align-items:center;gap:8px;margin:0 0 10px"><input id="reflectionOnly" type="checkbox" style="width:auto;margin:0">振り返りがある記録だけ表示</label><div class="history-list" id="historyList"></div></div></details>
 
 </div>
 <div class="page" id="calendarPage" hidden>
