@@ -46,6 +46,29 @@
 <details class="panel" id="reflectionPanel"><summary>セッションの振り返り</summary><p class="muted" id="reflectionPrompt" style="margin:12px 0 8px">集中セッションのあと、気づいたことを短く残せるよ。</p><textarea class="field-select" id="reflection" maxlength="500" placeholder="例：思ったより進んだこと、次に取り組むこと…"></textarea><button class="secondary wide" id="saveReflection">振り返りを保存</button></details>
 
 </div>
+
+<div class="page stillness-page" id="stillnessPage" hidden>
+ <section class="stillness-world" id="stillnessWorld" data-phase="day" aria-label="余白の風景">
+  <div class="stillness-sky-glow" aria-hidden="true"></div>
+  <div class="stillness-sun" aria-hidden="true"></div>
+  <div class="stillness-stars" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+  <div class="stillness-cloud stillness-cloud-a" aria-hidden="true"></div>
+  <div class="stillness-cloud stillness-cloud-b" aria-hidden="true"></div>
+  <svg class="stillness-landscape" viewBox="0 0 760 470" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
+   <path class="stillness-distant" d="M0 282 Q92 220 174 255 T342 247 T520 251 T760 222 V470 H0Z"/>
+   <path class="stillness-island-shadow" d="M82 326 Q190 284 310 304 Q426 276 558 312 Q652 322 694 357 Q605 383 488 371 Q337 399 220 371 Q130 364 82 326Z"/>
+   <path class="stillness-island" d="M62 320 Q164 274 291 294 Q414 263 552 298 Q656 308 710 346 Q610 370 487 361 Q333 389 213 360 Q111 354 62 320Z"/>
+   <path class="stillness-island-edge" d="M104 333 Q230 363 352 346 Q502 359 660 338"/>
+   <path class="stillness-grass" d="M190 298q-8-23-2-37m2 37q9-17 17-22m-17 22q-17-12-23-25m216 4q-5-25 3-39m-3 39q10-17 20-21m-20 21q-14-11-18-25m164 47q-3-18 6-30m-6 30q10-11 17-13"/>
+   <g class="stillness-flower"><path d="M265 308v-25m0 10q-10-10-15-6m15 2q10-11 15-7"/><circle cx="265" cy="280" r="4"/></g>
+   <g class="stillness-flower flower-two"><path d="M515 311v-22m0 9q-8-8-13-5m13 2q8-9 13-5"/><circle cx="515" cy="285" r="3.5"/></g>
+  </svg>
+  <div class="stillness-horizon" aria-hidden="true"></div>
+  <div class="stillness-copy"><span class="stillness-kicker">FOCUS · A QUIET PLACE</span><h1>余白に流れる時間</h1><p>何もないことを、何もないまま大切にする。</p></div>
+  <div class="stillness-clock" id="stillnessClock" aria-label="現在時刻">--:--</div>
+ </section>
+ <p class="stillness-note">急がなくていい。ここでは、ただ時間が流れている。</p>
+</div>
 <div class="mini-timer" id="miniTimer" hidden><div><span class="mini-timer-caption" id="miniTimerMode">集中する時間</span><strong class="mini-timer-clock" id="miniTimerClock">25:00</strong></div><button class="secondary" id="miniTimerToggle" type="button" aria-label="タイマーを一時停止">Ⅱ 一時停止</button></div>
 
 <div class="page" id="overviewPage" hidden>
@@ -155,6 +178,7 @@
  <button class="tab" type="button" data-page="overviewPage"><span>▥</span>概要</button>
  <button class="tab" type="button" data-page="calendarPage"><span>▦</span>カレンダー</button>
   <button class="tab" type="button" data-page="analyticsPage"><span>⌁</span>分析</button>
+ <button class="tab" type="button" data-page="stillnessPage"><span>☁</span>余白</button>
 
 
 </nav>
