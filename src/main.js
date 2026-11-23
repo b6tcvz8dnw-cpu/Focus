@@ -215,6 +215,7 @@ $('calendarToday').onclick=()=>{const now=new Date();moveCalendarTo(now.getFullY
 $('calendarGrid').addEventListener('click',e=>{
  const day=e.target.closest('[data-calendar-date]');if(!day)return;
  selectedCalendarDate=day.dataset.calendarDate;renderCalendar();
+ $('calendarDayDisclosure').open=true;
  $('calendarDayPanel').scrollIntoView({behavior:'smooth',block:'nearest'});
 });
 $('calendarDayDetails').addEventListener('click',e=>{

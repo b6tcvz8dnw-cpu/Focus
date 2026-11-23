@@ -2529,3 +2529,9 @@ test("cyber clock is the default home icon and is included in the app shell", as
   assert.ok(appearance.includes('const HOME_ICON_SOURCE = "./icons/icon-cyber-clock.svg"'));
   assert.ok(sw.includes("'./icons/icon-cyber-clock.svg'"));
 });
+
+
+test("selecting a calendar day expands its foldable detail panel", async () => {
+  const script = await read("../src/main.js");
+  assert.ok(script.includes("$('calendarDayDisclosure').open=true"));
+});

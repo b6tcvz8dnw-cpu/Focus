@@ -1,7 +1,7 @@
-const CACHE='focus-pwa-v43';
+const CACHE='focus-pwa-v42';
 const CACHE_PREFIX='focus-pwa-';
 const BUILD_ASSETS = [];
-const FILES=['./','./index.html','./manifest.webmanifest','./icon.svg','./icon-192.png','./icon-512.png','./icons/icon-cyber-clock.svg','./icons/icon-planet.png','./icons/icon-hourglass.png','./icons/icon-window.png','./icons/icon-comet.png',...BUILD_ASSETS];
+const FILES=['./','./index.html','./manifest.webmanifest','./icon.svg','./icon-192.png','./icon-512.png','./icons/icon-planet.png','./icons/icon-hourglass.png','./icons/icon-window.png','./icons/icon-comet.png',...BUILD_ASSETS];
 
 self.addEventListener('install',event=>{
   event.waitUntil(

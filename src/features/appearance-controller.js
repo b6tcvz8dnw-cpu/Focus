@@ -6,7 +6,7 @@ const THEMES = {
   rose: { bg: "#1b1317", panel: "#2a1d23", deep: "#21171c", line: "#50333d", text: "#f8edf0", muted: "#bea5ad", accent: "#e6a0ad", accent2: "#59323d", tab: "rgba(27,19,23,.96)" }
 };
 const MARKS = { dot: "●", star: "✦", leaf: "❧" };
-const HOME_ICON_SOURCE = "./icons/icon-cyber-clock.svg";
+const HOME_ICON_SOURCE = "./icons/icon-planet.png";
 
 export function createAppearanceController({ root, storage, onMessage = () => {} }) {
   if (!root || !storage) throw new TypeError("root and storage are required");
