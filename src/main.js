@@ -301,7 +301,28 @@ $('soundVolume').oninput=()=>ambientSound.setVolume(Number($('soundVolume').valu
 for(const kind of Object.keys(soundLevelDefaults)){$('soundVolume-'+kind).oninput=()=>{soundLevels[kind]=Number($('soundVolume-'+kind).value);ambientSound.setLayerVolume(kind,soundLevels[kind]/100);if(!storage.setJSON('focus-sound-levels',soundLevels))$('toast').textContent='音量設定を保存できなかったよ。'}}
 function buildBackupPayload(){return {app:'FOCUS',version:CURRENT_BACKUP_VERSION,exportedAt:new Date().toISOString(),stats:statsStore.exportStats(),timerSettings:normalizeTimerSettings(storage.getJSON('focus-timer-settings',null)),appearance:storage.getJSON('focus-appearance',null),mark:storage.getText('focus-mark')||'dot',homeIcon:storage.getText('focus-home-icon')||'planet',notificationsEnabled,quietText:storage.getText('focus-room-quiet-text')==='true'}}
 function downloadBackup(payload,filename){const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=filename;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)}
+function createTransferFile(){
+ const filename='FOCUS-移行データ-'+dateKey(new Date())+'.json';
+ return new File([JSON.stringify(buildBackupPayload(),null,2)],filename,{type:'application/json'});
+}
+async function shareTransferBackup(){
+ let file;
+ try{file=createTransferFile()}catch{$('toast').textContent='移行データを作成できなかったよ。';return}
+ if(typeof navigator.share==='function'&&typeof navigator.canShare==='function'&&navigator.canShare({files:[file]})){
+  try{
+   await navigator.share({files:[file],title:'FOCUSのデータ移行',text:'新しい端末のFOCUSでこのファイルを読み込んでね。'});
+   $('toast').textContent='移行データを共有したよ。';
+   return;
+  }catch(error){
+   if(error?.name==='AbortError')return;
+  }
+ }
+ downloadBackup(buildBackupPayload(),file.name);
+ $('toast').textContent='移行データを保存したよ。新しい端末へ送ってね。';
+}
 $('exportData').onclick=()=>{downloadBackup(buildBackupPayload(),'focus-backup-'+dateKey(new Date())+'.json');$('toast').textContent='バックアップを書き出したよ。'};
+$('transferExport').addEventListener('click',shareTransferBackup);
+$('transferImport').addEventListener('click',()=>$('importData').click());
 const importController=createBackupImportController({
  input:$('importData'),storage,statsStore,validate:validateBackupPayload,
  buildCurrentBackup:()=>buildBackupPayload(),

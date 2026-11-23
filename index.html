@@ -216,7 +216,16 @@
  </details>
  <details class="panel"><summary>目標設定</summary><div class="settings"><label>1日の目標（分）<input id="dailyGoal" type="number" min="0" max="1440" value="60"></label><label>1週間の目標（分）<input id="weeklyGoal" type="number" min="0" max="10080" value="300"></label></div><button class="secondary wide" id="saveGoals">目標を保存</button></details>
 <details class="panel"><summary>自動バックアップ</summary><p class="muted">学習記録を変更するたびに、この端末内へ最新とひとつ前の2世代を自動保存するよ。端末間同期やクラウド保存ではないので、機種変更前にはJSONを書き出してね。</p><p class="muted" id="autoBackupStatus">自動バックアップを確認中…</p><div class="settings"><button class="secondary wide" id="restoreLatestAutoBackup" type="button">最新の自動バックアップから復元</button><button class="secondary wide" id="restorePreviousAutoBackup" type="button">ひとつ前の自動バックアップから復元</button></div></details>
-<details class="panel"><summary>データ管理</summary><p class="muted">学習記録はこの端末のブラウザ内に保存されるよ。バックアップを保存しておけば、機種変更時などに手動で引き継げるよ。</p><button class="secondary wide" id="exportData">学習データを書き出す（JSON）</button><label class="import-label">バックアップを読み込む<input id="importData" type="file" accept="application/json,.json" style="display:none"></label><button class="secondary wide" id="clear">今日の記録をリセット</button></details>
+<section class="panel" aria-labelledby="dataTransferTitle">
+ <h3 id="dataTransferTitle" style="margin:0 0 8px">かんたんデータ移行</h3>
+ <p class="muted">学習記録やタイマー・デザイン設定を、別の端末へまとめて引き継げるよ。</p>
+ <button class="secondary wide" id="transferExport" type="button">① この端末から移行データを送る</button>
+ <button class="secondary wide" id="transferImport" type="button" style="margin-top:8px">② 受け取った移行データを読み込む</button>
+ <p class="muted" style="margin:10px 0 0">元の端末では①を押してAirDropなどでファイルを送り、新しい端末のFOCUSで②を押して受け取ったJSONファイルを選んでね。読み込み前には現在のデータも端末内に保護するよ。</p>
+ <input id="importData" type="file" accept="application/json,.json" style="display:none">
+</section>
+<details class="panel"><summary>手動バックアップ（詳細）</summary><p class="muted">移行データを個別に保存・管理したい場合はこちら。</p><button class="secondary wide" id="exportData">学習データを書き出す（JSON）</button></details>
+<details class="panel"><summary>データ管理</summary><p class="muted">学習記録はこの端末のブラウザ内に保存されるよ。</p><button class="secondary wide" id="clear">今日の記録をリセット</button></details>
 <details class="panel" id="recoveryPanel"><summary>復旧用データの確認・復元</summary>
  <p class="muted">移行前や読み込み前に端末内へ保護したデータを確認できるよ。復元できるものは、現在の学習記録を置き換える前に確認を表示するよ。破損した元データは削除せず、そのまま書き出せるよ。</p>
  <div id="recoveryList" class="recovery-list" aria-live="polite"><p class="muted">復旧用データを確認中…</p></div>
